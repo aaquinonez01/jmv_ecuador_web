@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+:root {
+  --background: #CCE4F7;
+  --foreground: #f8fafc;
+  
+  /* JMV Color Palette */
+  --jmv-blue: #1D4E8A;
+  --jmv-blue-light: #2563eb;
+  --jmv-blue-dark: #1e40af;
+  --jmv-red: #D3302F;
+  --jmv-red-light: #ef4444;
+  --jmv-red-dark: #dc2626;
+  --jmv-gold: #D98F06;
+  --jmv-gold-light: #f59e0b;
+  --jmv-gold-dark: #d97706;
+  --jmv-white: #ffffff;
+  --jmv-gray-light: #f8fafc;
+  --jmv-gray: #64748b;
+  --jmv-gray-dark: #334155;
+}
+
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* JMV Brand Colors */
+  --color-jmv-blue: var(--jmv-blue);
+  --color-jmv-blue-light: var(--jmv-blue-light);
+  --color-jmv-blue-dark: var(--jmv-blue-dark);
+  --color-jmv-red: var(--jmv-red);
+  --color-jmv-red-light: var(--jmv-red-light);
+  --color-jmv-red-dark: var(--jmv-red-dark);
+  --color-jmv-gold: var(--jmv-gold);
+  --color-jmv-gold-light: var(--jmv-gold-light);
+  --color-jmv-gold-dark: var(--jmv-gold-dark);
+  --color-jmv-white: var(--jmv-white);
+  --color-jmv-gray-light: var(--jmv-gray-light);
+  --color-jmv-gray: var(--jmv-gray);
+  --color-jmv-gray-dark: var(--jmv-gray-dark);
+  
+  /* Typography */
+  --font-poppins: 'Poppins', sans-serif;
+  --font-open-sans: 'Open Sans', sans-serif;
+  --font-dancing: 'Dancing Script', cursive;
+  --font-sans: var(--font-poppins);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Forced dark theme - removed automatic theme detection */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins);
+  line-height: 1.6;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--jmv-gray-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--jmv-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--jmv-blue-dark);
+}
+
+/* Glass morphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+/* Gradient backgrounds */
+.gradient-jmv {
+  background: linear-gradient(135deg, var(--jmv-blue) 0%, var(--jmv-red) 50%, var(--jmv-gold) 100%);
+}
+
+.gradient-jmv-soft {
+  background: linear-gradient(135deg, rgba(29, 78, 138, 0.1) 0%, rgba(211, 48, 47, 0.1) 50%, rgba(217, 143, 6, 0.1) 100%);
+}
+
+/* Fixed dark JMV gradient that ignores system theme preference */
+.bg-gradient-jmv-dark-fixed {
+  background: linear-gradient(135deg, #0f172a 0%, #1D4E8A 25%, #D3302F 60%, #D98F06 100%) !important;
+}
+
+/* Animation utilities */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom shadows */
+.shadow-jmv {
+  box-shadow: 0 10px 25px -3px rgba(29, 78, 138, 0.1), 0 4px 6px -2px rgba(29, 78, 138, 0.05);
+}
+
+.shadow-jmv-lg {
+  box-shadow: 0 25px 50px -12px rgba(29, 78, 138, 0.25);
+}
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Admin Panel Custom Animations */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+.animate-slide-in-bottom {
+  animation: slideInFromBottom 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+textarea,
+select,
+.transition-smooth {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Admin modal backdrop */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Drag & Drop visual feedback */
+.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+  cursor: grabbing !important;
+}
+
+.drag-over {
+  border-color: #0066CC;
+  background-color: rgba(0, 102, 204, 0.05);
+}

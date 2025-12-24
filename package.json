@@ -1,0 +1,41 @@
+{
+  "name": "jmv_web_oficial",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.2.1",
+    "@types/leaflet": "^1.9.20",
+    "axios": "^1.13.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.12",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.542.0",
+    "next": "15.5.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-leaflet": "^5.0.0",
+    "tailwind-merge": "^3.3.1",
+    "yet-another-react-lightbox": "^3.25.0",
+    "zod": "^4.1.5",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "prisma": "^6.18.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

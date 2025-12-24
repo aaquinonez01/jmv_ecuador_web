@@ -1,0 +1,139 @@
+/* Estilos específicos para el blog JMV */
+
+/* Prevenir que el texto se salga de los contenedores */
+.blog-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+}
+
+/* Prevenir que el texto se rompa en cada letra */
+.blog-content * {
+  word-break: normal;
+  white-space: normal;
+}
+
+/* Asegurar que los nombres y textos cortos no se rompan */
+.blog-content p, .blog-content span, .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
+  word-break: normal;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+
+/* Para textos que deben mantenerse en una línea */
+.blog-content .whitespace-nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Prevenir que el contenido se salga del contenedor */
+.blog-content {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* Asegurar que los elementos flex no se desborden */
+.blog-content .flex {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Prevenir desbordamiento en elementos de tendencias */
+.trending-item {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.trending-item * {
+  max-width: 100%;
+}
+
+/* Asegurar que los textos largos se ajusten correctamente */
+.blog-text {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+/* Prevenir desbordamiento en elementos flex */
+.blog-flex-item {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Asegurar que las imágenes no se salgan del contenedor */
+.blog-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Prevenir desbordamiento en botones y elementos pequeños */
+.blog-button {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Asegurar que los títulos largos se manejen correctamente */
+.blog-title {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+/* Prevenir desbordamiento en elementos de categoría */
+.blog-category {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Animaciones para el modal de publicación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-modal-in {
+  animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-modal-out {
+  animation: modalOut 0.3s ease-in;
+}
