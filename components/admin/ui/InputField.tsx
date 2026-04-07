@@ -1,21 +1,24 @@
 import React from "react";
 
 interface Props {
-  label: string;
+  label?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string;
   required?: boolean;
   type?: string;
+  className?: string;
 }
 
-export default function InputField({ label, value, onChange, placeholder, error, required, type = "text" }: Props) {
+export default function InputField({ label, value, onChange, placeholder, error, required, type = "text", className }: Props) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+    <div className={className}>
+      {label && (
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <input
         type={type}
         value={value}

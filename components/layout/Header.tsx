@@ -196,9 +196,12 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
                       Perfil
                     </Link>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         removeToken();
                         clear();
+                        await fetch("/api/session", {
+                          method: "DELETE",
+                        }).catch(() => null);
                         setOpenProfile(false);
                         router.replace("/");
                       }}

@@ -1,9 +1,11 @@
 "use server";
 
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import ActivitiesAlbumsClient from "./ActivitiesAlbumsClient";
-import type { ActivityCategory } from "@/actions/activity-categories/get";
-import type { AdminImage } from "@/types/admin/image";
+import type {
+  ActivityCatalogItem,
+  ActivityItem,
+  PaginatedResponse,
+} from "@/types/activity-management";
 
 export default async function ActividadesAlbumsServer() {
   const base = (
@@ -11,61 +13,48 @@ export default async function ActividadesAlbumsServer() {
     process.env.NEXT_PUBLIC_API_URL ||
     "http://localhost:3002/api"
   ).replace(/\/+$/, "");
-  let images: AdminImage[] = [];
-  let cats: ActivityCategory[] = [];
+
+  let activities: ActivityItem[] = [];
+  let pillars: ActivityCatalogItem[] = [];
+  let types: ActivityCatalogItem[] = [];
+
   try {
-    const [imagesRes, catsRes] = await Promise.all([
-      fetch(`${base}/site-images?section=galeria_actividades`, {
-        next: { revalidate: 300, tags: ["galeria_actividades"] },
+    const [activitiesRes, pillarsRes, typesRes] = await Promise.all([
+      fetch(`${base}/activities/public`, {
+        next: { revalidate: 300, tags: ["activities_public"] },
       }),
-      fetch(`${base}/activity-categories`, {
-        next: { revalidate: 600, tags: ["activity_categories"] },
+      fetch(`${base}/activity-pillars`, {
+        next: { revalidate: 600, tags: ["activity_pillars_public"] },
+      }),
+      fetch(`${base}/activity-types`, {
+        next: { revalidate: 600, tags: ["activity_types_public"] },
       }),
     ]);
-    images = await imagesRes.json();
-    cats = await catsRes.json();
-  } catch {
-    images = [];
-    cats = [];
-  }
-  const catMap = new Map<string, string>();
-  cats.forEach((c) => catMap.set(c.slug, c.name));
-  const groups = new Map<
-    string,
-    { title: string; desc?: string; coverUrl: string; imgs: typeof images }
-  >();
-  for (const img of images) {
-    const key = img.metadata?.groupId || `${img.title || img.alt || img.id}`;
-    const url = getOptimizedUrl(img.url, { w: 1600, q: "auto:good" });
-    if (!groups.has(key)) {
-      groups.set(key, {
-        title: img.title || img.alt,
-        desc: img.description,
-        coverUrl: url,
-        imgs: [img],
-      });
-    } else {
-      groups.get(key)!.imgs.push(img);
+
+    if (!activitiesRes.ok || !pillarsRes.ok || !typesRes.ok) {
+      throw new Error("No se pudo cargar actividades públicas");
     }
+
+    const activitiesData =
+      (await activitiesRes.json()) as PaginatedResponse<ActivityItem>;
+    activities = activitiesData.items || [];
+    pillars = ((await pillarsRes.json()) as ActivityCatalogItem[]).filter(
+      (item) => item.active
+    );
+    types = ((await typesRes.json()) as ActivityCatalogItem[]).filter(
+      (item) => item.active
+    );
+  } catch {
+    activities = [];
+    pillars = [];
+    types = [];
   }
-  const albums = Array.from(groups.entries()).map(([id, g]) => ({
-    id,
-    title: g.title || "Actividad",
-    description: g.desc,
-    coverUrl: g.coverUrl,
-    count: g.imgs.length,
-    categorySlug: g.imgs[0]?.subsection || null,
-    categoryName: g.imgs[0]?.subsection
-      ? catMap.get(g.imgs[0].subsection) || g.imgs[0].subsection
-      : null,
-    images: g.imgs.map((i) => ({
-      id: i.id,
-      url: getOptimizedUrl(i.url, { w: 1600, q: "auto:good" }),
-      alt: i.alt,
-    })),
-  }));
-  const categories = cats
-    .filter((c) => c.active)
-    .map((c) => ({ slug: c.slug, name: c.name }));
-  return <ActivitiesAlbumsClient albums={albums} categories={categories} />;
+
+  return (
+    <ActivitiesAlbumsClient
+      activities={activities}
+      pillars={pillars}
+      types={types}
+    />
+  );
 }

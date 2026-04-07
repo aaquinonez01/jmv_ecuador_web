@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -7,6 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminDashboard() {
-  // Redirigir automáticamente a la gestión de imágenes
-  redirect("/admin/imagenes");
+  redirect("/admin/proximas-actividades");
 }

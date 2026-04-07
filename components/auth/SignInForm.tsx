@@ -2,25 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { getAxiosClient } from "@/config/axios.config";
-import { setToken } from "@/lib/auth/token";
-import { useAuthStore } from "@/lib/store/auth";
-import { useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Mail,
-  Lock,
+  AlertCircle,
   Eye,
   EyeOff,
-  LogIn,
   Loader2,
-  AlertCircle,
+  Lock,
+  LogIn,
+  Mail,
 } from "lucide-react";
-import { signInSchema, SignInFormData } from "@/lib/signInValidation";
+import { useForm } from "react-hook-form";
+import { getAxiosClient } from "@/config/axios.config";
+import { setToken } from "@/lib/auth/token";
+import { signInSchema, type SignInFormData } from "@/lib/signInValidation";
+import { useAuthStore } from "@/lib/store/auth";
 
 export default function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState("");
   const { setUser } = useAuthStore();
@@ -44,11 +45,25 @@ export default function SignInForm() {
       });
       const token: string = res.data?.token;
       const user = res.data?.user;
-      if (!token) throw new Error("Token no recibido");
+
+      if (!token) {
+        throw new Error("Token no recibido");
+      }
+
       setToken(token);
-      if (user) setUser(user);
-      router.replace("/");
-    } catch (error) {
+      await fetch("/api/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      }).catch(() => null);
+
+      if (user) {
+        setUser(user);
+      }
+
+      const redirectTo = searchParams.get("redirect") || "/";
+      router.replace(redirectTo);
+    } catch {
       setServerError(
         "Ocurrió un error al iniciar sesión. Por favor intenta de nuevo."
       );
@@ -57,37 +72,37 @@ export default function SignInForm() {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-jmv-blue to-jmv-blue-dark rounded-2xl shadow-lg mb-4 animate-float">
-          <LogIn className="w-8 h-8 text-white" />
+      <div className="mb-8 text-center">
+        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-jmv-blue to-jmv-blue-dark shadow-lg animate-float">
+          <LogIn className="h-8 w-8 text-white" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">
           Bienvenido de nuevo
         </h2>
-        <p className="text-gray-600 text-sm sm:text-base">
+        <p className="text-sm text-gray-600 sm:text-base">
           Ingresa a tu cuenta para continuar
         </p>
       </div>
 
-      {serverError && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+      {serverError ? (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 animate-fade-in">
+          <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
           <p className="text-sm text-red-700">{serverError}</p>
         </div>
-      )}
+      ) : null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-semibold text-gray-700 mb-2"
+            className="mb-2 block text-sm font-semibold text-gray-700"
           >
             Correo electrónico
           </label>
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <div className="group relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
               <Mail
-                className={`w-5 h-5 transition-colors ${
+                className={`h-5 w-5 transition-colors ${
                   errors.email
                     ? "text-red-400"
                     : "text-gray-400 group-focus-within:text-jmv-blue"
@@ -99,32 +114,32 @@ export default function SignInForm() {
               id="email"
               {...register("email")}
               placeholder="tu@ejemplo.com"
-              className={`w-full text-gray-900 pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:ring-jmv-blue/20 transition-all duration-200 outline-none text-sm sm:text-base ${
+              className={`w-full rounded-xl border-2 py-3.5 pr-4 pl-12 text-sm text-gray-900 outline-none transition-all duration-200 focus:ring-2 focus:ring-jmv-blue/20 sm:text-base ${
                 errors.email
-                  ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                  : "border-gray-200 focus:border-jmv-blue hover:border-gray-300"
+                  ? "border-red-300 bg-red-50/50 focus:border-red-500"
+                  : "border-gray-200 hover:border-gray-300 focus:border-jmv-blue"
               }`}
             />
           </div>
-          {errors.email && (
-            <p className="mt-2 text-sm text-red-600 flex items-center gap-1 animate-fade-in">
-              <AlertCircle className="w-4 h-4" />
+          {errors.email ? (
+            <p className="mt-2 flex items-center gap-1 text-sm text-red-600 animate-fade-in">
+              <AlertCircle className="h-4 w-4" />
               {errors.email.message}
             </p>
-          )}
+          ) : null}
         </div>
 
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-semibold text-gray-700 mb-2"
+            className="mb-2 block text-sm font-semibold text-gray-700"
           >
             Contraseña
           </label>
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <div className="group relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
               <Lock
-                className={`w-5 h-5 transition-colors ${
+                className={`h-5 w-5 transition-colors ${
                   errors.password
                     ? "text-red-400"
                     : "text-gray-400 group-focus-within:text-jmv-blue"
@@ -136,46 +151,46 @@ export default function SignInForm() {
               id="password"
               {...register("password")}
               placeholder="••••••••"
-              className={`w-full pl-12 text-gray-900 pr-12 py-3.5 border-2 rounded-xl focus:ring-2 focus:ring-jmv-blue/20 transition-all duration-200 outline-none text-sm sm:text-base ${
+              className={`w-full rounded-xl border-2 py-3.5 pr-12 pl-12 text-sm text-gray-900 outline-none transition-all duration-200 focus:ring-2 focus:ring-jmv-blue/20 sm:text-base ${
                 errors.password
-                  ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                  : "border-gray-200 focus:border-jmv-blue hover:border-gray-300"
+                  ? "border-red-300 bg-red-50/50 focus:border-red-500"
+                  : "border-gray-200 hover:border-gray-300 focus:border-jmv-blue"
               }`}
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute cursor-pointer inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-jmv-blue transition-colors"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-4 text-gray-400 transition-colors hover:text-jmv-blue"
             >
               {showPassword ? (
-                <EyeOff className="w-5 h-5" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="w-5 h-5" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
-          {errors.password && (
-            <p className="mt-2 text-sm text-red-600 flex items-center gap-1 animate-fade-in">
-              <AlertCircle className="w-4 h-4" />
+          {errors.password ? (
+            <p className="mt-2 flex items-center gap-1 text-sm text-red-600 animate-fade-in">
+              <AlertCircle className="h-4 w-4" />
               {errors.password.message}
             </p>
-          )}
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between text-sm">
-          <label className="flex items-center gap-2 cursor-pointer group">
+          <label className="group flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
               {...register("rememberMe")}
-              className="w-4 h-4 text-jmv-blue border-gray-300 rounded focus:ring-2 focus:ring-jmv-blue/20 cursor-pointer transition-colors"
+              className="h-4 w-4 cursor-pointer rounded border-gray-300 text-jmv-blue focus:ring-2 focus:ring-jmv-blue/20"
             />
-            <span className="text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+            <span className="font-medium text-gray-600 transition-colors group-hover:text-gray-900">
               Recuérdame
             </span>
           </label>
           <Link
             href="/forgot-password"
-            className="text-jmv-blue hover:text-jmv-blue-dark font-semibold transition-colors hover:underline"
+            className="font-semibold text-jmv-blue transition-colors hover:text-jmv-blue-dark hover:underline"
           >
             ¿Olvidaste tu contraseña?
           </Link>
@@ -184,17 +199,17 @@ export default function SignInForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full cursor-pointer bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 text-sm sm:text-base"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-jmv-blue to-jmv-blue-dark py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100 sm:text-base"
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
               Ingresando...
             </>
           ) : (
             <>
-              <LogIn className="w-5 h-5" />
-              Iniciar Sesión
+              <LogIn className="h-5 w-5" />
+              Iniciar sesión
             </>
           )}
         </button>
