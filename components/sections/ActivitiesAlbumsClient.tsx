@@ -6,7 +6,7 @@ import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
-import Modal from "@/components/admin/ui/Modal";
+import ActivityGalleryModal from "./ActivityGalleryModal";
 import {
   Select,
   SelectContent,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/select";
 import type {
   ActivityCatalogItem,
-  ActivityImageItem,
   ActivityItem,
 } from "@/types/activity-management";
 import {
@@ -26,7 +25,6 @@ import {
   Layers3,
   MapPin,
   Shapes,
-  Tag,
   Users,
   X,
 } from "lucide-react";
@@ -166,12 +164,8 @@ export default function ActivitiesAlbumsClient({
               Memoria visual JMV
             </span>
             <h2 className="mt-5 text-3xl font-bold text-white sm:text-4xl">
-              Actividades realizadas con filtros por pilar y tipo
+              Actividades realizadas
             </h2>
-            <p className="mt-4 text-base leading-7 text-white/72">
-              Aquí se muestran las actividades históricas que ya pasaron, con su
-              clasificación y toda la galería de fotos cargada desde gestión.
-            </p>
           </div>
 
           <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-md">
@@ -278,10 +272,6 @@ export default function ActivitiesAlbumsClient({
             <h3 className="text-2xl font-semibold text-white">
               No hay actividades para esos filtros
             </h3>
-            <p className="mt-3 text-white/70">
-              Ajusta los filtros o carga nuevas actividades históricas desde el
-              panel de administración.
-            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -296,118 +286,15 @@ export default function ActivitiesAlbumsClient({
         )}
       </div>
 
-      <Modal
-        isOpen={!!openActivity}
+      <ActivityGalleryModal
+        activity={openActivity}
+        slides={slides}
         onClose={() => setOpenActivity(null)}
-        title={openActivity?.title || "Actividad"}
-        size="xl"
-      >
-        {openActivity ? (
-          <div className="space-y-4 p-4 sm:space-y-6 sm:p-6">
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
-              <div className="rounded-xl bg-gray-50 p-3 sm:p-4">
-                <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
-                  <CalendarDays className="h-3.5 w-3.5 text-[#0066CC] sm:h-4 sm:w-4" />
-                  Fecha
-                </div>
-                <p className="text-xs text-gray-800 sm:text-sm">
-                  {formatDate(openActivity.startDate)}
-                  {openActivity.endDate
-                    ? ` - ${formatDate(openActivity.endDate)}`
-                    : ""}
-                </p>
-              </div>
-              <div className="rounded-xl bg-gray-50 p-3 sm:p-4">
-                <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
-                  <MapPin className="h-3.5 w-3.5 text-[#0066CC] sm:h-4 sm:w-4" />
-                  Lugar
-                </div>
-                <p className="text-xs text-gray-800 sm:text-sm">
-                  {openActivity.location || "Sin lugar definido"}
-                </p>
-              </div>
-              <div className="rounded-xl bg-gray-50 p-3 sm:p-4">
-                <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
-                  <Tag className="h-3.5 w-3.5 text-[#0066CC] sm:h-4 sm:w-4" />
-                  Clasificación
-                </div>
-                <p className="text-xs text-gray-800 sm:text-sm">
-                  {openActivity.pillar?.name || "Sin pilar"} /{" "}
-                  {openActivity.type?.name || "Sin tipo"}
-                </p>
-              </div>
-              <div className="rounded-xl bg-gray-50 p-3 sm:p-4">
-                <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 sm:text-xs sm:tracking-[0.2em]">
-                  <Camera className="h-3.5 w-3.5 text-[#0066CC] sm:h-4 sm:w-4" />
-                  Galería
-                </div>
-                <p className="text-xs text-gray-800 sm:text-sm">
-                  {openActivity.gallery.length} fotografías
-                </p>
-              </div>
-            </div>
-
-            <div>
-              {openActivity.summary ? (
-                <p className="text-sm font-medium text-gray-700 sm:text-base">
-                  {openActivity.summary}
-                </p>
-              ) : null}
-              <p className="mt-3 whitespace-pre-line text-sm leading-6 text-gray-600 sm:leading-7">
-                {openActivity.description}
-              </p>
-            </div>
-
-            {slides.length ? (
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
-                    Galería
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setLightboxIndex(0);
-                      setLightboxOpen(true);
-                    }}
-                    className="rounded-xl bg-jmv-blue px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-jmv-blue-dark sm:px-4 sm:py-2 sm:text-sm"
-                  >
-                    Abrir visor
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4">
-                  {(openActivity.gallery.length
-                    ? openActivity.gallery
-                    : ([
-                        {
-                          id: "cover",
-                          url: openActivity.coverImageUrl || "",
-                          alt: openActivity.title,
-                          order: 0,
-                        },
-                      ] as ActivityImageItem[])
-                  ).map((image, index) => (
-                    <button
-                      key={image.id}
-                      onClick={() => {
-                        setLightboxIndex(index);
-                        setLightboxOpen(true);
-                      }}
-                      className="overflow-hidden rounded-xl border border-gray-200"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={image.url}
-                        alt={image.alt || openActivity.title}
-                        className="h-24 w-full object-cover transition hover:scale-105 sm:h-32"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-      </Modal>
+        onOpenLightbox={(index) => {
+          setLightboxIndex(index);
+          setLightboxOpen(true);
+        }}
+      />
 
       {openActivity && slides.length ? (
         <Lightbox
