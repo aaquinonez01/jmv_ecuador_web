@@ -53,10 +53,6 @@ export default async function ActivitiesGalleryServer() {
             <h2 className="mt-5 text-3xl font-bold text-white sm:text-4xl">
               Historias recientes de misión, encuentro y servicio
             </h2>
-            <p className="mt-4 text-base leading-7 text-white/70">
-              Las actividades históricas se gestionan por separado de las próximas
-              actividades y alimentan la página pública con su propia galería.
-            </p>
           </div>
           <Link
             href="/actividades"

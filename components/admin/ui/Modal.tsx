@@ -59,7 +59,7 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4 md:p-6 animate-fade-in"
       onClick={onClose}
     >
       {/* Backdrop */}
@@ -67,7 +67,7 @@ export default function Modal({
 
       {/* Modal Content */}
       <div
-        className={`relative bg-white rounded-xl shadow-2xl border border-slate-200 ${sizeStyles[size]} w-full max-h-[92vh] flex flex-col overflow-hidden animate-scale-in`}
+        className={`relative bg-white rounded-t-2xl sm:rounded-xl shadow-2xl border border-slate-200 ${sizeStyles[size]} w-full max-h-[95vh] sm:max-h-[92vh] flex flex-col overflow-hidden animate-scale-in`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
