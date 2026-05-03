@@ -7,6 +7,13 @@ import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import Modal from "@/components/admin/ui/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type {
   ActivityCatalogItem,
   ActivityImageItem,
@@ -16,9 +23,12 @@ import {
   CalendarDays,
   Camera,
   Filter,
+  Layers3,
   MapPin,
+  Shapes,
   Tag,
   Users,
+  X,
 } from "lucide-react";
 
 function formatDate(value?: string | null) {
@@ -164,38 +174,102 @@ export default function ActivitiesAlbumsClient({
             </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/8 p-5 backdrop-blur-sm">
-            <div className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
-              <Filter className="h-4 w-4 text-jmv-gold" />
-              Filtros
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-md">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-white/65">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-jmv-gold/15 text-jmv-gold ring-1 ring-jmv-gold/30">
+                  <Filter className="h-3.5 w-3.5" strokeWidth={2.4} />
+                </span>
+                Filtros
+              </div>
+              {(selectedPillar !== "all" || selectedType !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPillar("all");
+                    setSelectedType("all");
+                  }}
+                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10.5px] font-semibold text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+                >
+                  <X className="h-3 w-3" strokeWidth={2.4} />
+                  Limpiar
+                </button>
+              )}
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <select
-                value={selectedPillar}
-                onChange={(event) => setSelectedPillar(event.target.value)}
-                className="rounded-xl border border-white/10 bg-slate-950/25 px-4 py-3 text-sm text-white outline-none transition focus:border-jmv-gold"
-              >
-                <option value="all">Todos los pilares</option>
-                {pillars.map((pillar) => (
-                  <option key={pillar.id} value={pillar.id}>
-                    {pillar.name}
-                  </option>
-                ))}
-              </select>
 
-              <select
-                value={selectedType}
-                onChange={(event) => setSelectedType(event.target.value)}
-                className="rounded-xl border border-white/10 bg-slate-950/25 px-4 py-3 text-sm text-white outline-none transition focus:border-jmv-gold"
-              >
-                <option value="all">Todos los tipos</option>
-                {types.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-white/55">
+                  <Layers3 className="h-3 w-3" strokeWidth={2.4} />
+                  Pilar
+                </label>
+                <Select
+                  value={selectedPillar}
+                  onValueChange={setSelectedPillar}
+                >
+                  <SelectTrigger className="h-11 rounded-xl border-white/10 bg-slate-950/30 px-3.5 text-[13px] text-white shadow-inner shadow-black/20 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-slate-950/40 focus:border-jmv-gold focus:ring-2 focus:ring-jmv-gold/30 [&>svg]:text-white/60 [&_[data-placeholder]]:text-white/55">
+                    <SelectValue placeholder="Todos los pilares" />
+                  </SelectTrigger>
+                  <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
+                    <SelectItem
+                      value="all"
+                      className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
+                    >
+                      Todos los pilares
+                    </SelectItem>
+                    {pillars.map((pillar) => (
+                      <SelectItem
+                        key={pillar.id}
+                        value={pillar.id}
+                        className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
+                      >
+                        {pillar.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-white/55">
+                  <Shapes className="h-3 w-3" strokeWidth={2.4} />
+                  Tipo
+                </label>
+                <Select
+                  value={selectedType}
+                  onValueChange={setSelectedType}
+                >
+                  <SelectTrigger className="h-11 rounded-xl border-white/10 bg-slate-950/30 px-3.5 text-[13px] text-white shadow-inner shadow-black/20 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-slate-950/40 focus:border-jmv-gold focus:ring-2 focus:ring-jmv-gold/30 [&>svg]:text-white/60 [&_[data-placeholder]]:text-white/55">
+                    <SelectValue placeholder="Todos los tipos" />
+                  </SelectTrigger>
+                  <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
+                    <SelectItem
+                      value="all"
+                      className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
+                    >
+                      Todos los tipos
+                    </SelectItem>
+                    {types.map((type) => (
+                      <SelectItem
+                        key={type.id}
+                        value={type.id}
+                        className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
+                      >
+                        {type.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+
+            <p className="mt-3 text-[11px] text-white/50">
+              <strong className="font-bold text-white/80">
+                {filteredActivities.length}
+              </strong>{" "}
+              actividad{filteredActivities.length === 1 ? "" : "es"} encontrada
+              {filteredActivities.length === 1 ? "" : "s"}
+            </p>
           </div>
         </div>
 

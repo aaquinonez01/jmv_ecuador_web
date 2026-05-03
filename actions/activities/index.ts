@@ -4,6 +4,12 @@ import type {
   ActivityPayload,
   PaginatedResponse,
 } from "@/types/activity-management";
+import { triggerRevalidate } from "../revalidate/trigger";
+
+const ACTIVITIES_REVALIDATE = {
+  tags: ["activities_public", "activities_public_home"],
+  paths: ["/actividades", "/"],
+};
 
 function appendText(
   formData: FormData,
@@ -72,6 +78,7 @@ export async function createActivityAPI(
 ): Promise<ActivityItem> {
   const api = getAxiosClient();
   const { data } = await api.post("/activities", buildActivityFormData(payload));
+  await triggerRevalidate(ACTIVITIES_REVALIDATE);
   return data as ActivityItem;
 }
 
@@ -84,11 +91,13 @@ export async function updateActivityAPI(
     `/activities/${id}`,
     buildActivityFormData(payload as ActivityPayload)
   );
+  await triggerRevalidate(ACTIVITIES_REVALIDATE);
   return data as ActivityItem;
 }
 
 export async function deleteActivityAPI(id: string) {
   const api = getAxiosClient();
   const { data } = await api.delete(`/activities/${id}`);
+  await triggerRevalidate(ACTIVITIES_REVALIDATE);
   return data as { message: string };
 }

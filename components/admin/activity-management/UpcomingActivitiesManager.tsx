@@ -10,8 +10,8 @@ import {
 import { getActivityPillarsAPI } from "@/actions/activity-pillars";
 import { getActivityTypesAPI } from "@/actions/activity-types";
 import Button from "@/components/admin/ui/Button";
-import InputField from "@/components/admin/ui/InputField";
 import Modal from "@/components/admin/ui/Modal";
+import PageHeader from "@/components/admin/layout/PageHeader";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,9 +34,13 @@ import {
   FileText,
   ImagePlus,
   Link2,
+  MapPin,
   Pencil,
   Plus,
+  Search,
   Sparkles,
+  Star,
+  Tag,
   Trash2,
 } from "lucide-react";
 
@@ -472,158 +476,74 @@ export default function UpcomingActivitiesManager() {
   };
 
   if (loading) {
-    return <div className="p-6 text-gray-600">Cargando próximas actividades...</div>;
+    return (
+      <div className="px-6 py-10 text-sm text-slate-500">
+        Cargando próximas actividades...
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="space-y-6 p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Próximas actividades
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Administra los eventos futuros del home, con links, documentos,
-              fechas de inscripción y countdown.
-            </p>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-3">
-            <InputField
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por título, lugar o tipo..."
-              className="w-64"
-            />
+      <PageHeader
+        title="Próximas actividades"
+        description="Eventos futuros del home con countdown e inscripciones."
+        icon={<CalendarClock className="h-[18px] w-[18px]" strokeWidth={2.1} />}
+        breadcrumbs={[
+          { label: "Contenido" },
+          { label: "Próximas actividades" },
+        ]}
+        actions={
+          <>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Buscar..."
+                className="h-9 w-56 rounded-md border border-slate-200 bg-slate-50 pl-8 pr-3 text-[13px] text-slate-900 placeholder-slate-400 transition-colors focus:border-jmv-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-jmv-blue/15"
+              />
+            </div>
             <Button
               variant="primary"
+              size="md"
               onClick={openCreateModal}
-              icon={<Plus className="h-4 w-4" />}
+              icon={<Plus className="h-3.5 w-3.5" strokeWidth={2.5} />}
             >
-              Nueva actividad
+              Nueva
             </Button>
+          </>
+        }
+      />
+
+      <div className="flex flex-1 flex-col overflow-auto px-6 py-5">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-[12.5px] text-slate-500">
+            Mostrando{" "}
+            <strong className="font-bold text-slate-900">
+              {filteredActivities.length}
+            </strong>{" "}
+            actividad{filteredActivities.length === 1 ? "" : "es"}
+          </span>
+        </div>
+
+        {filteredActivities.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+            No hay próximas actividades cargadas.
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          {filteredActivities.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-500 xl:col-span-2">
-              No hay próximas actividades cargadas.
-            </div>
-          ) : (
-            filteredActivities.map((activity) => (
-              <article
+        ) : (
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+            {filteredActivities.map((activity) => (
+              <UpcomingCard
                 key={activity.id}
-                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
-              >
-                <div className="flex flex-col gap-4 p-6 lg:flex-row">
-                  <div className="h-40 w-full overflow-hidden rounded-2xl bg-gray-100 lg:w-56 lg:flex-shrink-0">
-                    {activity.coverImageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={activity.coverImageUrl}
-                        alt={activity.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-gray-400">
-                        <CalendarClock className="h-8 w-8" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex min-w-0 flex-1 flex-col justify-between">
-                    <div>
-                      <div className="mb-3 flex flex-wrap gap-2">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            activity.published
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {activity.published ? "Publicada" : "Oculta"}
-                        </span>
-                        {activity.featuredInHome ? (
-                          <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
-                            Destacada en home
-                          </span>
-                        ) : null}
-                        {activity.showInHome ? (
-                          <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                            Visible en home
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <h2 className="text-xl font-semibold text-gray-900">
-                        {activity.title}
-                      </h2>
-                      <p className="mt-2 line-clamp-3 text-sm text-gray-600">
-                        {activity.summary || activity.description}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2">
-                      <div className="flex items-center gap-2">
-                        <CalendarClock className="h-4 w-4 text-[#0066CC]" />
-                        <span>
-                          {formatDateLabel(activity.startDate)}
-                          {activity.endDate
-                            ? ` - ${formatDateLabel(activity.endDate)}`
-                            : ""}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock3 className="h-4 w-4 text-[#0066CC]" />
-                        <span>
-                          Límite inscripción:{" "}
-                          {formatDateLabel(activity.maxRegistrationDate)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-800">Estado:</span>{" "}
-                        {statusLabel(activity.registrationStatus)}
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-800">Tipo:</span>{" "}
-                        {activity.type?.name || "Sin asignar"}
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-800">
-                          Documentos:
-                        </span>{" "}
-                        {activity.documents.length}
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-800">Link:</span>{" "}
-                        {activity.externalUrl ? "Sí" : "No"}
-                      </div>
-                    </div>
-
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => openEditModal(activity)}
-                        icon={<Pencil className="h-4 w-4" />}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={() => handleDelete(activity)}
-                        icon={<Trash2 className="h-4 w-4" />}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))
-          )}
-        </div>
+                activity={activity}
+                onEdit={() => openEditModal(activity)}
+                onDelete={() => void handleDelete(activity)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <Modal
@@ -692,5 +612,138 @@ export default function UpcomingActivitiesManager() {
         </div>
       </Modal>
     </>
+  );
+}
+
+function UpcomingCard({
+  activity,
+  onEdit,
+  onDelete,
+}: {
+  activity: UpcomingActivityItem;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const dateRange = activity.endDate
+    ? `${formatDateLabel(activity.startDate)} – ${formatDateLabel(activity.endDate)}`
+    : formatDateLabel(activity.startDate);
+
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:border-slate-300 hover:shadow-md">
+      {/* Cover */}
+      <div className="relative h-28 w-full overflow-hidden bg-slate-100">
+        {activity.coverImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={activity.coverImageUrl}
+            alt={activity.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-slate-300">
+            <CalendarClock className="h-8 w-8" strokeWidth={1.5} />
+          </div>
+        )}
+
+        {/* Top-left: status pill */}
+        <span
+          className={`absolute left-2.5 top-2.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide backdrop-blur ${
+            activity.published
+              ? "bg-emerald-500/90 text-white"
+              : "bg-slate-900/70 text-white"
+          }`}
+        >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${activity.published ? "bg-white" : "bg-slate-300"}`}
+          />
+          {activity.published ? "Publicada" : "Oculta"}
+        </span>
+
+        {/* Top-right: featured */}
+        {activity.featuredInHome ? (
+          <span className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-full bg-amber-400/95 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-amber-950 backdrop-blur">
+            <Star className="h-2.5 w-2.5 fill-amber-950" strokeWidth={0} />
+            Destacada
+          </span>
+        ) : null}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col gap-2 p-3.5">
+        <div className="min-w-0">
+          <h3 className="line-clamp-1 text-[14.5px] font-bold leading-tight text-slate-900">
+            {activity.title}
+          </h3>
+          <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-slate-500">
+            {activity.summary || activity.description}
+          </p>
+        </div>
+
+        {/* Meta row */}
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-slate-600">
+          <span className="inline-flex items-center gap-1">
+            <CalendarClock className="h-3 w-3 text-jmv-blue" strokeWidth={2.2} />
+            <span className="font-medium text-slate-700">{dateRange}</span>
+          </span>
+          {activity.location ? (
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="h-3 w-3 text-slate-400" strokeWidth={2.2} />
+              <span className="truncate">{activity.location}</span>
+            </span>
+          ) : null}
+          {activity.type?.name ? (
+            <span className="inline-flex items-center gap-1">
+              <Tag className="h-3 w-3 text-slate-400" strokeWidth={2.2} />
+              <span className="truncate">{activity.type.name}</span>
+            </span>
+          ) : null}
+        </div>
+
+        {/* Status + extras */}
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10.5px] font-semibold text-slate-700">
+            <Clock3 className="h-2.5 w-2.5" strokeWidth={2.5} />
+            {statusLabel(activity.registrationStatus)}
+          </span>
+          {activity.documents.length > 0 ? (
+            <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10.5px] font-semibold text-slate-700">
+              <FileText className="h-2.5 w-2.5" strokeWidth={2.5} />
+              {activity.documents.length}
+            </span>
+          ) : null}
+          {activity.externalUrl ? (
+            <span className="inline-flex items-center gap-1 rounded-md bg-jmv-blue/10 px-1.5 py-0.5 text-[10.5px] font-semibold text-jmv-blue">
+              <Link2 className="h-2.5 w-2.5" strokeWidth={2.5} />
+              Link
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Actions footer */}
+      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-3 py-2">
+        <span className="text-[10.5px] font-medium text-slate-400">
+          Inscripción hasta {formatDateLabel(activity.maxRegistrationDate)}
+        </span>
+        <div className="flex items-center gap-0.5">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-jmv-blue/10 hover:text-jmv-blue"
+            title="Editar"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            title="Eliminar"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+    </article>
   );
 }

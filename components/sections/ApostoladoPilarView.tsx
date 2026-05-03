@@ -45,7 +45,7 @@ export default function ApostoladoPilarView({ items }: { items: Item[] }) {
               Primer Pilar
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-              <span className="text-jmv-gold">Apostolado</span> Social
+              <span className="text-jmv-gold">Apostolado</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 max-w-4xl mx-auto leading-relaxed">
               Compromiso activo con los más necesitados siguiendo el ejemplo de

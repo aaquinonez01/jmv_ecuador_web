@@ -58,9 +58,10 @@ export default function HistoriaPageHero() {
 
         <ScrollReveal direction="up" delay={200}>
           <p className="text-lg md:text-xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Desde 1995 hasta hoy, conoce los momentos más importantes que han
-            marcado el crecimiento y la consolidación de Juventudes Marianas
-            Vicencianas en todo el territorio ecuatoriano.
+            Desde las apariciones de la Medalla Milagrosa a Santa Catalina
+            Labouré en París (1830) hasta la fundación de JMV Ecuador en
+            1995 con Sor Noemí Miño, conoce los hitos que han marcado
+            nuestro caminar.
           </p>
         </ScrollReveal>
 

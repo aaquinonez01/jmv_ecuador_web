@@ -7,7 +7,7 @@ import { Menu, X, ChevronDown, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/store/auth";
 import { removeToken } from "@/lib/auth/token";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
 
 const navigation = [
@@ -17,7 +17,6 @@ const navigation = [
   },
   {
     name: "Nosotros",
-    href: "/quienes-somos",
     children: [
       { name: "Historia", href: "/quienes-somos/historia" },
       { name: "Estructura", href: "/estructura" },
@@ -26,7 +25,6 @@ const navigation = [
   },
   {
     name: "Formación",
-    href: "/formacion",
     children: [
       { name: "Ejes Formativos", href: "/formacion/ejes" },
       { name: "Santos Vicencianos", href: "/formacion/santos" },
@@ -36,10 +34,10 @@ const navigation = [
     name: "Actividades",
     href: "/actividades",
   },
-  {
-    name: "Blog",
-    href: "/blog",
-  },
+  // {
+  //   name: "Blog",
+  //   href: "/blog",
+  // },
   {
     name: "Contacto",
     href: "/contacto",
@@ -53,6 +51,7 @@ type InitialUser = {
 };
 
 export default function Header({ initialUser }: { initialUser?: InitialUser }) {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
@@ -60,6 +59,9 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
   const router = useRouter();
   // Hook que refresca el perfil desde /api/me tras recargas/navegación
   useAuth();
+
+  const isAdminRoute =
+    pathname?.startsWith("/admin") || pathname?.startsWith("/sign-in");
 
   useEffect(() => {
     if (initialUser) {
@@ -89,11 +91,15 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
     };
   }, [isMenuOpen]);
 
+  if (isAdminRoute) {
+    return null;
+  }
+
   return (
     <header
       className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 bg-[#D98F06]",
-        scrolled ? "shadow-xl" : ""
+        scrolled ? "shadow-xl" : "",
       )}
       style={{ backgroundColor: "#D98F06" }}
     >
@@ -112,7 +118,7 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
             {navigation.map((item) => (
               <div key={item.name} className="relative group">
                 <Link
-                  href={item.href}
+                  href={item.href || "#"}
                   className="flex items-center px-4 py-3 text-sm font-bold text-white/90 hover:text-white transition-all duration-200 rounded-lg hover:bg-white/10 hover:scale-105"
                 >
                   {item.name}
@@ -158,7 +164,7 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
                   onClick={() => setOpenProfile((s) => !s)}
                   className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white font-bold hover:bg-white/30 transition"
                 >
-                  {user?.profilePicture ?? initialUser?.profilePicture ? (
+                  {(user?.profilePicture ?? initialUser?.profilePicture) ? (
                     <Image
                       src={
                         (user?.profilePicture ??
@@ -250,7 +256,7 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
                   className="border-b border-white/10 pb-5 last:border-b-0"
                 >
                   <Link
-                    href={item.href}
+                    href={item.href || "#"}
                     className="flex items-center justify-between px-4 py-3.5 text-lg sm:text-xl font-bold text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >

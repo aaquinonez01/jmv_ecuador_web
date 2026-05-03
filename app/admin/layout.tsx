@@ -15,10 +15,9 @@ export default function AdminLayout({
 }) {
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-gray-50">
+      <div className="flex h-screen bg-slate-50">
         <AdminSidebar />
-        {/* ml-72 para dejar espacio al sidebar, mt-16 para el navbar */}
-        <main className="ml-72 pt-16 min-h-screen">{children}</main>
+        <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
         <ToastContainer />
       </div>
     </AdminGuard>

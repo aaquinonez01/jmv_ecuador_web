@@ -6,76 +6,76 @@ import ScrollReveal from "../ui/ScrollReveal";
 
 const timelineEvents = [
   {
+    year: "1830",
+    title: "Origen en París: apariciones de la Medalla Milagrosa",
+    description:
+      'El 18 de julio de 1830, la Santísima Virgen se aparece a Santa Catalina Labouré en París y le revela su deseo de formar una asociación de jóvenes que imiten a Jesús. Nace bajo el nombre de "Hijas de María Inmaculada", siendo el P. Aladel su primer Director y Benigna Hairón la primera Hija de María. Las primeras reuniones se llamaban "Cenáculos Marianos".',
+    icon: Star,
+    color: "from-jmv-gold to-jmv-gold-dark",
+    image: "/images/historia/catalina.jpg",
+  },
+  {
+    year: "1847",
+    title: "Aprobación pontificia de Pío IX",
+    description:
+      "El 20 de junio de 1847, el Romano Pontífice Pío IX aprueba oficialmente la Asociación de Hijas de María, reconociendo en un primer momento a los grupos de París como obra eclesial.",
+    icon: Award,
+    color: "from-jmv-red to-jmv-red-dark",
+    image: "/images/historia/pio_9.jpg",
+  },
+  {
+    year: "1850",
+    title: "Expansión y apertura a la rama masculina",
+    description:
+      'El 19 de julio de 1850 se aprueban los demás grupos de Francia y del extranjero, extendiéndose a la rama masculina. La asociación pasa a llamarse "Hijos e Hijas de María Inmaculada" y se expande junto a las Hijas de la Caridad y los Padres Paúles.',
+    icon: Users,
+    color: "from-blue-600 to-blue-800",
+    image: "/images/historia/hijas_hijos.webp",
+  },
+  {
+    year: "1987",
+    title: 'Nace oficialmente "Juventud Mariana Vicentina"',
+    description:
+      'El 28 de abril de 1987, el Superior General de la Congregación de la Misión y de las Hijas de la Caridad reconoce y actualiza la Asociación con su nombre oficial: "Asociación Juventud Mariana Vicentina" (JMV).',
+    icon: Heart,
+    color: "from-jmv-blue to-jmv-blue-dark",
+    image: "/images/historia/fundacion.jpg",
+  },
+  {
     year: "1995",
     title: "Fundación de JMV Ecuador",
     description:
-      "Nace oficialmente Juventudes Marianas Vicencianas en Ecuador, inspirada en el carisma de San Vicente de Paúl y la espiritualidad de la Medalla Milagrosa.",
-    icon: Star,
-    color: "from-jmv-blue to-jmv-blue-dark",
-    image: "/images/historia/fundacion-1995.jpg",
-  },
-  {
-    year: "1998",
-    title: "Primera Expansión Nacional",
-    description:
-      "JMV se extiende a las principales ciudades del país: Guayaquil, Cuenca y Ambato, estableciendo las bases de la organización nacional.",
+      'El 18 de julio de 1995, tras un encuentro en México donde Sor Noemí Miño recibe la motivación e información necesaria, JMV es fundada en Ecuador. El primer grupo del país fue el de la "Medalla Milagrosa" de Quito, desde donde se formó un equipo de jóvenes para visitar y acompañar a otros grupos a nivel nacional.',
     icon: MapPin,
-    color: "from-jmv-red to-jmv-red-dark",
-    image: "/images/historia/expansion-1998.jpg",
+    color: "from-jmv-blue to-jmv-red",
+    image: "/images/historia/jmv_ecuador_fundacion.jpg",
   },
   {
-    year: "2002",
-    title: "Reconocimiento Eclesiástico",
+    year: "1999",
+    title: "Aprobación de los Estatutos por R. P. Maloney",
     description:
-      "La Conferencia Episcopal Ecuatoriana reconoce oficialmente a JMV como movimiento de pastoral juvenil, consolidando su misión evangelizadora.",
+      "Los estatutos de la Asociación Juventud Mariana Vicentina son aprobados por el P. Robert P. Maloney, entonces Superior General, consolidando el marco que regiría a JMV en todo el mundo.",
     icon: Award,
     color: "from-jmv-gold to-jmv-gold-dark",
-    image: "/images/historia/reconocimiento-2002.jpg",
+    image: "/images/historia/jmv_padre_maloney.png",
   },
   {
-    year: "2005",
-    title: "Estructura de Zonas Pastorales",
+    year: "2000",
+    title: "Aprobación oficial de JMV Ecuador",
     description:
-      "Se establece la organización en 8 zonas pastorales, fortaleciendo la coordinación nacional y el acompañamiento local a los jóvenes.",
-    icon: Users,
-    color: "from-blue-600 to-blue-800",
-    image: "/images/historia/zonas-2005.jpg",
-  },
-  {
-    year: "2010",
-    title: "Consolidación del Servicio Social",
-    description:
-      "Se intensifican los proyectos de servicio social, estableciendo programas permanentes de apoyo a comunidades vulnerables en todo el país.",
-    icon: Heart,
-    color: "from-green-600 to-green-800",
-    image: "/images/historia/servicio-2010.jpg",
-  },
-  {
-    year: "2015",
-    title: "20 Años de Compromiso",
-    description:
-      "JMV Ecuador celebra dos décadas de formación juvenil, con más de 15,000 jóvenes formados y presencia consolidada en las 24 provincias.",
+      "El 12 de junio de 2000, el P. Robert P. Maloney, Director General de la Asociación, aprueba oficialmente JMV Ecuador, dando reconocimiento internacional al primer Consejo Nacional liderado por el P. Jhon Macías, Sor Noemí Miño y Juan Carlos Cajo.",
     icon: Calendar,
-    color: "from-purple-600 to-purple-800",
-    image: "/images/historia/20años-2015.jpg",
-  },
-  {
-    year: "2020",
-    title: "Adaptación Digital",
-    description:
-      "Durante la pandemia, JMV se adapta al mundo digital, manteniendo la formación y el servicio a través de plataformas virtuales innovadoras.",
-    icon: Star,
-    color: "from-indigo-600 to-indigo-800",
-    image: "/images/historia/digital-2020.jpg",
+    color: "from-emerald-600 to-emerald-800",
+    image: "/images/historia/aprobacion-ecuador-2000.jpg",
   },
   {
     year: "2025",
-    title: "30 Años Transformando Vidas",
+    title: "30 años de JMV Ecuador",
     description:
-      "JMV Ecuador celebra tres décadas de compromiso vicenciano, consolidándose como referente en pastoral juvenil y servicio social.",
+      "Tres décadas después de aquella semilla colocada en tierra ecuatoriana, JMV es un segundo hogar para miles de jóvenes que crecen como buenos cristianos, sirviendo al pobre al estilo de San Vicente de Paúl, Santa Luisa de Marillac y Santa Catalina Labouré.",
     icon: Award,
-    color: "from-jmv-blue to-jmv-red",
-    image: "/images/historia/30años-2025.jpg",
+    color: "from-jmv-blue to-jmv-gold",
+    image: "/images/historia/jmv_20.jpg",
   },
 ];
 
@@ -112,13 +112,13 @@ export default function HistoriaTimeline() {
               Nuestra Historia
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              <span className="text-jmv-gold">30 Años</span> de Compromiso
-              Vicenciano
+              De París <span className="text-jmv-gold">1830</span> a Ecuador{" "}
+              <span className="text-jmv-gold">1995</span>
             </h2>
             <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Un recorrido por las etapas más significativas de JMV Ecuador,
-              desde nuestra fundación hasta convertirnos en referente de
-              pastoral juvenil.
+              Un recorrido por los hitos que dieron origen a la Asociación
+              Juventud Mariana Vicentina en el mundo y su llegada a Ecuador hace
+              30 años.
             </p>
           </div>
         </ScrollReveal>
@@ -236,14 +236,31 @@ export default function HistoriaTimeline() {
                               : ""
                           }`}
                         >
+                          {event.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={event.image}
+                              alt={event.title}
+                              className="absolute inset-0 h-full w-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          ) : null}
                           <div
-                            className={`absolute inset-0 bg-gradient-to-br ${event.color} opacity-60`}
-                          ></div>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Icon className="w-16 h-16 text-white/40" />
-                          </div>
-                          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-                            <p className="text-white/80 text-sm font-medium">
+                            className={`absolute inset-0 bg-gradient-to-br ${event.color} ${
+                              event.image
+                                ? "opacity-25 mix-blend-multiply"
+                                : "opacity-60"
+                            }`}
+                          />
+                          {!event.image ? (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Icon className="w-16 h-16 text-white/40" />
+                            </div>
+                          ) : null}
+                          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                            <p className="text-white text-sm font-semibold">
                               {event.year}
                             </p>
                           </div>

@@ -16,25 +16,33 @@ export default function StatsCard({
   subtitle,
 }: StatsCardProps) {
   const colorStyles = {
-    blue: "bg-blue-50 text-blue-600",
-    green: "bg-green-50 text-green-600",
-    yellow: "bg-yellow-50 text-yellow-600",
+    blue: "bg-jmv-blue/10 text-jmv-blue",
+    green: "bg-emerald-50 text-emerald-600",
+    yellow: "bg-amber-50 text-amber-600",
     red: "bg-red-50 text-red-600",
-    purple: "bg-purple-50 text-purple-600",
+    purple: "bg-violet-50 text-violet-600",
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-1">{label}</p>
-          <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-gray-500">{subtitle}</p>
-          )}
-        </div>
-        <div className={`p-3 rounded-lg ${colorStyles[color]}`}>
+    <div className="group rounded-xl border border-slate-200 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-sm">
+      <div className="flex items-center gap-3">
+        <div
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${colorStyles[color]} transition-transform group-hover:scale-105`}
+        >
           {icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            {label}
+          </p>
+          <p className="mt-0.5 text-[20px] font-bold leading-tight text-slate-900">
+            {value}
+          </p>
+          {subtitle ? (
+            <p className="mt-0.5 truncate text-[10.5px] text-slate-400">
+              {subtitle}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>

@@ -9,14 +9,30 @@ interface Props {
   required?: boolean;
   type?: string;
   className?: string;
+  hint?: string;
+  disabled?: boolean;
+  autoFocus?: boolean;
 }
 
-export default function InputField({ label, value, onChange, placeholder, error, required, type = "text", className }: Props) {
+export default function InputField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  error,
+  required,
+  type = "text",
+  className,
+  hint,
+  disabled,
+  autoFocus,
+}: Props) {
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label} {required && <span className="text-red-500">*</span>}
+        <label className="mb-1 block text-xs font-semibold text-slate-700">
+          {label}
+          {required && <span className="ml-0.5 text-red-500">*</span>}
         </label>
       )}
       <input
@@ -24,10 +40,19 @@ export default function InputField({ label, value, onChange, placeholder, error,
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#0066CC] focus:border-transparent transition-all bg-white text-gray-900 placeholder-gray-400 ${error ? "border-red-500 bg-red-50" : "border-gray-300"}`}
+        disabled={disabled}
+        autoFocus={autoFocus}
+        className={`block h-9 w-full rounded-md border bg-white px-3 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-jmv-blue/30 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 ${
+          error
+            ? "border-red-400 focus:border-red-500 focus:ring-red-200"
+            : "border-slate-300 focus:border-jmv-blue"
+        }`}
       />
-      {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
+      {error ? (
+        <p className="mt-1 text-xs font-medium text-red-600">{error}</p>
+      ) : hint ? (
+        <p className="mt-1 text-xs text-slate-500">{hint}</p>
+      ) : null}
     </div>
   );
 }
-

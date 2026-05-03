@@ -306,7 +306,7 @@ export default function ConsejoZonales() {
                   <div className="text-4xl font-bold text-jmv-gold mb-2">
                     {zonasData
                       .reduce((total, zona) => total + zona.jovenes, 0)
-                      .toLocaleString()}
+                      .toLocaleString('es-EC')}
                   </div>
                   <div className="text-white/80">
                     Jóvenes en todas las zonas

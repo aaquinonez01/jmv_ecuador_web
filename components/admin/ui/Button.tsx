@@ -3,8 +3,8 @@ import { Loader2 } from "lucide-react";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
-  size?: "sm" | "md" | "lg";
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "outline";
+  size?: "xs" | "sm" | "md" | "lg";
   isLoading?: boolean;
   icon?: React.ReactNode;
 }
@@ -20,22 +20,26 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-1.5 font-semibold rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-jmv-blue/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none whitespace-nowrap";
 
-  const variantStyles = {
+  const variantStyles: Record<string, string> = {
     primary:
-      "bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]",
+      "bg-jmv-blue text-white hover:bg-jmv-blue-dark active:bg-jmv-blue-dark/90 shadow-sm",
     secondary:
-      "bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400",
-    danger: "bg-red-500 text-white hover:bg-red-600 active:bg-red-700",
+      "bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300 border border-slate-200",
+    outline:
+      "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400",
+    danger:
+      "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
     ghost:
-      "bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200",
+      "bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200",
   };
 
-  const sizeStyles = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2.5 text-base",
-    lg: "px-6 py-3.5 text-lg",
+  const sizeStyles: Record<string, string> = {
+    xs: "h-7 px-2.5 text-xs",
+    sm: "h-8 px-3 text-xs",
+    md: "h-9 px-3.5 text-sm",
+    lg: "h-10 px-5 text-sm",
   };
 
   return (
@@ -45,16 +49,11 @@ export default function Button({
       {...props}
     >
       {isLoading ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          <span>Cargando...</span>
-        </>
-      ) : (
-        <>
-          {icon}
-          {children}
-        </>
-      )}
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : icon ? (
+        <span className="inline-flex shrink-0">{icon}</span>
+      ) : null}
+      {children}
     </button>
   );
 }

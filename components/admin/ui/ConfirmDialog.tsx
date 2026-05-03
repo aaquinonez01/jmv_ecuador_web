@@ -3,7 +3,7 @@
 import React from "react";
 import Modal from "./Modal";
 import Button from "./Button";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Info } from "lucide-react";
 
 export interface ConfirmDialogProps {
   isOpen: boolean;
@@ -28,43 +28,41 @@ export default function ConfirmDialog({
   variant = "primary",
   isLoading = false,
 }: ConfirmDialogProps) {
+  const Icon = variant === "danger" ? AlertTriangle : Info;
+  const iconColor = variant === "danger" ? "text-red-600" : "text-jmv-blue";
+  const iconBg = variant === "danger" ? "bg-red-100" : "bg-jmv-blue/10";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm" showCloseButton={false}>
-      <div className="p-6">
-        {/* Icon */}
-        <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-            variant === "danger" ? "bg-red-100" : "bg-jmv-blue/10"
-          }`}
-        >
-          <AlertTriangle
-            className={`w-8 h-8 ${
-              variant === "danger" ? "text-red-500" : "text-jmv-blue"
-            }`}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-          <p className="text-gray-600">{message}</p>
-        </div>
-
-        {/* Actions */}
+      <div className="p-5">
         <div className="flex gap-3">
+          <div
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconBg}`}
+          >
+            <Icon className={`h-5 w-5 ${iconColor}`} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-bold text-slate-900">{title}</h3>
+            <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+              {message}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex justify-end gap-2">
           <Button
-            variant="ghost"
+            variant="outline"
+            size="sm"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1"
           >
             {cancelText}
           </Button>
           <Button
             variant={variant}
+            size="sm"
             onClick={onConfirm}
             isLoading={isLoading}
-            className="flex-1"
           >
             {confirmText}
           </Button>

@@ -26,7 +26,7 @@ const MapaInteractivo = dynamic(
         <div className="text-white/80">Cargando mapa interactivo...</div>
       </div>
     ),
-  }
+  },
 );
 
 const pasos = [
@@ -177,19 +177,19 @@ export default function UneteClient() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
-                  24
+                  10
                 </div>
                 <div className="text-white/70 text-sm">Provincias</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
-                  150+
+                  15+
                 </div>
                 <div className="text-white/70 text-sm">Comunidades</div>
               </div>
               <div className="text-center sm:col-span-1 col-span-2">
                 <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
-                  5,000+
+                  300+
                 </div>
                 <div className="text-white/70 text-sm">Jóvenes Activos</div>
               </div>
@@ -516,14 +516,6 @@ export default function UneteClient() {
                   energía transformadora y tu compromiso con los que más sufren.
                   ¡Únete hoy a la familia vicenciana!
                 </p>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <button className="bg-white text-jmv-blue px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300">
-                    Quiero Ser Parte de JMV Ecuador
-                  </button>
-                </motion.div>
               </div>
             </div>
           </ScrollReveal>

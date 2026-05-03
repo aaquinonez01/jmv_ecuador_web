@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { ChevronRight, Users, Crown, MapPin } from 'lucide-react'
-import Button from '../ui/Button'
-import ScrollReveal from '../ui/ScrollReveal'
+import Link from "next/link";
+import { ChevronRight, Users, Crown, MapPin } from "lucide-react";
+import Button from "../ui/Button";
+import ScrollReveal from "../ui/ScrollReveal";
 
 export default function EstructuraHero() {
   return (
@@ -52,16 +52,16 @@ export default function EstructuraHero() {
 
         <ScrollReveal direction="up" delay={150}>
           <h2 className="text-xl md:text-2xl lg:text-3xl font-light mb-8 text-white/90 font-dancing max-w-5xl mx-auto">
-            "Un liderazgo comprometido que guía con el ejemplo del servicio 
-            y la entrega a los más necesitados"
+            "Un liderazgo comprometido que guía con el ejemplo del servicio y la
+            entrega a los más necesitados"
           </h2>
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={200}>
           <p className="text-lg md:text-xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Conoce a los líderes que dirigen JMV Ecuador a nivel nacional y zonal,
-            jóvenes comprometidos que dedican su vida al servicio y la formación 
-            de nuevas generaciones vicencianas.
+            Conoce a los líderes que dirigen JMV Ecuador a nivel nacional y
+            zonal, jóvenes comprometidos que dedican su vida al servicio y la
+            formación de nuevas generaciones vicencianas.
           </p>
         </ScrollReveal>
 
@@ -94,15 +94,21 @@ export default function EstructuraHero() {
         <ScrollReveal direction="up" delay={300}>
           <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">6</div>
+              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
+                8
+              </div>
               <div className="text-white/70 text-sm">Miembros del Consejo</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">6</div>
+              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
+                6
+              </div>
               <div className="text-white/70 text-sm">Zonas Pastorales</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">24</div>
+              <div className="text-3xl md:text-4xl font-bold text-jmv-gold mb-2">
+                +10
+              </div>
               <div className="text-white/70 text-sm">Provincias del País</div>
             </div>
           </div>
@@ -118,5 +124,5 @@ export default function EstructuraHero() {
         </div>
       </div>
     </section>
-  )
+  );
 }
