@@ -87,7 +87,7 @@ function Countdown({
   }
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       {[
         { label: "Días", value: countdown.days },
         { label: "Horas", value: countdown.hours },
@@ -96,10 +96,10 @@ function Countdown({
       ].map((item) => (
         <div
           key={item.label}
-          className="rounded-2xl border border-white/15 bg-white/10 px-3 py-4 text-center backdrop-blur-sm"
+          className="rounded-2xl border border-white/15 bg-white/10 px-2 py-3 text-center backdrop-blur-sm sm:px-3 sm:py-4"
         >
-          <div className="text-2xl font-bold text-white">{item.value}</div>
-          <div className="mt-1 text-xs uppercase tracking-[0.25em] text-white/65">
+          <div className="text-xl font-bold text-white sm:text-2xl">{item.value}</div>
+          <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-white/65 sm:text-xs sm:tracking-[0.25em]">
             {item.label}
           </div>
         </div>
@@ -144,7 +144,7 @@ function ProximasActividadesSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr,0.9fr]">
       <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 shadow-2xl backdrop-blur-sm">
-        <div className="flex flex-row">
+        <div className="flex flex-col lg:flex-row">
           <div className="flex-1 p-5 sm:p-6 lg:p-8">
             <div className="mb-4 flex gap-2">
               <Skeleton className="h-6 w-28 rounded-full" />
@@ -153,26 +153,26 @@ function ProximasActividadesSkeleton() {
             <Skeleton className="h-8 w-3/4 rounded-xl" />
             <Skeleton className="mt-2 h-4 w-full rounded-lg" />
             <Skeleton className="mt-1 h-4 w-5/6 rounded-lg" />
-            <div className="mt-5 grid grid-cols-2 gap-2">
+            <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <Skeleton className="h-12 rounded-2xl" />
               <Skeleton className="h-12 rounded-2xl" />
               <Skeleton className="h-12 rounded-2xl" />
               <Skeleton className="h-12 rounded-2xl" />
             </div>
             <Skeleton className="mt-5 h-4 w-16 rounded-lg" />
-            <div className="mt-2 grid grid-cols-4 gap-3">
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               <Skeleton className="h-20 rounded-2xl" />
               <Skeleton className="h-20 rounded-2xl" />
               <Skeleton className="h-20 rounded-2xl" />
               <Skeleton className="h-20 rounded-2xl" />
             </div>
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               <Skeleton className="h-11 w-36 rounded-xl" />
               <Skeleton className="h-11 w-44 rounded-xl" />
             </div>
           </div>
-          <div className="flex w-2/5 shrink-0 items-center justify-center bg-white/5 p-4">
-            <Skeleton className="h-64 w-full rounded-2xl" />
+          <div className="flex w-full shrink-0 items-center justify-center bg-white/5 p-4 lg:w-2/5">
+            <Skeleton className="h-48 w-full rounded-2xl sm:h-64" />
           </div>
         </div>
       </div>
@@ -239,8 +239,8 @@ export default function ProximasActividades() {
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr,0.9fr]">
             <ScrollReveal direction="up" delay={120}>
               <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 shadow-2xl backdrop-blur-sm">
-                <div className="flex flex-row">
-                  <div className="flex-1 p-5 sm:p-6 lg:p-8">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="order-2 flex-1 p-5 sm:p-6 lg:order-1 lg:p-8">
                     <div className="mb-4 flex flex-wrap gap-2">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${badgeClass(
@@ -342,16 +342,16 @@ export default function ProximasActividades() {
                     ) : null}
                   </div>
 
-                  <div className="flex w-2/5 shrink-0 items-center justify-center bg-white/5 p-4">
+                  <div className="order-1 flex w-full shrink-0 items-center justify-center bg-white/5 p-4 lg:order-2 lg:w-2/5">
                     {featured.coverImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={featured.coverImageUrl}
                         alt={featured.title}
-                        className="w-full rounded-2xl object-contain"
+                        className="max-h-72 w-full rounded-2xl object-contain lg:max-h-none"
                       />
                     ) : (
-                      <div className="h-64 w-full rounded-2xl bg-[linear-gradient(135deg,rgba(217,143,6,0.6),rgba(13,78,166,0.8))]" />
+                      <div className="h-48 w-full rounded-2xl bg-[linear-gradient(135deg,rgba(217,143,6,0.6),rgba(13,78,166,0.8))] sm:h-64" />
                     )}
                   </div>
                 </div>

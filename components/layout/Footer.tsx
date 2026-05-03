@@ -1,44 +1,49 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  TikTok,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 const footerLinks = {
-  'Quiénes Somos': [
-    { name: 'Nuestra Historia', href: '/quienes-somos/historia' },
-    { name: 'Organización', href: '/quienes-somos/organizacion' },
-    { name: 'Espiritualidad Vicenciana', href: '/quienes-somos/espiritualidad' },
+  "Quiénes Somos": [
+    { name: "Nuestra Historia", href: "/quienes-somos/historia" },
+    { name: "Estructura", href: "/estructura" },
   ],
-  'Qué Hacemos': [
-    { name: 'Nuestros Pilares', href: '/que-hacemos/pilares' },
-    { name: 'Áreas de Acción', href: '/que-hacemos/areas' },
-    { name: 'Proyectos', href: '/que-hacemos/proyectos' },
+  "Qué Hacemos": [{ name: "Nuestros Pilares", href: "/pilares" }],
+  Formación: [
+    { name: "Ejes Formativos", href: "/formacion/ejes" },
+    { name: "Santos Vicencianos", href: "/formacion/santos" },
   ],
-  'Formación': [
-    { name: 'Ejes Formativos', href: '/formacion/ejes' },
-    { name: 'Santos Vicencianos', href: '/formacion/santos' },
-    { name: 'Materiales', href: '/formacion/materiales' },
+  Participar: [
+    { name: "Únete a JMV", href: "/unete" },
+    { name: "Actividades", href: "/actividades" },
   ],
-  'Participar': [
-    { name: 'Únete a JMV', href: '/unete' },
-    { name: 'Actividades', href: '/actividades' },
-    { name: 'Voluntariado', href: '/voluntariado' },
-    { name: 'Donaciones', href: '/donaciones' },
-  ],
-}
+};
 
 const socialLinks = [
-  { name: 'Facebook', href: '#', icon: Facebook },
-  { name: 'Instagram', href: '#', icon: Instagram },
-  { name: 'Twitter', href: '#', icon: Twitter },
-]
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/JMV.Ec2020",
+    icon: Facebook,
+  },
+  { name: "Instagram", href: "#", icon: Instagram },
+  { name: "Twitter", href: "#", icon: Twitter },
+];
 
 export default function Footer() {
-  const pathname = usePathname()
-  const isAdmin = pathname.startsWith('/admin') || pathname.startsWith('/sign-in')
+  const pathname = usePathname();
+  const isAdmin =
+    pathname.startsWith("/admin") || pathname.startsWith("/sign-in");
   if (isAdmin) {
-    return null
+    return null;
   }
   return (
     <footer className="bg-jmv-blue text-white">
@@ -52,27 +57,24 @@ export default function Footer() {
                 <span className="text-white font-bold text-xl">JMV</span>
               </div>
               <div>
-                <h1 className="text-lg font-bold">
-                  Juventudes Marianas
-                </h1>
-                <p className="text-sm text-jmv-gold">
-                  Vicencianas Ecuador
-                </p>
+                <h1 className="text-lg font-bold">Juventudes Marianas</h1>
+                <p className="text-sm text-jmv-gold">Vicencianas Ecuador</p>
               </div>
             </Link>
             <p className="text-sm text-blue-100 mb-6">
-              Formando jóvenes comprometidos con el servicio, la fe y la transformación social bajo el carisma vicenciano.
+              Formando jóvenes comprometidos con el servicio, la fe y la
+              transformación social bajo el carisma vicenciano.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-jmv-gold" />
-                <span>contacto@jmvecuador.org</span>
+                <span>jmvecuador@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-jmv-gold" />
-                <span>+593 2 123 4567</span>
+                <span>+593 99 230 3481</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-jmv-gold" />
@@ -104,29 +106,6 @@ export default function Footer() {
         </div>
 
         {/* Newsletter Signup */}
-        <div className="mt-12 pt-8 border-t border-blue-400">
-          <div className="max-w-md">
-            <h3 className="text-lg font-semibold mb-4 text-jmv-gold">
-              Mantente Informado
-            </h3>
-            <p className="text-sm text-blue-100 mb-4">
-              Suscríbete a nuestro boletín para recibir noticias y actividades de JMV Ecuador.
-            </p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Tu correo electrónico"
-                className="flex-1 px-4 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-jmv-gold"
-              />
-              <button
-                type="submit"
-                className="bg-jmv-gold text-jmv-blue px-6 py-2 rounded-lg font-medium text-sm hover:bg-jmv-gold-dark transition-colors duration-200"
-              >
-                Suscribirse
-              </button>
-            </form>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Footer */}
@@ -134,16 +113,18 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             {/* Copyright */}
-            <p className="text-sm text-blue-200">
-              © {new Date().getFullYear()} Juventudes Marianas Vicencianas Ecuador. Todos los derechos reservados.
+            <p className="text-sm text-blue-200" suppressHydrationWarning>
+              © {new Date().getFullYear()} Juventudes Marianas Vicencianas
+              Ecuador. Todos los derechos reservados.
             </p>
 
             {/* Social Links */}
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               {socialLinks.map((social) => {
-                const Icon = social.icon
+                const Icon = social.icon;
                 return (
                   <Link
+                    target="_blank"
                     key={social.name}
                     href={social.href}
                     className="text-blue-200 hover:text-white transition-colors duration-200"
@@ -151,12 +132,12 @@ export default function Footer() {
                   >
                     <Icon className="h-5 w-5" />
                   </Link>
-                )
+                );
               })}
             </div>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
