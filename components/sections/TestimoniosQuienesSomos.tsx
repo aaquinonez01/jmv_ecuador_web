@@ -1,5 +1,3 @@
-"use server";
-
 import TestimoniosQuienesSomosClient from "./TestimoniosQuienesSomosClient";
 import type {
   PaginatedResponse,
