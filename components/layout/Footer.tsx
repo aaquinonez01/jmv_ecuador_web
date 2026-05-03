@@ -1,16 +1,17 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-  TikTok,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+
+type SocialLink = {
+  name: string;
+  href: string;
+  icon?: LucideIcon;
+  image?: string;
+};
 
 const footerLinks = {
   "Quiénes Somos": [
@@ -28,14 +29,22 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
+const socialLinks: SocialLink[] = [
   {
     name: "Facebook",
     href: "https://www.facebook.com/JMV.Ec2020",
     icon: Facebook,
   },
-  { name: "Instagram", href: "#", icon: Instagram },
-  { name: "Twitter", href: "#", icon: Twitter },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/jmv_ecuador?igsh=eGg3bXBiZnE1dnBt",
+    icon: Instagram,
+  },
+  {
+    name: "Tiktok",
+    href: "https://www.tiktok.com/@jmv.ecuador?_r=1&_t=ZS-9632vWSIqWL",
+    image: "/images/tiktok.png",
+  },
 ];
 
 export default function Footer() {
@@ -130,7 +139,17 @@ export default function Footer() {
                     className="text-blue-200 hover:text-white transition-colors duration-200"
                     aria-label={social.name}
                   >
-                    <Icon className="h-5 w-5" />
+                    {Icon ? (
+                      <Icon className="h-5 w-5" />
+                    ) : social.image ? (
+                      <Image
+                        src={social.image}
+                        alt={social.name}
+                        width={20}
+                        height={20}
+                        className="h-5 w-5 object-contain invert opacity-80 hover:opacity-100 transition-opacity"
+                      />
+                    ) : null}
                   </Link>
                 );
               })}
