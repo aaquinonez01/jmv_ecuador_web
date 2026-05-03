@@ -449,8 +449,8 @@ export default function ConsejoManager() {
                     Aún no hay miembros en este período.
                   </p>
                 ) : (
-                  <div className="overflow-hidden rounded-lg border border-slate-200">
-                    <table className="min-w-full divide-y divide-slate-200 text-xs">
+                  <div className="overflow-x-auto rounded-lg border border-slate-200">
+                    <table className="min-w-[640px] divide-y divide-slate-200 text-xs sm:min-w-full">
                       <thead className="bg-slate-50">
                         <tr className="text-[10.5px] uppercase tracking-wider text-slate-500">
                           <th className="px-4 py-2.5 text-left font-bold">

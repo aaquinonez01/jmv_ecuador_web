@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import AdminGuard from "@/components/admin/layout/AdminGuard";
-import AdminSidebar from "@/components/admin/layout/AdminSidebar";
+import AdminShell from "@/components/admin/layout/AdminShell";
 import ToastContainer from "@/components/admin/ui/ToastContainer";
 
 export const metadata: Metadata = {
@@ -15,11 +15,8 @@ export default function AdminLayout({
 }) {
   return (
     <AdminGuard>
-      <div className="flex h-screen bg-slate-50">
-        <AdminSidebar />
-        <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
-        <ToastContainer />
-      </div>
+      <AdminShell>{children}</AdminShell>
+      <ToastContainer />
     </AdminGuard>
   );
 }

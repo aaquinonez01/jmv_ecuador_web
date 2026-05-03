@@ -24,6 +24,8 @@ import {
 import { removeToken } from "@/lib/auth/token";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { useAuthStore } from "@/lib/store/auth";
+import { useAdminSidebar } from "./AdminShell";
+import { X } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -44,6 +46,7 @@ export default function AdminSidebar() {
   const router = useRouter();
   const { user } = useAuth();
   const { clear } = useAuthStore();
+  const { isMobileOpen, closeMobile } = useAdminSidebar();
 
   const handleLogout = async () => {
     removeToken();
@@ -167,7 +170,32 @@ export default function AdminSidebar() {
   const userInitial = fullName.charAt(0).toUpperCase() || "A";
 
   return (
-    <aside className="relative z-30 flex h-screen w-[320px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)]">
+    <>
+      {/* Mobile backdrop */}
+      <div
+        onClick={closeMobile}
+        className={`fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-200 lg:hidden ${
+          isMobileOpen
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+        aria-hidden="true"
+      />
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[280px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)] transition-transform duration-300 ease-out sm:w-[320px] lg:relative lg:z-30 lg:translate-x-0 ${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        {/* Mobile close button */}
+        <button
+          onClick={closeMobile}
+          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white lg:hidden"
+          aria-label="Cerrar menú"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
       {/* Decorative glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-jmv-gold/10 to-transparent" />
       <div className="pointer-events-none absolute -left-10 top-1/3 h-48 w-48 rounded-full bg-jmv-blue/30 blur-3xl" />
@@ -292,6 +320,7 @@ export default function AdminSidebar() {
           </button>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

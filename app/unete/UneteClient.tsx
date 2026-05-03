@@ -22,7 +22,7 @@ const MapaInteractivo = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-96 bg-jmv-blue/20 rounded-2xl flex items-center justify-center">
+      <div className="w-full h-[520px] bg-jmv-blue/20 rounded-2xl flex items-center justify-center">
         <div className="text-white/80">Cargando mapa interactivo...</div>
       </div>
     ),
@@ -248,23 +248,13 @@ export default function UneteClient() {
             </div>
           </ScrollReveal>
 
-          {/* Map Legend */}
+          {/* Map Hint */}
           <ScrollReveal direction="up" delay={150}>
-            <div className="mt-8 flex flex-wrap justify-center gap-6">
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                <div className="w-4 h-4 bg-jmv-red rounded-full mr-2"></div>
-                <span className="text-white/80 text-sm">
-                  Comunidades Activas
-                </span>
-              </div>
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                <div className="w-4 h-4 bg-jmv-gold rounded-full mr-2"></div>
-                <span className="text-white/80 text-sm">Sedes Zonales</span>
-              </div>
-              <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-                <div className="w-4 h-4 bg-blue-400 rounded-full mr-2"></div>
-                <span className="text-white/80 text-sm">
-                  Comunidades en Formación
+            <div className="mt-6 flex justify-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 backdrop-blur-sm">
+                <div className="size-3 animate-pulse rounded-full bg-jmv-gold shadow-lg shadow-jmv-gold/50" />
+                <span className="text-sm text-white/85">
+                  Haz click en cualquier marcador para ver los detalles de la comunidad
                 </span>
               </div>
             </div>

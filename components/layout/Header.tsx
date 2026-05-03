@@ -2,13 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X, ChevronDown, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/lib/store/auth";
-import { removeToken } from "@/lib/auth/token";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { usePathname } from "next/navigation";
 
 const navigation = [
   {
@@ -44,32 +40,13 @@ const navigation = [
   },
 ];
 
-type InitialUser = {
-  fullName?: string;
-  displayName?: string;
-  profilePicture?: string | null;
-};
-
-export default function Header({ initialUser }: { initialUser?: InitialUser }) {
+export default function Header() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [openProfile, setOpenProfile] = useState(false);
-  const { user, setUser, clear } = useAuthStore();
-  const router = useRouter();
-  // Hook que refresca el perfil desde /api/me tras recargas/navegación
-  useAuth();
 
   const isAdminRoute =
     pathname?.startsWith("/admin") || pathname?.startsWith("/sign-in");
-
-  useEffect(() => {
-    if (initialUser) {
-      setUser(initialUser);
-    } else {
-      clear();
-    }
-  }, [initialUser, setUser, clear]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -158,74 +135,6 @@ export default function Header({ initialUser }: { initialUser?: InitialUser }) {
               <span className="hidden md:inline">Únete a JMV</span>
               <span className="md:hidden">Únete</span>
             </Link>
-            {user || initialUser ? (
-              <div className="relative ml-3">
-                <button
-                  onClick={() => setOpenProfile((s) => !s)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white font-bold hover:bg-white/30 transition"
-                >
-                  {(user?.profilePicture ?? initialUser?.profilePicture) ? (
-                    <Image
-                      src={
-                        (user?.profilePicture ??
-                          initialUser?.profilePicture) as string
-                      }
-                      alt="avatar"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover"
-                    />
-                  ) : (
-                    <span>
-                      {(() => {
-                        const name =
-                          user?.displayName ||
-                          initialUser?.displayName ||
-                          user?.fullName ||
-                          initialUser?.fullName ||
-                          "U";
-                        const parts = name.trim().split(/\s+/);
-                        const initials =
-                          (parts[0]?.[0] || "U") + (parts[1]?.[0] || "");
-                        return initials.toUpperCase();
-                      })()}
-                    </span>
-                  )}
-                </button>
-                {openProfile && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white text-gray-800 rounded-lg shadow-xl py-2 z-50">
-                    <Link
-                      href="/auth/profile"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                      onClick={() => setOpenProfile(false)}
-                    >
-                      Perfil
-                    </Link>
-                    <button
-                      onClick={async () => {
-                        removeToken();
-                        clear();
-                        await fetch("/api/session", {
-                          method: "DELETE",
-                        }).catch(() => null);
-                        setOpenProfile(false);
-                        router.replace("/");
-                      }}
-                      className="w-full text-left block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Cerrar sesión
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                href="/sign-in"
-                className="ml-4 bg-white/10 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/20 transition-all duration-200 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                Iniciar sesión
-              </Link>
-            )}
           </nav>
 
           {/* Mobile Menu Button */}

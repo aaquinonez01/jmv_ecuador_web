@@ -43,6 +43,10 @@ interface ComunidadFormState {
   nombre: string;
   ciudad: string;
   correoElectronico: string;
+  direccion: string;
+  telefono: string;
+  latitud: string;
+  longitud: string;
   zonaId: string;
 }
 
@@ -56,6 +60,10 @@ const emptyComunidadForm = (): ComunidadFormState => ({
   nombre: "",
   ciudad: "",
   correoElectronico: "",
+  direccion: "",
+  telefono: "",
+  latitud: "",
+  longitud: "",
   zonaId: "",
 });
 
@@ -78,11 +86,22 @@ function toZonaPayload(form: ZonaFormState): ZonaPayload {
   };
 }
 
+function parseCoord(value: string): number | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  const parsed = Number(trimmed.replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function toComunidadPayload(form: ComunidadFormState): ComunidadPayload {
   return {
     nombre: form.nombre.trim(),
     ciudad: form.ciudad.trim(),
     correoElectronico: form.correoElectronico.trim(),
+    direccion: form.direccion.trim() || undefined,
+    telefono: form.telefono.trim() || undefined,
+    latitud: parseCoord(form.latitud),
+    longitud: parseCoord(form.longitud),
     zonaId: form.zonaId,
   };
 }
@@ -234,6 +253,16 @@ export default function TerritoriosManager() {
         nombre: item.nombre,
         ciudad: item.ciudad,
         correoElectronico: item.correoElectronico,
+        direccion: item.direccion ?? "",
+        telefono: item.telefono ?? "",
+        latitud:
+          item.latitud !== null && item.latitud !== undefined
+            ? String(item.latitud)
+            : "",
+        longitud:
+          item.longitud !== null && item.longitud !== undefined
+            ? String(item.longitud)
+            : "",
         zonaId: item.zona?.id || "",
       },
     });
@@ -277,6 +306,20 @@ export default function TerritoriosManager() {
     }
     if (!payload.zonaId) {
       toast.error("Debes seleccionar una zona.");
+      return;
+    }
+    const hasLat = payload.latitud !== undefined;
+    const hasLng = payload.longitud !== undefined;
+    if (hasLat !== hasLng) {
+      toast.error("Latitud y longitud deben completarse juntas.");
+      return;
+    }
+    if (hasLat && (payload.latitud! < -90 || payload.latitud! > 90)) {
+      toast.error("La latitud debe estar entre -90 y 90.");
+      return;
+    }
+    if (hasLng && (payload.longitud! < -180 || payload.longitud! > 180)) {
+      toast.error("La longitud debe estar entre -180 y 180.");
       return;
     }
 
@@ -730,6 +773,109 @@ export default function TerritoriosManager() {
                 <ChevronDown
                   className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                   strokeWidth={2.2}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-md border border-dashed border-slate-200 bg-slate-50/40 p-3.5">
+              <div className="mb-2.5 flex items-center justify-between">
+                <h3 className="text-[11.5px] font-bold uppercase tracking-wider text-slate-600">
+                  Ubicación en el mapa
+                </h3>
+                <a
+                  href="https://www.google.com/maps"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10.5px] font-semibold text-jmv-blue hover:underline"
+                >
+                  Buscar en Google Maps ↗
+                </a>
+              </div>
+              <p className="mb-3 text-[10.5px] leading-snug text-slate-500">
+                Tip: en Google Maps haz click derecho sobre el lugar y haz click
+                en las coordenadas para copiarlas (formato: latitud, longitud).
+              </p>
+              <InputField
+                label="Dirección"
+                value={comunidadEditor.form.direccion}
+                onChange={(event) =>
+                  setComunidadEditor((current) =>
+                    current
+                      ? {
+                          ...current,
+                          form: {
+                            ...current.form,
+                            direccion: event.target.value,
+                          },
+                        }
+                      : current
+                  )
+                }
+                placeholder="Ej. Av. 12 de Octubre N24-563 y Cordero"
+              />
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <InputField
+                  label="Latitud"
+                  type="text"
+                  inputMode="decimal"
+                  value={comunidadEditor.form.latitud}
+                  onChange={(event) =>
+                    setComunidadEditor((current) =>
+                      current
+                        ? {
+                            ...current,
+                            form: {
+                              ...current.form,
+                              latitud: event.target.value,
+                            },
+                          }
+                        : current
+                    )
+                  }
+                  placeholder="-0.1807"
+                  hint="Entre -90 y 90"
+                />
+                <InputField
+                  label="Longitud"
+                  type="text"
+                  inputMode="decimal"
+                  value={comunidadEditor.form.longitud}
+                  onChange={(event) =>
+                    setComunidadEditor((current) =>
+                      current
+                        ? {
+                            ...current,
+                            form: {
+                              ...current.form,
+                              longitud: event.target.value,
+                            },
+                          }
+                        : current
+                    )
+                  }
+                  placeholder="-78.4678"
+                  hint="Entre -180 y 180"
+                />
+              </div>
+              <div className="mt-3">
+                <InputField
+                  label="Teléfono (opcional)"
+                  type="tel"
+                  value={comunidadEditor.form.telefono}
+                  onChange={(event) =>
+                    setComunidadEditor((current) =>
+                      current
+                        ? {
+                            ...current,
+                            form: {
+                              ...current.form,
+                              telefono: event.target.value,
+                            },
+                          }
+                        : current
+                    )
+                  }
+                  placeholder="+593 99 123 4567"
                 />
               </div>
             </div>

@@ -10,6 +10,10 @@ export interface ComunidadItem {
   nombre: string;
   ciudad: string;
   correoElectronico: string;
+  direccion?: string | null;
+  telefono?: string | null;
+  latitud?: number | null;
+  longitud?: number | null;
   zona: {
     id: string;
     nombre: string;
@@ -26,6 +30,9 @@ export interface ComunidadPayload {
   nombre: string;
   ciudad: string;
   correoElectronico: string;
+  direccion?: string;
+  telefono?: string;
+  latitud?: number;
+  longitud?: number;
   zonaId: string;
 }
-
