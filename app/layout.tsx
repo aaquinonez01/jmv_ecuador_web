@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -59,6 +59,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [{ url: "/logo-jmv.png", type: "image/png" }],
+    shortcut: "/logo-jmv.png",
+    apple: { url: "/logo-jmv.png", sizes: "180x180" },
+  },
   openGraph: {
     title: "Juventudes Marianas Vicencianas Ecuador",
     description:
@@ -102,7 +107,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={cn("scroll-smooth dark", "font-sans", geist.variable)}>
+    <html
+      lang="es"
+      className={cn("scroll-smooth dark", "font-sans", geist.variable)}
+    >
       <body
         className={`${poppins.variable} ${openSans.variable} ${dancingScript.variable} antialiased bg-slate-900 text-slate-100`}
       >
