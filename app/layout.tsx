@@ -59,11 +59,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  icons: {
-    icon: [{ url: "/logo-jmv.png", type: "image/png" }],
-    shortcut: "/logo-jmv.png",
-    apple: { url: "/logo-jmv.png", sizes: "180x180" },
-  },
   openGraph: {
     title: "Juventudes Marianas Vicencianas Ecuador",
     description:
