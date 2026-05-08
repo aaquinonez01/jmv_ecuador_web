@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Heart, Star } from "lucide-react";
 import Button from "../ui/Button";
@@ -14,11 +15,16 @@ export default function HeroSection({ backgroundUrl = "/images/hero/hero.jpg" }:
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-24 lg:pt-16">
       {/* Background with Gradient Overlay */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-black z-10 opacity-60" />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
-          style={{ backgroundImage: `url('${backgroundUrl}')` }}
+        <Image
+          src={backgroundUrl}
+          alt=""
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center opacity-80"
         />
+        <div className="absolute inset-0 bg-black z-10 opacity-60" />
       </div>
 
       {/* Animated Background Elements */}

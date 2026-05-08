@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { ChevronDown, Target, Cross, Users, Hand, BookOpen } from 'lucide-react'
 import ScrollReveal from '../ui/ScrollReveal'
@@ -13,11 +14,16 @@ export default function PilaresHero({ backgroundUrl = "/images/pilares/pilares-h
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-24 lg:pt-16">
       {/* Background with Gradient Overlay */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-jmv z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-          style={{ backgroundImage: `url('${backgroundUrl}')` }}
+        <Image
+          src={backgroundUrl}
+          alt=""
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center opacity-10"
         />
+        <div className="absolute inset-0 bg-gradient-jmv z-10" />
       </div>
 
       {/* Animated Background Elements */}

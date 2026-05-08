@@ -1,27 +1,27 @@
 import ActividadesHero from "@/components/sections/ActividadesHero";
-import { getImagesBySectionAPI } from "@/actions/admin-images/get-by-section";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { ssrFetch } from "@/lib/helpers/apiBase";
 import ActividadesAlbumsServer from "@/components/sections/ActividadesAlbumsServer";
 export const revalidate = 300;
 
 export default async function ActividadesPage() {
-  const base = (
-    process.env.INTERNAL_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:3002/api"
-  ).replace(/\/+$/, "");
-  let url = "";
-  try {
-    const res = await fetch(
-      `${base}/site-images?section=hero_backgrounds&subsection=actividades`,
-      {
-        next: { revalidate: 1800, tags: ["hero_backgrounds_actividades"] },
+  let url = getOptimizedUrl("/images/hero/hero.jpg", {
+    w: 1920,
+    q: "auto:good",
+  });
+  const res = await ssrFetch(
+    "/site-images?section=hero_backgrounds&subsection=actividades",
+    { revalidate: 1800, tags: ["hero_backgrounds_actividades"] },
+  );
+  if (res) {
+    try {
+      const imgs = await res.json();
+      if (imgs?.[0]?.url) {
+        url = getOptimizedUrl(imgs[0].url, { w: 1920, q: "auto:good" });
       }
-    );
-    const imgs = await res.json();
-    url = getOptimizedUrl(imgs[0]?.url || "", { w: 2560, q: "auto:best" });
-  } catch {
-    url = getOptimizedUrl("/images/hero/hero.jpg", { w: 2560, q: "auto:best" });
+    } catch {
+      // keep fallback
+    }
   }
   return (
     <>

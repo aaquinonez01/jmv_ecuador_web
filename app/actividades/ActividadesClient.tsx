@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Calendar, MapPin, Users, Camera, ChevronDown } from 'lucide-react'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -294,11 +295,16 @@ export default function ActividadesClient({ heroUrl = "/images/actividades/activ
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
         {/* Background with Gradient Overlay */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-jmv z-10" />
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-            style={{ backgroundImage: `url('${heroUrl}')` }}
+          <Image
+            src={heroUrl}
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            className="object-cover object-center opacity-10"
           />
+          <div className="absolute inset-0 bg-gradient-jmv z-10" />
         </div>
 
         {/* Animated Background Elements */}

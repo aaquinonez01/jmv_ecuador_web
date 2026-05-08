@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Heart,
@@ -199,11 +200,13 @@ export default function ActivitiesGallery() {
                 onMouseLeave={() => setHoveredActivity(null)}
               >
                 {/* Background Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-all duration-700 group-hover:scale-110"
-                  style={{
-                    backgroundImage: `url('${activity.image}')`,
-                  }}
+                <Image
+                  src={activity.image}
+                  alt={activity.title}
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="object-cover object-center transition-all duration-700 group-hover:scale-110"
                 />
 
                 {/* Gradient Overlay */}

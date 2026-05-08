@@ -1,26 +1,24 @@
 "use server";
 
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { ssrFetch } from "@/lib/helpers/apiBase";
 import HeroSection from "./HeroSection";
 
 export default async function HeroServer() {
-  const base = (
-    process.env.INTERNAL_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:3002/api"
-  ).replace(/\/+$/, "");
   let url = "/images/hero/hero.jpg";
-  try {
-    const res = await fetch(
-      `${base}/site-images?section=hero_backgrounds&subsection=home`,
-      {
-        next: { revalidate: 1800, tags: ["hero_backgrounds_home"] },
-      }
-    );
-    const images = await res.json();
-    url = getOptimizedUrl(images[0]?.url || url, { w: 2560, q: "auto:best" });
-  } catch {
-    url = getOptimizedUrl(url, { w: 2560, q: "auto:best" });
+  const res = await ssrFetch(
+    "/site-images?section=hero_backgrounds&subsection=home",
+    { revalidate: 1800, tags: ["hero_backgrounds_home"] }
+  );
+  if (res) {
+    try {
+      const images = await res.json();
+      url = getOptimizedUrl(images[0]?.url || url, { w: 1920, q: "auto:good" });
+    } catch {
+      url = getOptimizedUrl(url, { w: 1920, q: "auto:good" });
+    }
+  } else {
+    url = getOptimizedUrl(url, { w: 1920, q: "auto:good" });
   }
   return <HeroSection backgroundUrl={url} />;
 }
