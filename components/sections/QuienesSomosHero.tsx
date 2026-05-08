@@ -10,7 +10,7 @@ interface Props {
   backgroundUrl?: string;
 }
 
-export default function QuienesSomosHero({ backgroundUrl = "/images/quienes-somos/jmv-community.jpg" }: Props) {
+export default function QuienesSomosHero({ backgroundUrl = "/images/hero/hero.jpg" }: Props) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
       {/* Background with Gradient Overlay */}

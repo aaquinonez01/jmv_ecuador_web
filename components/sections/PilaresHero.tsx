@@ -9,7 +9,7 @@ interface Props {
   backgroundUrl?: string;
 }
 
-export default function PilaresHero({ backgroundUrl = "/images/pilares/pilares-hero.jpg" }: Props) {
+export default function PilaresHero({ backgroundUrl = "/images/hero/hero.jpg" }: Props) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-24 lg:pt-16">
       {/* Background with Gradient Overlay */}

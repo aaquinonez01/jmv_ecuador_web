@@ -5,7 +5,7 @@ import { Camera, ChevronDown } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function ActividadesHero({ heroUrl }: { heroUrl?: string }) {
-  const bg = heroUrl || "/images/actividades/actividades-hero.jpg";
+  const bg = heroUrl || "/images/hero/hero.jpg";
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
       <div className="absolute inset-0">

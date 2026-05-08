@@ -1,17 +1,20 @@
-import QuieneSomosHeroServer from "@/components/sections/QuienesSomosHeroServer";
+import { Suspense } from "react";
+import QuienesSomosHero from "@/components/sections/QuienesSomosHero";
 import MisionVision from "@/components/sections/MisionVision";
 import CarismaVicenciano from "@/components/sections/CarismaVicenciano";
 import TestimoniosQuienesSomos from "@/components/sections/TestimoniosQuienesSomos";
-import ReconocimientosSection from "@/components/sections/ReconocimientosSection";
 import UneteCTASection from "@/components/sections/UneteCTASection";
+import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 
 export default function QuienesSomosPage() {
   return (
     <>
-      <QuieneSomosHeroServer />
+      <QuienesSomosHero />
       <MisionVision />
       <CarismaVicenciano />
-      <TestimoniosQuienesSomos />
+      <Suspense fallback={<TestimonialsSkeleton />}>
+        <TestimoniosQuienesSomos />
+      </Suspense>
       <UneteCTASection />
     </>
   );

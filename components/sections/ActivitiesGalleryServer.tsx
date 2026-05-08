@@ -18,7 +18,7 @@ export default async function ActivitiesGalleryServer() {
   let items: ActivityItem[] = [];
 
   const res = await ssrFetch("/activities/public?limit=3", {
-    revalidate: 300,
+    revalidate: 86400,
     tags: ["activities_public_home"],
   });
   if (res) {

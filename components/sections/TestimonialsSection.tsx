@@ -11,7 +11,7 @@ export default async function TestimonialsSection() {
   let items: TestimonialItem[] = [];
 
   const res = await ssrFetch("/testimonials/public?limit=6", {
-    revalidate: 300,
+    revalidate: 259200,
     tags: ["testimonials_home"],
   });
   if (res) {

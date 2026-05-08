@@ -3,7 +3,7 @@ import type { Asesor, ConsejoPeriod, HomeAnnouncement } from "@/types/consejo";
 
 export async function fetchConsejoActual(): Promise<ConsejoPeriod | null> {
   const res = await ssrFetch("/consejo-nacional/actual", {
-    revalidate: 300,
+    revalidate: 2592000,
     tags: ["consejo_actual"],
   });
   if (!res) return null;
@@ -16,7 +16,7 @@ export async function fetchConsejoActual(): Promise<ConsejoPeriod | null> {
 
 export async function fetchAsesoresActuales(): Promise<Asesor[]> {
   const res = await ssrFetch("/asesores/actuales", {
-    revalidate: 300,
+    revalidate: 2592000,
     tags: ["asesores_actuales"],
   });
   if (!res) return [];
@@ -29,7 +29,7 @@ export async function fetchAsesoresActuales(): Promise<Asesor[]> {
 
 export async function fetchActiveAnnouncements(): Promise<HomeAnnouncement[]> {
   const res = await ssrFetch("/home-announcements/active", {
-    revalidate: 120,
+    revalidate: 3600,
     tags: ["home_announcements_active"],
   });
   if (!res) return [];

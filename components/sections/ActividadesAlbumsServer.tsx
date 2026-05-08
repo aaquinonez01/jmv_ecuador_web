@@ -15,15 +15,15 @@ export default async function ActividadesAlbumsServer() {
 
   const [activitiesRes, pillarsRes, typesRes] = await Promise.all([
     ssrFetch("/activities/public", {
-      revalidate: 300,
+      revalidate: 86400,
       tags: ["activities_public"],
     }),
     ssrFetch("/activity-pillars", {
-      revalidate: 600,
+      revalidate: 2592000,
       tags: ["activity_pillars_public"],
     }),
     ssrFetch("/activity-types", {
-      revalidate: 600,
+      revalidate: 2592000,
       tags: ["activity_types_public"],
     }),
   ]);

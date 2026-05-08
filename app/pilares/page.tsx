@@ -1,4 +1,4 @@
-import PilaresHeroServer from "@/components/sections/PilaresHeroServer";
+import PilaresHero from "@/components/sections/PilaresHero";
 import PilaresInteractivo from "@/components/sections/PilaresInteractivo";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 export default function PilaresPage() {
   return (
     <>
-      <PilaresHeroServer />
+      <PilaresHero />
       <PilaresInteractivo />
     </>
   );
