@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -11,8 +8,8 @@ import {
   Users,
 } from "lucide-react";
 import ScrollReveal from "../ui/ScrollReveal";
-import { Skeleton } from "../ui/Skeleton";
-import { getHomeUpcomingActivitiesAPI } from "@/actions/upcoming-activities";
+import CountdownClient from "./CountdownClient";
+import { fetchHomeUpcomingActivities } from "@/lib/api/upcoming-activities.server";
 import type { UpcomingActivityItem } from "@/types/activity-management";
 
 function formatDate(value?: string | null) {
@@ -22,90 +19,6 @@ function formatDate(value?: string | null) {
     month: "short",
     year: "numeric",
   }).format(new Date(value));
-}
-
-function useCountdown(targetDate?: string | null) {
-  const calculate = () => {
-    if (!targetDate) return null;
-
-    const diff = new Date(targetDate).getTime() - Date.now();
-    if (diff <= 0) {
-      return { days: 0, hours: 0, minutes: 0, seconds: 0, isFinished: true };
-    }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
-
-    return { days, hours, minutes, seconds, isFinished: false };
-  };
-
-  const [countdown, setCountdown] = useState(calculate);
-
-  useEffect(() => {
-    setCountdown(calculate());
-    if (!targetDate) return;
-
-    const interval = window.setInterval(() => {
-      setCountdown(calculate());
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, [targetDate]);
-
-  return countdown;
-}
-
-function Countdown({
-  activity,
-}: {
-  activity: UpcomingActivityItem;
-}) {
-  const target =
-    activity.countdownTargetType === "registration_close"
-      ? activity.maxRegistrationDate
-      : activity.startDate;
-  const countdown = useCountdown(target);
-
-  if (!target || !countdown) {
-    return (
-      <div className="rounded-2xl border border-white/15 bg-white/10 p-4 text-white/75">
-        Define una fecha del evento o de cierre para activar el contador.
-      </div>
-    );
-  }
-
-  if (countdown.isFinished) {
-    return (
-      <div className="rounded-2xl border border-amber-300/20 bg-amber-500/10 p-4 text-amber-100">
-        {activity.countdownTargetType === "registration_close"
-          ? "La fecha máxima de inscripción ya venció."
-          : "La fecha del evento ya llegó o pasó."}
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-      {[
-        { label: "Días", value: countdown.days },
-        { label: "Horas", value: countdown.hours },
-        { label: "Min", value: countdown.minutes },
-        { label: "Seg", value: countdown.seconds },
-      ].map((item) => (
-        <div
-          key={item.label}
-          className="rounded-2xl border border-white/15 bg-white/10 px-2 py-3 text-center backdrop-blur-sm sm:px-3 sm:py-4"
-        >
-          <div className="text-xl font-bold text-white sm:text-2xl">{item.value}</div>
-          <div className="mt-1 text-[10px] uppercase tracking-[0.18em] text-white/65 sm:text-xs sm:tracking-[0.25em]">
-            {item.label}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function statusLabel(status?: string | null) {
@@ -140,70 +53,16 @@ function badgeClass(status?: string | null) {
   }
 }
 
-function ProximasActividadesSkeleton() {
-  return (
-    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr,0.9fr]">
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 shadow-2xl backdrop-blur-sm">
-        <div className="flex flex-col lg:flex-row">
-          <div className="flex-1 p-5 sm:p-6 lg:p-8">
-            <div className="mb-4 flex gap-2">
-              <Skeleton className="h-6 w-28 rounded-full" />
-              <Skeleton className="h-6 w-20 rounded-full" />
-            </div>
-            <Skeleton className="h-8 w-3/4 rounded-xl" />
-            <Skeleton className="mt-2 h-4 w-full rounded-lg" />
-            <Skeleton className="mt-1 h-4 w-5/6 rounded-lg" />
-            <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              <Skeleton className="h-12 rounded-2xl" />
-              <Skeleton className="h-12 rounded-2xl" />
-              <Skeleton className="h-12 rounded-2xl" />
-              <Skeleton className="h-12 rounded-2xl" />
-            </div>
-            <Skeleton className="mt-5 h-4 w-16 rounded-lg" />
-            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-              <Skeleton className="h-20 rounded-2xl" />
-              <Skeleton className="h-20 rounded-2xl" />
-              <Skeleton className="h-20 rounded-2xl" />
-              <Skeleton className="h-20 rounded-2xl" />
-            </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Skeleton className="h-11 w-36 rounded-xl" />
-              <Skeleton className="h-11 w-44 rounded-xl" />
-            </div>
-          </div>
-          <div className="flex w-full shrink-0 items-center justify-center bg-white/5 p-4 lg:w-2/5">
-            <Skeleton className="h-48 w-full rounded-2xl sm:h-64" />
-          </div>
-        </div>
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-48 rounded-[1.75rem]" />
-        <Skeleton className="h-48 rounded-[1.75rem]" />
-        <Skeleton className="h-48 rounded-[1.75rem]" />
-      </div>
-    </div>
-  );
+function pickFeatured(items: UpcomingActivityItem[]) {
+  return items.find((item) => item.featuredInHome) || items[0] || null;
 }
 
-export default function ProximasActividades() {
-  const [items, setItems] = useState<UpcomingActivityItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getHomeUpcomingActivitiesAPI()
-      .then((res) => setItems(res.items || []))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const featured = useMemo(() => {
-    return items.find((item) => item.featuredInHome) || items[0] || null;
-  }, [items]);
-
-  const secondaryItems = useMemo(() => {
-    if (!featured) return [];
-    return items.filter((item) => item.id !== featured.id).slice(0, 3);
-  }, [featured, items]);
+export default async function ProximasActividades() {
+  const items = await fetchHomeUpcomingActivities();
+  const featured = pickFeatured(items);
+  const secondaryItems = featured
+    ? items.filter((item) => item.id !== featured.id).slice(0, 3)
+    : [];
 
   return (
     <section className="relative overflow-hidden py-16 sm:py-20">
@@ -223,9 +82,7 @@ export default function ProximasActividades() {
           </div>
         </ScrollReveal>
 
-        {loading ? (
-          <ProximasActividadesSkeleton />
-        ) : !featured ? (
+        {!featured ? (
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-10 text-center backdrop-blur-sm">
             <h3 className="text-2xl font-semibold text-white">
               Aún no hay próximas actividades publicadas
@@ -244,7 +101,7 @@ export default function ProximasActividades() {
                     <div className="mb-4 flex flex-wrap gap-2">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${badgeClass(
-                          featured.registrationStatus
+                          featured.registrationStatus,
                         )}`}
                       >
                         {statusLabel(featured.registrationStatus)}
@@ -280,7 +137,8 @@ export default function ProximasActividades() {
                       <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white/85">
                         <Users className="h-5 w-5 text-jmv-gold" />
                         <span>
-                          {featured.participantsLabel || "Participantes por confirmar"}
+                          {featured.participantsLabel ||
+                            "Participantes por confirmar"}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white/85">
@@ -296,7 +154,14 @@ export default function ProximasActividades() {
                       <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
                         ¡Faltan!
                       </p>
-                      <Countdown activity={featured} />
+                      <CountdownClient
+                        targetDate={
+                          featured.countdownTargetType === "registration_close"
+                            ? featured.maxRegistrationDate
+                            : featured.startDate
+                        }
+                        countdownTargetType={featured.countdownTargetType}
+                      />
                     </div>
 
                     <div className="mt-5 flex flex-wrap gap-3">
@@ -377,7 +242,7 @@ export default function ProximasActividades() {
                       </div>
                       <span
                         className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${badgeClass(
-                          activity.registrationStatus
+                          activity.registrationStatus,
                         )}`}
                       >
                         {statusLabel(activity.registrationStatus)}

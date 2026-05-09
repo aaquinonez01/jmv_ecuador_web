@@ -1,0 +1,178 @@
+"use client";
+
+import { useState, useEffect, type ReactNode } from "react";
+import Link from "next/link";
+import { Menu, X, ChevronDown, Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+
+export type NavItem = {
+  name: string;
+  href?: string;
+  children?: { name: string; href: string }[];
+};
+
+type Props = {
+  navigation: NavItem[];
+  logo: ReactNode;
+};
+
+export default function HeaderClient({ navigation, logo }: Props) {
+  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const isAdminRoute =
+    pathname?.startsWith("/admin") || pathname?.startsWith("/sign-in");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
+  if (isAdminRoute) {
+    return null;
+  }
+
+  return (
+    <header
+      className={cn(
+        "fixed top-0 w-full z-50 transition-all duration-300 bg-[#D98F06]",
+        scrolled ? "shadow-xl" : "",
+      )}
+      style={{ backgroundColor: "#D98F06" }}
+    >
+      <div className=" mx-auto px-3 sm:px-4 md:px-6 lg:px-8 w-full">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
+          {logo}
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {navigation.map((item) => (
+              <div key={item.name} className="relative group">
+                <Link
+                  href={item.href || "#"}
+                  className="flex items-center px-4 py-3 text-sm font-bold text-white/90 hover:text-white transition-all duration-200 rounded-lg hover:bg-white/10 hover:scale-105"
+                >
+                  {item.name}
+                  {item.children && <ChevronDown className="ml-1 h-3 w-3" />}
+                </Link>
+
+                {item.children && (
+                  <div className="absolute top-full left-0 w-56 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 mt-1">
+                    <div className="py-3">
+                      <div className="px-4 py-2 border-b border-gray-200">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          {item.name}
+                        </span>
+                      </div>
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-jmv-blue hover:bg-jmv-blue/10 transition-all duration-200 hover:pl-6 group/item"
+                        >
+                          <span className="w-1.5 h-1.5 bg-jmv-blue rounded-full mr-3 opacity-0 group-hover/item:opacity-100 transition-opacity"></span>
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <Link
+              href="/unete"
+              className="bg-jmv-red text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-jmv-red-dark transition-all duration-200 ml-4 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              <span className="hidden md:inline">Únete a JMV</span>
+              <span className="md:hidden">Únete</span>
+            </Link>
+          </nav>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+            className="lg:hidden p-2 sm:p-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
+          >
+            {isMenuOpen ? (
+              <X className="h-4 w-4 sm:h-5 sm:w-5" />
+            ) : (
+              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {isMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-50 bg-[#D98F06] overflow-y-auto"
+          style={{ backgroundColor: "#D98F06", top: "64px" }}
+        >
+          <div className="min-h-full flex flex-col px-5 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8">
+            <div className="flex-1 space-y-3">
+              {navigation.map((item) => (
+                <div
+                  key={item.name}
+                  className="border-b border-white/10 pb-5 last:border-b-0"
+                >
+                  <Link
+                    href={item.href || "#"}
+                    className="flex items-center justify-between px-4 py-3.5 text-lg sm:text-xl font-bold text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                    {item.children && (
+                      <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6 opacity-60" />
+                    )}
+                  </Link>
+                  {item.children && (
+                    <div className="ml-4 sm:ml-5 mt-3 space-y-2 pl-4 sm:pl-5 border-l-2 border-white/20">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.name}
+                          href={child.href}
+                          className="flex items-center px-3 py-2.5 text-base sm:text-lg font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-md transition-all duration-200 hover:pl-5"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-3"></span>
+                          {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-6 mt-auto">
+              <Link
+                href="/unete"
+                className="flex items-center justify-center w-full bg-jmv-red text-white px-6 py-4 rounded-xl font-bold hover:bg-jmv-red-dark transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Heart className="w-5 h-5 mr-2" />
+                Únete a JMV
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}

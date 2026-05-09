@@ -1,28 +1,19 @@
 import type { Metadata } from "next";
-import { Poppins, Open_Sans, Dancing_Script, Geist } from "next/font/google";
+import { Poppins, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
 const poppins = Poppins({
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-poppins",
   display: "swap",
 });
 
-const openSans = Open_Sans({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-open-sans",
-  display: "swap",
-});
-
 const dancingScript = Dancing_Script({
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   subsets: ["latin"],
   variable: "--font-dancing",
   display: "swap",
@@ -104,10 +95,10 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={cn("scroll-smooth dark", "font-sans", geist.variable)}
+      className={cn("scroll-smooth dark", "font-sans", poppins.variable)}
     >
       <body
-        className={`${poppins.variable} ${openSans.variable} ${dancingScript.variable} antialiased bg-slate-900 text-slate-100`}
+        className={`${poppins.variable} ${dancingScript.variable} antialiased bg-slate-900 text-slate-100`}
       >
         <Header />
         <main className="min-h-screen">{children}</main>

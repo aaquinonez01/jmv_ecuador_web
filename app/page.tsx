@@ -12,8 +12,12 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <HomeAnnouncementBanner />
-      <ProximasActividades />
+      <Suspense fallback={null}>
+        <HomeAnnouncementBanner />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ProximasActividades />
+      </Suspense>
       <Suspense fallback={<GallerySkeleton />}>
         <ActivitiesGalleryServer />
       </Suspense>
