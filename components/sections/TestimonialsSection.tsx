@@ -1,36 +1,26 @@
 "use server";
 
 import TestimonialsSectionClient from "./TestimonialsSectionClient";
+import { ssrFetch } from "@/lib/helpers/apiBase";
 import type {
   PaginatedResponse,
   TestimonialItem,
 } from "@/types/activity-management";
 
 export default async function TestimonialsSection() {
-  const base = (
-    process.env.INTERNAL_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:3002/api"
-  ).replace(/\/+$/, "");
-
   let items: TestimonialItem[] = [];
 
-  try {
-    const res = await fetch(`${base}/testimonials/public?limit=6`, {
-      next: { revalidate: 300, tags: ["testimonials_home"] },
-    });
-
-    if (!res.ok) {
-      throw new Error(
-        `Testimonios públicos respondieron ${res.status} desde ${base}`
-      );
+  const res = await ssrFetch("/testimonials/public?limit=6", {
+    revalidate: 259200,
+    tags: ["testimonials_home"],
+  });
+  if (res) {
+    try {
+      const data = (await res.json()) as PaginatedResponse<TestimonialItem>;
+      items = data.items || [];
+    } catch {
+      items = [];
     }
-
-    const data = (await res.json()) as PaginatedResponse<TestimonialItem>;
-    items = data.items || [];
-  } catch (error) {
-    console.error("[TestimonialsSection] no se pudieron cargar testimonios", error);
-    items = [];
   }
 
   return <TestimonialsSectionClient testimonials={items} />;

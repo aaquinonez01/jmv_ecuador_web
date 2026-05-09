@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Heart, Star, Users, Calendar } from "lucide-react";
 import Button from "../ui/Button";
@@ -9,16 +10,21 @@ interface Props {
   backgroundUrl?: string;
 }
 
-export default function QuienesSomosHero({ backgroundUrl = "/images/quienes-somos/jmv-community.jpg" }: Props) {
+export default function QuienesSomosHero({ backgroundUrl = "/images/hero/hero.jpg" }: Props) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
       {/* Background with Gradient Overlay */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-jmv z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-          style={{ backgroundImage: `url('${backgroundUrl}')` }}
+        <Image
+          src={backgroundUrl}
+          alt=""
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center opacity-10"
         />
+        <div className="absolute inset-0 bg-gradient-jmv z-10" />
       </div>
 
       {/* Animated Background Elements */}

@@ -1,17 +1,24 @@
 'use client';
 
+import Image from 'next/image';
 import { Camera, ChevronDown } from 'lucide-react';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function ActividadesHero({ heroUrl }: { heroUrl?: string }) {
+  const bg = heroUrl || "/images/hero/hero.jpg";
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-jmv z-10" />
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-          style={{ backgroundImage: `url('${heroUrl || "/images/actividades/actividades-hero.jpg"}')` }}
+        <Image
+          src={bg}
+          alt=""
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover object-center opacity-10"
         />
+        <div className="absolute inset-0 bg-gradient-jmv z-10" />
       </div>
       <div className="absolute inset-0 z-20">
         <div className="absolute top-32 left-16 w-40 h-40 bg-white/10 rounded-full blur-xl animate-float" />

@@ -15,17 +15,16 @@ import {
 } from "lucide-react";
 import ScrollReveal from "../ui/ScrollReveal";
 import Image from "next/image";
+import {
+  apostoladoItems,
+  type ApostoladoItem,
+} from "@/data/pilares-apostolado";
 
-interface Item {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  imagen: string;
-  ubicacion?: string;
-  beneficiarios?: number;
-}
-
-export default function ApostoladoPilarView({ items }: { items: Item[] }) {
+export default function ApostoladoPilarView({
+  items = apostoladoItems,
+}: {
+  items?: ApostoladoItem[];
+}) {
   const [currentImage, setCurrentImage] = useState(0);
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % items.length);
   const prevImage = () =>

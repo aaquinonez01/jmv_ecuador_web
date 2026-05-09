@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CalendarDays, Camera, MapPin } from "lucide-react";
+import { ssrFetch } from "@/lib/helpers/apiBase";
 import type { ActivityItem, PaginatedResponse } from "@/types/activity-management";
 
 function formatDate(value?: string | null) {
@@ -14,27 +15,19 @@ function formatDate(value?: string | null) {
 }
 
 export default async function ActivitiesGalleryServer() {
-  const base = (
-    process.env.INTERNAL_API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:3002/api"
-  ).replace(/\/+$/, "");
-
   let items: ActivityItem[] = [];
 
-  try {
-    const res = await fetch(`${base}/activities/public?limit=3`, {
-      next: { revalidate: 300, tags: ["activities_public_home"] },
-    });
-
-    if (!res.ok) {
-      throw new Error("No se pudo cargar actividades");
+  const res = await ssrFetch("/activities/public?limit=3", {
+    revalidate: 86400,
+    tags: ["activities_public_home"],
+  });
+  if (res) {
+    try {
+      const data = (await res.json()) as PaginatedResponse<ActivityItem>;
+      items = data.items || [];
+    } catch {
+      items = [];
     }
-
-    const data = (await res.json()) as PaginatedResponse<ActivityItem>;
-    items = data.items || [];
-  } catch {
-    items = [];
   }
 
   if (!items.length) {
