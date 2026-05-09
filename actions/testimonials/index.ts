@@ -4,6 +4,12 @@ import type {
   TestimonialItem,
   TestimonialPayload,
 } from "@/types/activity-management";
+import { triggerRevalidate } from "../revalidate/trigger";
+
+const TESTIMONIALS_REVALIDATE = {
+  tags: ["testimonials_home", "testimonials_historia"],
+  paths: ["/", "/quienes-somos/historia"],
+};
 
 function appendText(
   formData: FormData,
@@ -57,6 +63,7 @@ export async function createTestimonialAPI(
     "/testimonials",
     buildTestimonialFormData(payload)
   );
+  await triggerRevalidate(TESTIMONIALS_REVALIDATE);
   return data as TestimonialItem;
 }
 
@@ -69,11 +76,13 @@ export async function updateTestimonialAPI(
     `/testimonials/${id}`,
     buildTestimonialFormData(payload as TestimonialPayload)
   );
+  await triggerRevalidate(TESTIMONIALS_REVALIDATE);
   return data as TestimonialItem;
 }
 
 export async function deleteTestimonialAPI(id: string) {
   const api = getAxiosClient();
   const { data } = await api.delete(`/testimonials/${id}`);
+  await triggerRevalidate(TESTIMONIALS_REVALIDATE);
   return data as { message: string };
 }

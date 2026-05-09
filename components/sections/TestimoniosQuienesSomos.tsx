@@ -21,8 +21,13 @@ export default async function TestimoniosQuienesSomos() {
     if (res.ok) {
       const data = (await res.json()) as PaginatedResponse<TestimonialItem>;
       items = data.items || [];
+    } else {
+      console.error(
+        `[TestimoniosQuienesSomos] respuesta ${res.status} desde ${base}`
+      );
     }
-  } catch {
+  } catch (error) {
+    console.error("[TestimoniosQuienesSomos] no se pudieron cargar testimonios", error);
     items = [];
   }
 

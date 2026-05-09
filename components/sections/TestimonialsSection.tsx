@@ -21,12 +21,15 @@ export default async function TestimonialsSection() {
     });
 
     if (!res.ok) {
-      throw new Error("No se pudieron cargar testimonios");
+      throw new Error(
+        `Testimonios públicos respondieron ${res.status} desde ${base}`
+      );
     }
 
     const data = (await res.json()) as PaginatedResponse<TestimonialItem>;
     items = data.items || [];
-  } catch {
+  } catch (error) {
+    console.error("[TestimonialsSection] no se pudieron cargar testimonios", error);
     items = [];
   }
 
