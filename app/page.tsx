@@ -8,6 +8,8 @@ import CTASection from "@/components/sections/CTASection";
 import GallerySkeleton from "@/components/sections/skeletons/GallerySkeleton";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

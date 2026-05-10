@@ -24,7 +24,7 @@ export async function ssrFetch(
 
   const base = getApiBase();
   const url = `${base}${path.startsWith("/") ? "" : "/"}${path}`;
-  const { revalidate = 1800, tags, timeoutMs = 3000 } = opts;
+  const { revalidate = 1800, tags, timeoutMs = 8000 } = opts;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

@@ -3,6 +3,8 @@ import ConsejoNacional from "@/components/sections/ConsejoNacional";
 import AsesoresNacionales from "@/components/sections/AsesoresNacionales";
 import ConsejoZonales from "@/components/sections/ConsejoZonales";
 
+export const dynamic = "force-dynamic";
+
 export default function EstructuraPage() {
   return (
     <>

@@ -11,6 +11,8 @@ export const metadata = {
     "actividades JMV, retiros, encuentros, campamentos, misiones, galería, jóvenes vicencianos Ecuador",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function ActividadesPage() {
   return (
     <>

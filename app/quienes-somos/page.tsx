@@ -6,6 +6,8 @@ import TestimoniosQuienesSomos from "@/components/sections/TestimoniosQuienesSom
 import UneteCTASection from "@/components/sections/UneteCTASection";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 
+export const dynamic = "force-dynamic";
+
 export default function QuienesSomosPage() {
   return (
     <>
