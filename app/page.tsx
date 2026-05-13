@@ -14,10 +14,17 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-12" aria-hidden />}>
         <HomeAnnouncementBanner />
       </Suspense>
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <section
+            className="py-16 sm:py-20 bg-gradient-to-br from-jmv-blue-dark via-jmv-blue to-blue-900"
+            aria-hidden
+          />
+        }
+      >
         <ProximasActividades />
       </Suspense>
       <Suspense fallback={<GallerySkeleton />}>
