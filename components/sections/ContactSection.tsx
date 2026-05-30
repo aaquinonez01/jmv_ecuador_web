@@ -103,8 +103,8 @@ export default function ContactSection() {
           </ScrollReveal>
         </div>
 
-        {/* Formulario */}
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        {/* Formulario arriba, mapa a todo el ancho abajo */}
+        <div className="flex flex-col gap-8">
           <ScrollReveal direction="up" delay={200}>
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl p-6 sm:p-8 shadow-jmv">
               <div className="grid sm:grid-cols-2 gap-6">

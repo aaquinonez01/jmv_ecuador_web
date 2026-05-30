@@ -211,9 +211,9 @@ export default function MapaInteractivo() {
           >
             <MarkerContent>
               <div className="group relative cursor-pointer">
-                <span className="absolute -inset-1 animate-ping rounded-full bg-jmv-gold/40" />
-                <span className="absolute -inset-0.5 rounded-full bg-jmv-gold/30 blur-sm" />
-                <div className="relative flex size-5 items-center justify-center rounded-full border-2 border-white bg-jmv-gold shadow-lg transition-transform duration-200 group-hover:scale-125">
+                <span className="absolute -inset-1 animate-ping rounded-full bg-red-500/40" />
+                <span className="absolute -inset-0.5 rounded-full bg-red-500/30 blur-sm" />
+                <div className="relative flex size-5 items-center justify-center rounded-full border-2 border-white bg-red-600 shadow-lg transition-transform duration-200 group-hover:scale-125">
                   <MapPin
                     className="size-3 text-white drop-shadow"
                     strokeWidth={2.5}
