@@ -15,10 +15,18 @@ import { Mail, MapPin, Phone, Users } from "lucide-react";
 const ECUADOR_CENTER: [number, number] = [-78.1834, -1.8312];
 const ECUADOR_ZOOM = 6.2;
 
-// Estilo de mapa "Voyager" de Carto (gratuito, sin API key): colorido y con
-// vida, en lugar del estilo oscuro por defecto que se veía apagado y sin color.
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+// Estilo "Liberty" de OpenFreeMap (gratuito, sin API key): mapa pastel pero
+// con color —verdes para vegetación, azul para agua, calles y ciudades—, en
+// lugar del estilo casi blanco anterior.
+const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+
+// Limita el mapa a Ecuador continental: no se puede arrastrar fuera del país
+// ni alejar para ver Colombia/Perú. Formato [[oeste, sur], [este, norte]].
+const ECUADOR_BOUNDS: [[number, number], [number, number]] = [
+  [-82.0, -5.5],
+  [-74.5, 2.0],
+];
+const ECUADOR_MIN_ZOOM = 6;
 
 function hasCoords(c: ComunidadItem): c is ComunidadItem & {
   latitud: number;
@@ -179,12 +187,14 @@ export default function MapaInteractivo() {
   }, []);
 
   return (
-    <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl">
+    <div className="relative h-[600px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl md:h-[720px]">
       <Map
         center={ECUADOR_CENTER}
         zoom={ECUADOR_ZOOM}
         className="h-full w-full"
         styles={{ light: MAP_STYLE, dark: MAP_STYLE }}
+        maxBounds={ECUADOR_BOUNDS}
+        minZoom={ECUADOR_MIN_ZOOM}
       >
         <MapControls
           position="top-right"
@@ -201,11 +211,11 @@ export default function MapaInteractivo() {
           >
             <MarkerContent>
               <div className="group relative cursor-pointer">
-                <span className="absolute -inset-2 animate-ping rounded-full bg-jmv-gold/40" />
-                <span className="absolute -inset-1 rounded-full bg-jmv-gold/30 blur-sm" />
-                <div className="relative flex size-9 items-center justify-center rounded-full border-2 border-white bg-jmv-gold shadow-lg transition-transform duration-200 group-hover:scale-110">
+                <span className="absolute -inset-1 animate-ping rounded-full bg-jmv-gold/40" />
+                <span className="absolute -inset-0.5 rounded-full bg-jmv-gold/30 blur-sm" />
+                <div className="relative flex size-5 items-center justify-center rounded-full border-2 border-white bg-jmv-gold shadow-lg transition-transform duration-200 group-hover:scale-125">
                   <MapPin
-                    className="size-5 text-white drop-shadow"
+                    className="size-3 text-white drop-shadow"
                     strokeWidth={2.5}
                     fill="white"
                   />
