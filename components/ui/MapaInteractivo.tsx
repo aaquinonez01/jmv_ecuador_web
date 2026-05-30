@@ -15,6 +15,11 @@ import { Mail, MapPin, Phone, Users } from "lucide-react";
 const ECUADOR_CENTER: [number, number] = [-78.1834, -1.8312];
 const ECUADOR_ZOOM = 6.2;
 
+// Estilo de mapa "Voyager" de Carto (gratuito, sin API key): colorido y con
+// vida, en lugar del estilo oscuro por defecto que se veía apagado y sin color.
+const MAP_STYLE =
+  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+
 function hasCoords(c: ComunidadItem): c is ComunidadItem & {
   latitud: number;
   longitud: number;
@@ -175,7 +180,12 @@ export default function MapaInteractivo() {
 
   return (
     <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl">
-      <Map center={ECUADOR_CENTER} zoom={ECUADOR_ZOOM} className="h-full w-full">
+      <Map
+        center={ECUADOR_CENTER}
+        zoom={ECUADOR_ZOOM}
+        className="h-full w-full"
+        styles={{ light: MAP_STYLE, dark: MAP_STYLE }}
+      >
         <MapControls
           position="top-right"
           showZoom
