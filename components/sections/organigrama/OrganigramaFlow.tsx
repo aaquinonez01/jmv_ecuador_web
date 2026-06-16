@@ -27,7 +27,7 @@ import {
   type LayoutMode,
 } from "./layout";
 import OrgNode, { type OrgNodeData } from "./OrgNode";
-import NodeDetailPanel from "./NodeDetailPanel";
+import NodeDetailModal from "./NodeDetailModal";
 
 const nodeTypes: NodeTypes = { org: OrgNode };
 const EDGE_STYLE = { stroke: "rgba(217,143,6,0.6)", strokeWidth: 2 };
@@ -154,7 +154,7 @@ export default function OrganigramaFlow({
         onPaneClick={onPaneClick}
       />
 
-      <NodeDetailPanel
+      <NodeDetailModal
         entidad={selected}
         consejo={consejo}
         asesores={asesores}
