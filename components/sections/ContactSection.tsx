@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Mail, Phone, MapPin, MessageSquare, User, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { Mail, MapPin, MessageSquare, User, Send, CheckCircle, AlertCircle } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import dynamic from 'next/dynamic'
@@ -66,39 +66,27 @@ export default function ContactSection() {
         </div>
 
         {/* Tarjetas de contacto */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid sm:grid-cols-2 gap-6 mb-12 max-w-3xl mx-auto">
           <ScrollReveal direction="up" delay={200}>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-white">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-white h-full">
               <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-4">
                 <Mail className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold mb-1">Correo</h3>
               <p className="text-white/80 mb-3">Escríbenos y te responderemos</p>
-              <a href="mailto:contacto@jmvecuador.org" className="text-jmv-gold hover:underline">
-                contacto@jmvecuador.org
+              <a href="mailto:jmvecuador@gmail.com" className="text-jmv-gold hover:underline break-all">
+                jmvecuador@gmail.com
               </a>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={300}>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-white">
-              <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-4">
-                <Phone className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-semibold mb-1">Teléfono</h3>
-              <p className="text-white/80 mb-3">Lunes a Viernes, 9:00–17:00</p>
-              <a href="tel:+59321234567" className="text-jmv-gold hover:underline">
-                +593 2 123 4567
-              </a>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal direction="up" delay={400}>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-white">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-white h-full">
               <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center mb-4">
                 <MapPin className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-semibold mb-1">Ubicación</h3>
               <p className="text-white/80 mb-3">Sede Nacional JMV Ecuador</p>
-              <span className="text-jmv-gold">Quito, Ecuador</span>
+              <span className="text-jmv-gold">Quito – La Recoleta</span>
             </div>
           </ScrollReveal>
         </div>

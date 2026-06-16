@@ -379,23 +379,10 @@ export default function UneteClient() {
                   >
                     <MapPin className="w-6 h-6 text-jmv-gold mr-4 flex-shrink-0" />
                     <div>
-                      <p className="font-medium text-white">Oficina Nacional</p>
+                      <p className="font-medium text-white">Sede Nacional</p>
                       <p className="text-white/70 text-sm">
-                        Av. 12 de Octubre N24-563 y Cordero, Quito
+                        Quito – La Recoleta
                       </p>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    className="flex items-center p-4 bg-white/5 rounded-lg border border-white/10"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    <Phone className="w-6 h-6 text-jmv-gold mr-4 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-white">
-                        WhatsApp Nacional
-                      </p>
-                      <p className="text-white/70 text-sm">+593 99 123 4567</p>
                     </div>
                   </motion.div>
 
@@ -407,7 +394,7 @@ export default function UneteClient() {
                     <div>
                       <p className="font-medium text-white">Email Nacional</p>
                       <p className="text-white/70 text-sm">
-                        contacto@jmvecuador.org
+                        jmvecuador@gmail.com
                       </p>
                     </div>
                   </motion.div>

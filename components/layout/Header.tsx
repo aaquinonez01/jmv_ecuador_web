@@ -13,6 +13,7 @@ const navigation: NavItem[] = [
       { name: "Historia", href: "/quienes-somos/historia" },
       { name: "Estructura", href: "/estructura" },
       { name: "Nuestros Pilares", href: "/pilares" },
+      { name: "JMV en el Mundo", href: "/jmv-en-el-mundo" },
     ],
   },
   {

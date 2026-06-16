@@ -5,7 +5,6 @@ import {
   Heart,
   Users,
   MapPin,
-  Phone,
   Mail,
   ArrowRight,
   CheckCircle,
@@ -161,18 +160,8 @@ export default function UneteCTASection() {
                 <div className="flex items-center p-4 bg-white/5 rounded-lg border border-white/10">
                   <MapPin className="w-6 h-6 text-jmv-gold mr-3" />
                   <div>
-                    <p className="font-medium text-white">Encuentra tu Zona</p>
-                    <p className="text-white/70 text-sm">
-                      Presencia en mas de 16 provincias
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center p-4 bg-white/5 rounded-lg border border-white/10">
-                  <Phone className="w-6 h-6 text-jmv-gold mr-3" />
-                  <div>
-                    <p className="font-medium text-white">WhatsApp Nacional</p>
-                    <p className="text-white/70 text-sm">+593 99 230 3481</p>
+                    <p className="font-medium text-white">Sede Nacional</p>
+                    <p className="text-white/70 text-sm">Quito – La Recoleta</p>
                   </div>
                 </div>
 
