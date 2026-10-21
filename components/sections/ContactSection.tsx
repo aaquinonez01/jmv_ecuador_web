@@ -9,8 +9,11 @@ import ScrollReveal from '@/components/ui/ScrollReveal'
 import dynamic from 'next/dynamic'
 import { contactSchema, type ContactFormData } from '@/lib/contactValidation'
 
+// Declarado fuera del componente: si se crea dentro, cada re-render (validación,
+// envío) desmonta y vuelve a montar el mapa, re-descargando tiles y comunidades.
+const MapaInteractivo = dynamic(() => import('@/components/ui/MapaInteractivo'), { ssr: false })
+
 export default function ContactSection() {
-  const MapaInteractivo = dynamic(() => import('@/components/ui/MapaInteractivo'), { ssr: false })
   const [serverMessage, setServerMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const {
     register,

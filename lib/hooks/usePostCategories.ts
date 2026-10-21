@@ -7,6 +7,46 @@ import { getSubtypesByActivityType } from "@/actions/categories-posts/get-subtyp
 
 type Id = string;
 
+// Caché a nivel de módulo: todas las instancias del hook (BlogClient, cada BlogPost,
+// modales) comparten una sola petición por carga de página en vez de 2-3 por instancia.
+let scopesPromise: Promise<any[]> | null = null;
+let activityTypesPromise: Promise<any[]> | null = null;
+const subtypesPromises = new Map<Id, Promise<any[]>>();
+
+function cached<T>(
+  get: () => Promise<T> | null,
+  set: (p: Promise<T> | null) => void,
+  load: () => Promise<T>
+): Promise<T> {
+  let p = get();
+  if (!p) {
+    p = load().catch((err) => {
+      set(null);
+      throw err;
+    });
+    set(p);
+  }
+  return p;
+}
+
+const loadScopes = () =>
+  cached(() => scopesPromise, (p) => (scopesPromise = p), getAllScopes);
+const loadActivityTypes = () =>
+  cached(
+    () => activityTypesPromise,
+    (p) => (activityTypesPromise = p),
+    getAllActivityTypes
+  );
+const loadSubtypes = (activityTypeId: Id) =>
+  cached(
+    () => subtypesPromises.get(activityTypeId) ?? null,
+    (p) =>
+      p
+        ? subtypesPromises.set(activityTypeId, p)
+        : subtypesPromises.delete(activityTypeId),
+    () => getSubtypesByActivityType(activityTypeId)
+  );
+
 export function usePostCategories(preload?: {
   scopeId?: Id;
   activityTypeId?: Id;
@@ -40,7 +80,7 @@ export function usePostCategories(preload?: {
     (async () => {
       try {
         setLoading((s) => ({ ...s, scopes: true }));
-        const list = await getAllScopes();
+        const list = await loadScopes();
         if (alive) setScopes(list);
       } catch {
         if (alive)
@@ -55,7 +95,7 @@ export function usePostCategories(preload?: {
     (async () => {
       try {
         setLoading((s) => ({ ...s, activityTypes: true }));
-        const list = await getAllActivityTypes();
+        const list = await loadActivityTypes();
         if (alive) setActivityTypes(list);
       } catch {
         if (alive)
@@ -82,7 +122,7 @@ export function usePostCategories(preload?: {
     (async () => {
       try {
         setLoading((s) => ({ ...s, subtypes: true }));
-        const list = await getSubtypesByActivityType(activityTypeId);
+        const list = await loadSubtypes(activityTypeId);
         if (!alive) return;
         setSubtypes(list);
         if (subtypeId && !list.some((s) => s.id === subtypeId))

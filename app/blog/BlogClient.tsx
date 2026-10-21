@@ -112,7 +112,6 @@ export default function BlogClient({
     return backendPosts.map(mapBackendPostToFrontend);
   }, [backendPosts]);
 
-  console.log("mappedPosts", mappedPosts);
   // Manejar cambio de categoría (scope, activity, subtype)
   const handleCategoryChange = (category: string) => {
     // Resetear filtros cuando se selecciona "all"

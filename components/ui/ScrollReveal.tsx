@@ -25,35 +25,29 @@ export default function ScrollReveal({
   once = true,
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [hasAnimated, setHasAnimated] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const currentElement = elementRef.current;
+    if (!currentElement) return;
+
+    // El retraso lo aplica transitionDelay; antes también había un setTimeout con
+    // el mismo valor y el contenido tardaba el doble en aparecer.
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && (!once || !hasAnimated)) {
-          setTimeout(() => {
-            setIsVisible(true);
-            setHasAnimated(true);
-          }, delay);
-        } else if (!entry.isIntersecting && !once) {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          if (once) observer.disconnect();
+        } else if (!once) {
           setIsVisible(false);
         }
       },
       { threshold }
     );
+    observer.observe(currentElement);
 
-    const currentElement = elementRef.current;
-    if (currentElement) {
-      observer.observe(currentElement);
-    }
-
-    return () => {
-      if (currentElement) {
-        observer.unobserve(currentElement);
-      }
-    };
-  }, [delay, threshold, once, hasAnimated]);
+    return () => observer.disconnect();
+  }, [threshold, once]);
 
   const getInitialTransform = () => {
     switch (direction) {
@@ -79,7 +73,10 @@ export default function ScrollReveal({
   return (
     <div
       ref={elementRef}
-      className={cn("transition-all ease-out", className)}
+      className={cn(
+        "transition-[opacity,transform] ease-out motion-reduce:transition-none",
+        className
+      )}
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? getFinalTransform() : getInitialTransform(),

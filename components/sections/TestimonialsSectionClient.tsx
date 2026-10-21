@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import ScrollReveal from "../ui/ScrollReveal";
 import type { TestimonialItem } from "@/types/activity-management";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 function renderStars(rating: number) {
   return Array.from({ length: 5 }, (_, index) => (
@@ -122,7 +123,8 @@ export default function TestimonialsSectionClient({
                     {activeItem.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={activeItem.imageUrl}
+                        src={getOptimizedUrl(activeItem.imageUrl, { w: 400 })}
+                        decoding="async"
                         alt={activeItem.name}
                         className="h-full w-full object-cover"
                       />

@@ -11,6 +11,7 @@ import ScrollReveal from "../ui/ScrollReveal";
 import CountdownClient from "./CountdownClient";
 import { fetchHomeUpcomingActivities } from "@/lib/api/upcoming-activities.server";
 import type { UpcomingActivityItem } from "@/types/activity-management";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 function formatDate(value?: string | null) {
   if (!value) return "Por confirmar";
@@ -211,7 +212,8 @@ export default async function ProximasActividades() {
                     {featured.coverImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={featured.coverImageUrl}
+                        src={getOptimizedUrl(featured.coverImageUrl, { w: 1000 })}
+                        decoding="async"
                         alt={featured.title}
                         className="max-h-72 w-full rounded-2xl object-contain lg:max-h-none"
                       />

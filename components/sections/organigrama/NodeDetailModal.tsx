@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { OrgEntidad, OrgNivel } from "@/lib/data/organigrama";
 import type { Asesor, ConsejoMember, ConsejoPeriod } from "@/types/consejo";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 const NIVEL_ICON: Record<OrgNivel, LucideIcon> = {
   internacional: Crown,
@@ -287,7 +288,8 @@ function MemberCard({ miembro }: { miembro: ConsejoMember }) {
           {miembro.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={miembro.imageUrl}
+              src={getOptimizedUrl(miembro.imageUrl, { w: 400 })}
+              decoding="async"
               alt={miembro.nombre}
               className="h-full w-full object-cover"
             />
@@ -364,7 +366,8 @@ function AsesorCard({ asesor }: { asesor: Asesor }) {
           {asesor.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={asesor.imageUrl}
+              src={getOptimizedUrl(asesor.imageUrl, { w: 400 })}
+              decoding="async"
               alt={asesor.nombre}
               className="h-full w-full object-cover"
             />

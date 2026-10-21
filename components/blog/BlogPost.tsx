@@ -7,6 +7,7 @@ import ImageGallery from "./ImageGallery";
 import PostModal from "./PostModal";
 import { usePostCategories } from "@/lib/hooks/usePostCategories";
 import type { Post } from "@/types/user";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface BlogPostProps {
   post: Post;
@@ -180,11 +181,11 @@ export default function BlogPost({
                     }}
                   >
                     <img
-                      src={image}
+                      src={getOptimizedUrl(image, { w: 800 })}
+                      decoding="async"
                       alt={`Foto de ${post.author.name} ${index + 1}`}
                       className="absolute inset-0 w-full h-full object-cover"
                       loading="lazy"
-                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-jmv-blue/5 via-transparent to-jmv-gold/5 group-hover:from-jmv-blue/10 group-hover:to-jmv-gold/10 transition-all duration-300"></div>
                     {index === 5 && post.images && post.images.length > 6 && (

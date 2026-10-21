@@ -9,7 +9,7 @@ export default async function TestimoniosQuienesSomos() {
   let items: TestimonialItem[] = [];
 
   const res = await ssrFetch("/testimonials/public?limit=12", {
-    revalidate: 259200,
+    revalidate: 86400,
     tags: ["testimonials_historia"],
   });
   if (res) {

@@ -3,6 +3,7 @@
 import { Crown, Heart, MapPin, Star, Quote, User } from 'lucide-react'
 import ScrollReveal from '../ui/ScrollReveal'
 import type { ConsejoMember, ConsejoPeriod } from '@/types/consejo'
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface Props {
   period: ConsejoPeriod | null
@@ -95,7 +96,8 @@ export default function ConsejoNacionalClient({ period }: Props) {
                       {miembro.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={miembro.imageUrl}
+                          src={getOptimizedUrl(miembro.imageUrl, { w: 400 })}
+                          decoding="async"
                           alt={miembro.nombre}
                           className="w-full h-full object-cover"
                         />

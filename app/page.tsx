@@ -8,7 +8,9 @@ import CTASection from "@/components/sections/CTASection";
 import GallerySkeleton from "@/components/sections/skeletons/GallerySkeleton";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 
-export const dynamic = "force-dynamic";
+// ISR: HTML cacheado; se regenera en segundo plano o al instante cuando el
+// backend llama a /api/revalidate tras un cambio en el admin.
+export const revalidate = 300;
 
 export default function Home() {
   return (

@@ -31,7 +31,7 @@ const pilares: Pilar[] = [
     subtitulo: 'La pedagogía del encuentro',
     icono: Users,
     imagen:
-      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80',
+      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1000&q=75&auto=format',
     cita: {
       texto:
         '"La multitud de los creyentes no tenía sino un solo corazón y una sola alma. No había entre ellos ningún necesitado."',
@@ -70,7 +70,7 @@ const pilares: Pilar[] = [
     subtitulo: 'Encuentro con Cristo vivo',
     icono: BookOpen,
     imagen:
-      'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1200&q=80',
+      'https://images.unsplash.com/photo-1507692049790-de58290a4334?w=1000&q=75&auto=format',
     cita: {
       texto:
         '"Donde están dos o tres reunidos en mi nombre, allí estoy yo en medio de ellos."',
@@ -109,7 +109,7 @@ const pilares: Pilar[] = [
     subtitulo: 'Servir como el Buen Samaritano',
     icono: HandHeart,
     imagen:
-      'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1200&q=80',
+      'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1000&q=75&auto=format',
     cita: {
       texto:
         '"Servir a los pobres es servir a Jesucristo. El amor es infinitamente inventivo."',
@@ -148,7 +148,7 @@ const pilares: Pilar[] = [
     subtitulo: 'Hasta que Cristo sea formado en ti',
     icono: GraduationCap,
     imagen:
-      'https://images.unsplash.com/photo-1519452575417-564c1401ecc0?w=1200&q=80',
+      'https://images.unsplash.com/photo-1519452575417-564c1401ecc0?w=1000&q=75&auto=format',
     cita: {
       texto:
         '"Formar es engendrar a Jesús en los otros, o más bien engendrar a los otros para Cristo."',

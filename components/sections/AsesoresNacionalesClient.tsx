@@ -3,6 +3,7 @@
 import { Sparkles, MapPin, Star, Quote, User, Calendar } from 'lucide-react'
 import ScrollReveal from '../ui/ScrollReveal'
 import type { Asesor } from '@/types/consejo'
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface Props {
   asesores: Asesor[]
@@ -74,7 +75,8 @@ export default function AsesoresNacionalesClient({ asesores }: Props) {
                       {asesor.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={asesor.imageUrl}
+                          src={getOptimizedUrl(asesor.imageUrl, { w: 400 })}
+                          decoding="async"
                           alt={asesor.nombre}
                           className="w-full h-full object-cover"
                         />

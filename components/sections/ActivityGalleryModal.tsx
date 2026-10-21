@@ -12,6 +12,7 @@ import {
   MapPin,
 } from "lucide-react";
 import type { ActivityItem } from "@/types/activity-management";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface Slide {
   src: string;
@@ -173,7 +174,7 @@ export default function ActivityGalleryModal({
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentSlide.src}
-                  src={currentSlide.src}
+                  src={getOptimizedUrl(currentSlide.src, { w: 1600 })}
                   alt={currentSlide.alt}
                   initial={{ opacity: 0, scale: 1.02 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -239,7 +240,8 @@ export default function ActivityGalleryModal({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={slide.src}
+                      src={getOptimizedUrl(slide.src, { w: 300 })}
+                      decoding="async"
                       alt={slide.alt}
                       className="h-full w-full object-cover"
                     />

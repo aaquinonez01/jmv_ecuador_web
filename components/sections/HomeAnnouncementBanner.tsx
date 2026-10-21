@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Sparkles, ArrowRight } from 'lucide-react'
 import { fetchActiveAnnouncements } from '@/lib/api/consejo.server'
 import type { HomeAnnouncement } from '@/types/consejo'
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 function pickPrimary(items: HomeAnnouncement[]): HomeAnnouncement | null {
   if (!items.length) return null
@@ -25,7 +26,8 @@ export default async function HomeAnnouncementBanner() {
             {primary.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={primary.imageUrl}
+                src={getOptimizedUrl(primary.imageUrl, { w: 1200 })}
+                decoding="async"
                 alt={primary.titulo}
                 className="w-full h-56 md:h-full object-cover"
               />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarDays, Camera, MapPin } from "lucide-react";
 import { ssrFetch } from "@/lib/helpers/apiBase";
 import type { ActivityItem, PaginatedResponse } from "@/types/activity-management";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 function formatDate(value?: string | null) {
   if (!value) return "Por confirmar";
@@ -65,7 +66,8 @@ export default async function ActivitiesGalleryServer() {
                 {activity.coverImageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={activity.coverImageUrl}
+                    src={getOptimizedUrl(activity.coverImageUrl, { w: 800 })}
+                    decoding="async"
                     alt={activity.title}
                     className="h-full w-full object-cover"
                   />

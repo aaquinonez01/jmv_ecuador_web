@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Lightbox from "yet-another-react-lightbox";
-import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
-import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import "yet-another-react-lightbox/styles.css";
+import dynamic from "next/dynamic";
 import ActivityGalleryModal from "./ActivityGalleryModal";
+
+const ActivityLightbox = dynamic(() => import("./ActivityLightbox"), {
+  ssr: false,
+});
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import {
   Select,
   SelectContent,
@@ -69,7 +70,8 @@ function ActivityCard({
         {activity.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={activity.coverImageUrl}
+            src={getOptimizedUrl(activity.coverImageUrl, { w: 800 })}
+            decoding="async"
             alt={activity.title}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
@@ -297,16 +299,11 @@ export default function ActivitiesAlbumsClient({
       />
 
       {openActivity && slides.length ? (
-        <Lightbox
+        <ActivityLightbox
           open={lightboxOpen}
           close={() => setLightboxOpen(false)}
           index={lightboxIndex}
           slides={slides}
-          plugins={[Zoom, Fullscreen, Slideshow]}
-          animation={{ fade: 300 }}
-          zoom={{ maxZoomPixelRatio: 3, scrollToZoom: true }}
-          slideshow={{ autoplay: false, delay: 3000 }}
-          controller={{ closeOnBackdropClick: true }}
         />
       ) : null}
     </section>

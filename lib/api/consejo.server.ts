@@ -3,7 +3,7 @@ import type { Asesor, ConsejoPeriod, HomeAnnouncement } from "@/types/consejo";
 
 export async function fetchConsejoActual(): Promise<ConsejoPeriod | null> {
   const res = await ssrFetch("/consejo-nacional/actual", {
-    revalidate: 2592000,
+    revalidate: 86400,
     tags: ["consejo_actual"],
   });
   if (!res) return null;
@@ -16,7 +16,7 @@ export async function fetchConsejoActual(): Promise<ConsejoPeriod | null> {
 
 export async function fetchAsesoresActuales(): Promise<Asesor[]> {
   const res = await ssrFetch("/asesores/actuales", {
-    revalidate: 2592000,
+    revalidate: 86400,
     tags: ["asesores_actuales"],
   });
   if (!res) return [];

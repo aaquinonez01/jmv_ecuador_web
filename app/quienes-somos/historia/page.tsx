@@ -2,7 +2,8 @@ import HistoriaPageHero from "@/components/sections/HistoriaPageHero";
 import HistoriaTimeline from "@/components/sections/HistoriaTimeline";
 import TestimoniosQuienesSomos from "@/components/sections/TestimoniosQuienesSomos";
 
-export const dynamic = "force-dynamic";
+// ISR: ver app/page.tsx.
+export const revalidate = 3600;
 
 export default function HistoriaPage() {
   return (

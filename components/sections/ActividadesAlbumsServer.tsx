@@ -19,11 +19,11 @@ export default async function ActividadesAlbumsServer() {
       tags: ["activities_public"],
     }),
     ssrFetch("/activity-pillars", {
-      revalidate: 2592000,
+      revalidate: 86400,
       tags: ["activity_pillars_public"],
     }),
     ssrFetch("/activity-types", {
-      revalidate: 2592000,
+      revalidate: 86400,
       tags: ["activity_types_public"],
     }),
   ]);

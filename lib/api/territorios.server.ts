@@ -8,7 +8,7 @@ import type { OrgZona } from "@/lib/data/organigrama";
  */
 export async function fetchZonasOrganigrama(): Promise<OrgZona[]> {
   const res = await ssrFetch("/zonas", {
-    revalidate: 2592000,
+    revalidate: 86400,
     tags: ["zonas"],
   });
   if (!res) return [];

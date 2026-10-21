@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Quote, ChevronLeft, ChevronRight, Star, Heart } from 'lucide-react'
 import ScrollReveal from '../ui/ScrollReveal'
 import type { TestimonialItem } from '@/types/activity-management'
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface Props {
   testimonios: TestimonialItem[]
@@ -92,7 +93,8 @@ export default function TestimoniosQuienesSomosClient({ testimonios }: Props) {
                   {actual.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={actual.imageUrl}
+                      src={getOptimizedUrl(actual.imageUrl, { w: 600 })}
+                      decoding="async"
                       alt={actual.name}
                       className="w-full h-full object-cover"
                     />
@@ -193,7 +195,8 @@ export default function TestimoniosQuienesSomosClient({ testimonios }: Props) {
                       {t.imageUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={t.imageUrl}
+                          src={getOptimizedUrl(t.imageUrl, { w: 200 })}
+                          decoding="async"
                           alt={t.name}
                           className="w-full h-full object-cover"
                         />

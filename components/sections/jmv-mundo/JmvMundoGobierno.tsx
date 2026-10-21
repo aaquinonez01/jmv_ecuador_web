@@ -168,12 +168,11 @@ export default function JmvMundoGobierno() {
             <figure className="mb-8">
               <div className="relative h-72 w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl sm:h-96">
                 <Image
-                  src="/images/gallery/secretariado.png"
+                  src="/images/gallery/secretariado.jpg"
                   alt="Equipo del Secretariado Internacional de la JMV"
                   fill
                   sizes="(max-width: 1280px) 100vw, 1100px"
                   className="object-cover"
-                  priority
                 />
               </div>
               <figcaption className="mt-3 text-center text-sm text-white/60">

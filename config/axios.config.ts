@@ -5,7 +5,13 @@ function normalizeBaseUrl(raw?: string): string {
   return base.endsWith("/api") ? base : `${base}/api`;
 }
 
-const baseURL = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+// En el servidor (server actions) se usa la red interna de Docker para no salir
+// a internet y volver a entrar por el proxy; en el navegador, la URL pública.
+const baseURL = normalizeBaseUrl(
+  typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL
+);
 
 export function createApi(
   extraHeaders?: Record<string, string>

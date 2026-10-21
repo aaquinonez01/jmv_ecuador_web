@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import {
   X,
   ChevronLeft,
@@ -238,7 +239,8 @@ export default function ImageGallery({
       <div className="flex items-center justify-center h-full pt-16 pb-20">
         <div className="relative max-w-full max-h-full">
           <img
-            src={images[activeIndex]}
+            src={getOptimizedUrl(images[activeIndex], { w: 1600 })}
+            decoding="async"
             alt={`Galería ${activeIndex + 1}`}
             className="max-w-full max-h-full object-contain transition-transform duration-300"
             style={{
@@ -288,11 +290,11 @@ export default function ImageGallery({
               title={`Ir a imagen ${index + 1}`}
             >
               <img
-                src={image}
+                src={getOptimizedUrl(image, { w: 300 })}
+                decoding="async"
                 alt={`Miniatura ${index + 1}`}
                 className="w-full h-full object-cover"
                 loading="lazy"
-                decoding="async"
               />
             </button>
           ))}

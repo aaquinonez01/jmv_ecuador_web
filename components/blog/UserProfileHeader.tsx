@@ -11,6 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import type { User } from "@/types/user";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 
 interface UserProfileHeaderProps {
   user: User;
@@ -45,7 +46,8 @@ export default function UserProfileHeader({
       <div className="relative h-48 sm:h-64 md:h-80 bg-gradient-to-br from-jmv-blue via-jmv-gold to-jmv-red overflow-hidden">
         {user.profilePicture ? (
           <img
-            src={user.profilePicture}
+            src={getOptimizedUrl(user.profilePicture, { w: 400 })}
+            decoding="async"
             alt="Cover"
             className="w-full h-full object-cover"
           />
@@ -73,7 +75,8 @@ export default function UserProfileHeader({
             <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-jmv-blue to-jmv-blue-dark overflow-hidden">
               {user.avatar ? (
                 <img
-                  src={user.avatar}
+                  src={getOptimizedUrl(user.avatar, { w: 200 })}
+                  decoding="async"
                   alt={user.name}
                   className="w-full h-full object-cover"
                 />
