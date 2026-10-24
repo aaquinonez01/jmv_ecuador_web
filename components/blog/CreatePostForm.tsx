@@ -1,565 +1,570 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Image as ImageIcon,
-  Video,
-  FileText,
-  X,
-  Plus,
-  ChevronRight,
-  Camera,
-} from "lucide-react";
-import { usePostCategories } from "@/lib/hooks/usePostCategories";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { AlertDialog } from "radix-ui";
+import { Camera, Check, FileText, ImagePlus, Loader2, Send, X } from "lucide-react";
+import Modal from "@/components/ui/Modal";
+import { buttonVariants } from "@/components/ui/button-variants";
+import { cn } from "@/lib/utils";
+import { useSubtypes } from "@/lib/hooks/usePostCategories";
+import type { BlogCategory, PostType } from "@/types/user";
+
+export interface CreatePostValues {
+  title: string;
+  content: string;
+  scope: string;
+  activityType: string;
+  subtype?: string;
+  typePost: PostType;
+  attachments: File[];
+}
 
 interface CreatePostFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (post: {
-    title?: string;
-    content: string;
-    scope: string;
-    activityType: string;
-    subtype?: string;
-    typePost: "moments" | "documents";
-    attachments: File[];
-  }) => Promise<void>;
+  onSubmit: (post: CreatePostValues) => Promise<void>;
+  scopes: BlogCategory[];
+  activityTypes: BlogCategory[];
 }
+
+type FieldKey = "title" | "content" | "scope" | "activityType";
+
+const MAX_FILES = 10;
+const MAX_FILE_MB = 10;
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+// El backend exige al menos 10 caracteres en el texto
+const MIN_CONTENT = 10;
+const MAX_CONTENT = 1000;
+const MAX_TITLE = 100;
+
+const TYPE_OPTIONS: { value: PostType; label: string; hint: string; icon: typeof Camera }[] = [
+  {
+    value: "moments",
+    label: "Momento",
+    hint: "Algo que viviste: un encuentro, una misión, un servicio.",
+    icon: Camera,
+  },
+  {
+    value: "documents",
+    label: "Documento",
+    hint: "Un recurso para otras comunidades: guía, formación, material.",
+    icon: FileText,
+  },
+];
+
+const fieldClass = (invalid: boolean) =>
+  cn(
+    "w-full rounded-xl border-2 bg-white px-4 text-base text-gray-900 placeholder:text-gray-500",
+    invalid ? "border-red-600" : "border-slate-300 focus:border-jmv-blue"
+  );
+
+type Attachment = { key: string; file: File; url: string };
 
 export default function CreatePostForm({
   isOpen,
   onClose,
   onSubmit,
+  scopes,
+  activityTypes,
 }: CreatePostFormProps) {
+  const ids = useId();
+  const formId = `${ids}-form`;
+  const [typePost, setTypePost] = useState<PostType>("moments");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [typePost, setTypePost] = useState<"moments" | "documents">("moments");
-  const [attachments, setAttachments] = useState<File[]>([]);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [scope, setScope] = useState("");
+  const [activityType, setActivityType] = useState("");
+  const [subtype, setSubtype] = useState("");
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [errors, setErrors] = useState<Partial<Record<FieldKey, string>>>({});
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const attachmentsRef = useRef<Attachment[]>([]);
+  attachmentsRef.current = attachments;
 
-  // Cargar categorías del backend con manejo dinámico de subtypes
-  const {
-    scopes,
-    activityTypes,
-    subtypes,
-    scopeId,
-    activityTypeId,
-    subtypeId,
-    setScopeId,
-    setActivityTypeId,
-    setSubtypeId,
-  } = usePostCategories();
+  const { subtypes, loading: subtypesLoading } = useSubtypes(activityType || undefined);
 
-  // Alias para mantener compatibilidad con el formulario
-  const scope = scopeId || "";
-  const activityType = activityTypeId || "";
-  const subtype = subtypeId || "";
+  // Libera las vistas previas al desmontar
+  useEffect(
+    () => () => attachmentsRef.current.forEach((a) => URL.revokeObjectURL(a.url)),
+    []
+  );
 
-  const setScope = (id: string) => setScopeId(id || undefined);
-  const setActivityType = (id: string) => setActivityTypeId(id || undefined);
-  const setSubtype = (id: string) => setSubtypeId(id || undefined);
+  const isDirty =
+    !!title.trim() || !!content.trim() || !!scope || !!activityType || attachments.length > 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const reset = () => {
+    attachments.forEach((a) => URL.revokeObjectURL(a.url));
+    setTypePost("moments");
+    setTitle("");
+    setContent("");
+    setScope("");
+    setActivityType("");
+    setSubtype("");
+    setAttachments([]);
+    setErrors({});
+    setFileError(null);
+    setServerError(null);
+  };
+
+  const requestClose = () => {
+    if (isSubmitting) return;
+    if (isDirty) setConfirmDiscard(true);
+    else onClose();
+  };
+
+  const discard = () => {
+    setConfirmDiscard(false);
+    reset();
+    onClose();
+  };
+
+  const validate = () => {
+    const next: Partial<Record<FieldKey, string>> = {};
+    if (!title.trim()) next.title = "Escribe un título para tu publicación.";
+    if (content.trim().length < MIN_CONTENT)
+      next.content = `Cuéntanos un poco más: el texto necesita al menos ${MIN_CONTENT} caracteres.`;
+    if (!scope) next.scope = "Elige el alcance (local, zonal o nacional).";
+    if (!activityType) next.activityType = "Elige el tipo de actividad.";
+    return next;
+  };
+
+  const focusField = (key: FieldKey) => {
+    document.getElementById(`${ids}-${key}`)?.focus();
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
-    // Validar campos requeridos
-    if (!content.trim() || !scope || !activityType) {
-      setError("Por favor completa los campos requeridos");
-      return;
-    }
-
-    // Validar que haya al menos una imagen
-    if (attachments.length === 0) {
-      setError("Debes agregar al menos una imagen");
+    setServerError(null);
+    const found = validate();
+    setErrors(found);
+    if (Object.keys(found).length) {
+      requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
 
     setIsSubmitting(true);
-    setError(null);
-
     try {
       await onSubmit({
-        title: title.trim() || undefined,
-        content,
+        title: title.trim(),
+        content: content.trim(),
         scope,
         activityType,
         subtype: subtype || undefined,
         typePost,
-        attachments,
+        attachments: attachments.map((a) => a.file),
       });
-
-      // Reset form solo si el submit fue exitoso
-      setTitle("");
-      setContent("");
-      setTypePost("moments");
-      setScopeId(undefined);
-      setActivityTypeId(undefined);
-      setSubtypeId(undefined);
-      setAttachments([]);
-      previewUrls.forEach((url) => {
-        if (url) URL.revokeObjectURL(url);
-      });
-      setPreviewUrls([]);
+      reset();
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Error al crear la publicación");
+    } catch (err) {
+      setServerError(
+        err instanceof Error && err.message
+          ? err.message
+          : "No pudimos publicar en este momento. Inténtalo de nuevo."
+      );
+      requestAnimationFrame(() => summaryRef.current?.focus());
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-
-    // Validar que no exceda 10 archivos en total
-    if (attachments.length + files.length > 10) {
-      setError(`Máximo 10 archivos permitidos. Actualmente tienes ${attachments.length} archivo(s)`);
-      return;
-    }
-
-    // Filtrar solo imágenes y validar tamaño
-    const allowedMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
-    const maxFileSize = 10 * 1024 * 1024; // 10MB
-    const validFiles: File[] = [];
+  const handleFiles = (list: FileList | null) => {
+    const files = Array.from(list ?? []);
+    if (!files.length) return;
+    const room = MAX_FILES - attachments.length;
+    const problems: string[] = [];
+    const accepted: Attachment[] = [];
 
     for (const file of files) {
-      // Validar tipo
-      if (!allowedMimeTypes.includes(file.type)) {
-        setError(`"${file.name}" no es un tipo de imagen válido. Solo se permiten: JPEG, PNG, WebP, GIF`);
+      if (accepted.length >= room) {
+        problems.push(`Puedes subir hasta ${MAX_FILES} fotos por publicación.`);
+        break;
+      }
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        problems.push(`«${file.name}» no es una foto válida (usa JPG, PNG, WebP o GIF).`);
         continue;
       }
-
-      // Validar tamaño
-      if (file.size > maxFileSize) {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        setError(`"${file.name}" (${sizeMB}MB) excede el límite de 10MB`);
+      if (file.size > MAX_FILE_MB * 1024 * 1024) {
+        problems.push(`«${file.name}» pesa más de ${MAX_FILE_MB} MB.`);
         continue;
       }
-
-      validFiles.push(file);
-    }
-
-    if (validFiles.length === 0) return;
-
-    setAttachments((prev) => [...prev, ...validFiles]);
-    setError(null);
-
-    const newPreviewUrls = validFiles.map((file) => {
-      return URL.createObjectURL(file);
-    });
-    setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
-  };
-
-  const removeAttachment = (index: number) => {
-    if (previewUrls[index]) {
-      URL.revokeObjectURL(previewUrls[index]);
-    }
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
-    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    return () => {
-      previewUrls.forEach((url) => {
-        if (url) URL.revokeObjectURL(url);
+      accepted.push({
+        key: `${file.name}-${file.size}-${file.lastModified}-${Math.random()}`,
+        file,
+        url: URL.createObjectURL(file),
       });
-    };
-  }, [previewUrls]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
 
-  if (!isOpen) return null;
+    setAttachments((prev) => [...prev, ...accepted]);
+    setFileError(problems.length ? problems.join(" ") : null);
+  };
 
-  const canSubmit = content.trim() && scope && activityType && attachments.length > 0 && !isSubmitting;
+  const removeAttachment = (key: string) => {
+    setAttachments((prev) => {
+      const target = prev.find((a) => a.key === key);
+      if (target) URL.revokeObjectURL(target.url);
+      return prev.filter((a) => a.key !== key);
+    });
+  };
+
+  const errorList = Object.entries(errors) as [FieldKey, string][];
+  const describedBy = (key: FieldKey, extra?: string) =>
+    [errors[key] ? `${ids}-${key}-error` : null, extra].filter(Boolean).join(" ") || undefined;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 z-[9999] pt-20 sm:pt-24 md:pt-0 md:mt-20">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[80vh] flex flex-col overflow-hidden animate-modal-in">
-        {/* Header con gradiente */}
-        <div className="bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white p-5 sm:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-bold">
-                Crear Nueva Publicación
-              </h3>
-              <p className="text-sm text-blue-100 mt-1">
-                Comparte con la comunidad JMV Ecuador
-              </p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="p-5 sm:p-6 space-y-6">
-            {/* Selector de 3 Niveles */}
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-5 border border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                <span className="w-6 h-6 bg-jmv-blue text-white rounded-full flex items-center justify-center text-xs">
-                  1
-                </span>
-                Clasificación de la Actividad
-              </h4>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Columna 1: Alcance */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-2.5 uppercase tracking-wide">
-                    Alcance
-                  </label>
-                  <div className="space-y-2">
-                    {scopes.map((s: any) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setScope(s.id)}
-                        className={`w-full p-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-3 border-2 ${
-                          scope === s.id
-                            ? `bg-jmv-blue text-white border-transparent shadow-lg scale-105`
-                            : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:shadow-md"
-                        }`}
-                      >
-                        <span className="text-xl">{s.icon}</span>
-                        <span className="flex-1 text-left">{s.name}</span>
-                        {scope === s.id && <ChevronRight className="w-4 h-4" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Columna 2: Tipo de Actividad */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-2.5 uppercase tracking-wide">
-                    Tipo de Actividad
-                  </label>
-                  {scope ? (
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                      {activityTypes.map((type: any) => (
-                        <button
-                          key={type.id}
-                          type="button"
-                          onClick={() => setActivityType(type.id)}
-                          className={`w-full p-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-3 border-2 ${
-                            activityType === type.id
-                              ? "bg-jmv-blue text-white border-transparent shadow-lg scale-105"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-jmv-blue/30 hover:bg-jmv-blue/5"
-                          }`}
-                        >
-                          <span className="text-xl">{type.icon}</span>
-                          <span className="flex-1 text-left text-sm">
-                            {type.name}
-                          </span>
-                          {activityType === type.id && (
-                            <ChevronRight className="w-4 h-4" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="h-64 flex items-center justify-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                      <p className="text-sm text-gray-400 text-center px-4">
-                        Selecciona un alcance primero
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Columna 3: Subtipo */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-2.5 uppercase tracking-wide">
-                    Subtipo{" "}
-                    <span className="text-gray-400 font-normal">
-                      (Opcional)
-                    </span>
-                  </label>
-                  {activityType ? (
-                    <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                      {subtypes.map((sub: any) => (
-                        <button
-                          key={sub.id}
-                          type="button"
-                          onClick={() =>
-                            setSubtype(subtype === sub.id ? "" : sub.id)
-                          }
-                          className={`w-full p-2.5 rounded-lg font-medium transition-all duration-200 text-left text-sm border ${
-                            subtype === sub.id
-                              ? "bg-jmv-gold text-white border-transparent shadow-md"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-jmv-gold/30 hover:bg-jmv-gold/5"
-                          }`}
-                        >
-                          {sub.name}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="h-64 flex items-center justify-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                      <p className="text-sm text-gray-400 text-center px-4">
-                        Selecciona un tipo de actividad primero
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Preview de selección */}
-              {scope && activityType && (
-                <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200 flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Selección:
-                  </span>
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium bg-jmv-blue text-white`}
-                  >
-                    {scopes.find((s: any) => s.id === scope)?.name}
-                  </span>
-                  <span className="text-gray-300">→</span>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-jmv-blue text-white">
-                    {
-                      activityTypes.find((a: any) => a.id === activityType)
-                        ?.name
-                    }
-                  </span>
-                  {subtype && (
-                    <>
-                      <span className="text-gray-300">→</span>
-                      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-jmv-gold text-white">
-                        {subtypes.find((s: any) => s.id === subtype)?.name}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Tipo de Post */}
-            <div className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl p-5 border border-gray-200">
-              <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                <span className="w-6 h-6 bg-jmv-blue text-white rounded-full flex items-center justify-center text-xs">
-                  2
-                </span>
-                Tipo de Publicación
-              </h4>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setTypePost("moments")}
-                  className={`p-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2 border-2 ${
-                    typePost === "moments"
-                      ? "bg-jmv-blue text-white border-transparent shadow-lg scale-105"
-                      : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:shadow-md"
-                  }`}
-                >
-                  <Camera className="w-6 h-6" />
-                  <span>Momentos</span>
-                  <span className="text-xs opacity-80">Fotos de eventos y actividades</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTypePost("documents")}
-                  className={`p-4 rounded-xl font-medium transition-all duration-200 flex flex-col items-center gap-2 border-2 ${
-                    typePost === "documents"
-                      ? "bg-jmv-blue text-white border-transparent shadow-lg scale-105"
-                      : "bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:shadow-md"
-                  }`}
-                >
-                  <FileText className="w-6 h-6" />
-                  <span>Documentos</span>
-                  <span className="text-xs opacity-80">Guías, manuales y recursos</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Título (opcional) */}
-            <div>
-              <label htmlFor="post-title" className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 bg-jmv-blue text-white rounded-full flex items-center justify-center text-xs">
-                  3
-                </span>
-                Título (Opcional)
-              </label>
-              <input
-                id="post-title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ej: Retiro Juvenil 2024"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-jmv-blue focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
-                maxLength={100}
-              />
-            </div>
-
-            {/* Contenido */}
-            <div>
-              <label htmlFor="post-content" className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 bg-jmv-blue text-white rounded-full flex items-center justify-center text-xs">
-                  4
-                </span>
-                ¿Qué quieres compartir?
-              </label>
-              <textarea
-                id="post-content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Comparte tu experiencia, reflexiones o aprendizajes con la comunidad JMV..."
-                className="w-full p-4 border-2 border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-jmv-blue focus:border-transparent transition-all duration-200 text-sm"
-                rows={4}
-                maxLength={1000}
-                required
-              />
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-xs text-gray-500">
-                  {content.length}/1000 caracteres
-                </span>
-              </div>
-            </div>
-
-            {/* Mensaje de error */}
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-                <p className="text-red-700 text-sm font-medium">{error}</p>
-              </div>
-            )}
-
-            {/* Adjuntos */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 bg-jmv-blue text-white rounded-full flex items-center justify-center text-xs">
-                  5
-                </span>
-                Imágenes{" "}
-                <span className="text-red-500 font-normal">(Requerido)</span>
-                <span className="text-xs text-gray-500 font-normal ml-auto">
-                  {attachments.length}/10 archivos
-                </span>
-              </label>
-
-              <div className="flex flex-wrap gap-3 mb-4">
-                <label className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 rounded-lg hover:from-blue-100 hover:to-blue-200 transition-all cursor-pointer border border-blue-200 font-medium text-sm">
-                  <ImageIcon className="w-4 h-4" />
-                  Agregar Imágenes
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                    multiple
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    disabled={attachments.length >= 10}
-                  />
-                </label>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200 font-medium text-sm cursor-not-allowed opacity-60">
-                  <Video className="w-4 h-4" />
-                  Video (No disponible)
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-500 rounded-lg border border-gray-200 font-medium text-sm cursor-not-allowed opacity-60">
-                  <FileText className="w-4 h-4" />
-                  Documento (No disponible)
-                </div>
-              </div>
-
-              {/* Preview de archivos */}
-              {attachments.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {attachments.map((file, index) =>
-                    file.type.startsWith("image/") && previewUrls[index] ? (
-                      <div
-                        key={index}
-                        className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200"
-                      >
-                        <img
-                          src={previewUrls[index]}
-                          alt={file.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeAttachment(index)}
-                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-lg opacity-0 group-hover:opacity-100"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ) : null
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Footer con botones */}
-          <div className="border-t border-gray-200 p-5 sm:p-6 bg-gray-50 flex flex-col-reverse sm:flex-row justify-between items-center gap-3">
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={requestClose}
+        title="Nueva publicación"
+        description="Comparte con la comunidad JMV Ecuador. Los campos con * son obligatorios."
+        size="md"
+        footer={
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button
               type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto px-6 py-2.5 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              onClick={requestClose}
+              disabled={isSubmitting}
+              className={buttonVariants({ variant: "ghost", className: "w-full sm:w-auto" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              disabled={!canSubmit}
-              className="w-full sm:w-auto bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white px-8 py-3 rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+              form={formId}
+              disabled={isSubmitting}
+              aria-busy={isSubmitting || undefined}
+              className={buttonVariants({ variant: "primary", className: "w-full gap-2 sm:w-auto" })}
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Publicando...
+                  <Loader2 className="h-5 w-5 motion-safe:animate-spin" aria-hidden="true" />
+                  Publicando…
                 </>
               ) : (
                 <>
-                  <Plus className="w-5 h-5" />
+                  <Send className="h-5 w-5" aria-hidden="true" />
                   Publicar
                 </>
               )}
             </button>
           </div>
-        </form>
-      </div>
+        }
+      >
+        <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-8">
+          {errorList.length || serverError ? (
+            <div
+              ref={summaryRef}
+              tabIndex={-1}
+              role="alert"
+              className="rounded-xl border-2 border-red-200 bg-red-50 p-4 text-sm text-red-800"
+            >
+              {serverError ? (
+                <p className="font-semibold">{serverError}</p>
+              ) : (
+                <>
+                  <p className="font-semibold">Antes de publicar, revisa esto:</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    {errorList.map(([key, message]) => (
+                      <li key={key}>
+                        <button
+                          type="button"
+                          onClick={() => focusField(key)}
+                          className="text-left underline underline-offset-2"
+                        >
+                          {message}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          ) : null}
 
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-        @keyframes modal-in {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .animate-modal-in {
-          animation: modal-in 0.2s ease-out;
-        }
-      `}</style>
-    </div>
+          {/* 1. Tipo */}
+          <fieldset>
+            <legend className="mb-3 text-base font-semibold text-gray-900">
+              1. ¿Qué quieres compartir? *
+            </legend>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {TYPE_OPTIONS.map(({ value, label, hint, icon: Icon }) => {
+                const checked = typePost === value;
+                return (
+                  <label
+                    key={value}
+                    className={cn(
+                      "relative flex cursor-pointer items-start gap-3 rounded-xl border-2 p-4",
+                      "has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(color:--focus-ring) has-[input:focus-visible]:outline-solid",
+                      checked ? "border-jmv-blue bg-jmv-blue/5" : "border-slate-300 hover:border-slate-400"
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name={`${ids}-type`}
+                      value={value}
+                      checked={checked}
+                      onChange={() => setTypePost(value)}
+                      className="sr-only"
+                    />
+                    <Icon className="mt-0.5 h-6 w-6 shrink-0 text-jmv-blue" aria-hidden="true" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-semibold text-gray-900">{label}</span>
+                      <span className="block text-sm text-gray-700">{hint}</span>
+                    </span>
+                    <span
+                      className={cn(
+                        "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2",
+                        checked ? "border-jmv-blue bg-jmv-blue text-white" : "border-slate-400"
+                      )}
+                      aria-hidden="true"
+                    >
+                      {checked ? <Check className="h-4 w-4" strokeWidth={3} /> : null}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          {/* 2. Texto */}
+          <fieldset className="space-y-4">
+            <legend className="mb-3 text-base font-semibold text-gray-900">2. Cuéntanos</legend>
+            <div>
+              <label htmlFor={`${ids}-title`} className="mb-1 block text-sm font-semibold text-gray-800">
+                Título *
+              </label>
+              <input
+                id={`${ids}-title`}
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={MAX_TITLE}
+                placeholder={typePost === "moments" ? "Ej.: Misión de Semana Santa en Esmeraldas" : "Ej.: Guía para preparar un retiro"}
+                aria-invalid={errors.title ? true : undefined}
+                aria-describedby={describedBy("title")}
+                className={cn(fieldClass(!!errors.title), "min-h-12")}
+              />
+              {errors.title ? (
+                <p id={`${ids}-title-error`} className="mt-1 text-sm text-red-700">
+                  {errors.title}
+                </p>
+              ) : null}
+            </div>
+            <div>
+              <label htmlFor={`${ids}-content`} className="mb-1 block text-sm font-semibold text-gray-800">
+                {typePost === "moments" ? "¿Qué viviste? *" : "¿De qué trata este recurso? *"}
+              </label>
+              <p id={`${ids}-content-hint`} className="mb-2 text-sm text-gray-600">
+                {typePost === "moments"
+                  ? "Te puede ayudar pensar: ¿qué vi?, ¿qué sentí?, ¿a qué me compromete?"
+                  : "Cuenta para quién es útil y cómo se usa."}
+              </p>
+              <textarea
+                id={`${ids}-content`}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={5}
+                maxLength={MAX_CONTENT}
+                aria-invalid={errors.content ? true : undefined}
+                aria-describedby={describedBy("content", `${ids}-content-hint ${ids}-content-count`)}
+                className={cn(fieldClass(!!errors.content), "resize-y py-3")}
+              />
+              <div className="mt-1 flex items-start justify-between gap-3">
+                {errors.content ? (
+                  <p id={`${ids}-content-error`} className="text-sm text-red-700">
+                    {errors.content}
+                  </p>
+                ) : (
+                  <span />
+                )}
+                <p id={`${ids}-content-count`} className="shrink-0 text-sm text-gray-600">
+                  {content.length}/{MAX_CONTENT}
+                </p>
+              </div>
+            </div>
+          </fieldset>
+
+          {/* 3. Clasificación */}
+          <fieldset className="space-y-4">
+            <legend className="mb-3 text-base font-semibold text-gray-900">
+              3. ¿Dónde y en qué actividad?
+            </legend>
+            <div>
+              <label htmlFor={`${ids}-scope`} className="mb-1 block text-sm font-semibold text-gray-800">
+                Alcance *
+              </label>
+              <select
+                id={`${ids}-scope`}
+                value={scope}
+                onChange={(e) => setScope(e.target.value)}
+                aria-invalid={errors.scope ? true : undefined}
+                aria-describedby={describedBy("scope")}
+                className={cn(fieldClass(!!errors.scope), "min-h-12")}
+              >
+                <option value="">Elige una opción</option>
+                {scopes.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              {errors.scope ? (
+                <p id={`${ids}-scope-error`} className="mt-1 text-sm text-red-700">
+                  {errors.scope}
+                </p>
+              ) : null}
+            </div>
+            <div>
+              <label htmlFor={`${ids}-activityType`} className="mb-1 block text-sm font-semibold text-gray-800">
+                Tipo de actividad *
+              </label>
+              <select
+                id={`${ids}-activityType`}
+                value={activityType}
+                onChange={(e) => {
+                  setActivityType(e.target.value);
+                  setSubtype("");
+                }}
+                aria-invalid={errors.activityType ? true : undefined}
+                aria-describedby={describedBy("activityType")}
+                className={cn(fieldClass(!!errors.activityType), "min-h-12")}
+              >
+                <option value="">Elige una opción</option>
+                {activityTypes.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+              {errors.activityType ? (
+                <p id={`${ids}-activityType-error`} className="mt-1 text-sm text-red-700">
+                  {errors.activityType}
+                </p>
+              ) : null}
+            </div>
+            <div>
+              <label htmlFor={`${ids}-subtype`} className="mb-1 block text-sm font-semibold text-gray-800">
+                Subtipo (opcional)
+              </label>
+              <select
+                id={`${ids}-subtype`}
+                value={subtype}
+                onChange={(e) => setSubtype(e.target.value)}
+                disabled={!activityType || subtypesLoading || subtypes.length === 0}
+                aria-describedby={`${ids}-subtype-hint`}
+                className={cn(fieldClass(false), "min-h-12 disabled:bg-slate-100 disabled:text-gray-500")}
+              >
+                <option value="">Sin subtipo</option>
+                {subtypes.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.name}
+                  </option>
+                ))}
+              </select>
+              <p id={`${ids}-subtype-hint`} className="mt-1 text-sm text-gray-600">
+                {!activityType
+                  ? "Se activa cuando eliges el tipo de actividad."
+                  : subtypesLoading
+                    ? "Cargando subtipos…"
+                    : subtypes.length === 0
+                      ? "Esta actividad no tiene subtipos."
+                      : "Precisa la actividad si quieres."}
+              </p>
+            </div>
+          </fieldset>
+
+          {/* 4. Fotos */}
+          <fieldset>
+            <legend className="mb-1 text-base font-semibold text-gray-900">
+              4. Fotos {typePost === "moments" ? "(recomendadas)" : "(opcionales)"}
+            </legend>
+            <p id={`${ids}-files-hint`} className="mb-3 text-sm text-gray-600">
+              Hasta {MAX_FILES} fotos JPG, PNG, WebP o GIF de máximo {MAX_FILE_MB} MB cada una.
+              Llevas {attachments.length} de {MAX_FILES}.
+            </p>
+
+            <label
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm", className: "cursor-pointer gap-2" }),
+                "has-[input:focus-visible]:outline-3 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(color:--focus-ring) has-[input:focus-visible]:outline-solid",
+                attachments.length >= MAX_FILES && "pointer-events-none opacity-50"
+              )}
+            >
+              <ImagePlus className="h-5 w-5" aria-hidden="true" />
+              Agregar fotos
+              <input
+                type="file"
+                accept={ALLOWED_TYPES.join(",")}
+                multiple
+                disabled={attachments.length >= MAX_FILES}
+                aria-describedby={`${ids}-files-hint${fileError ? ` ${ids}-files-error` : ""}`}
+                onChange={(e) => {
+                  handleFiles(e.target.files);
+                  e.target.value = "";
+                }}
+                className="sr-only"
+              />
+            </label>
+
+            {fileError ? (
+              <p id={`${ids}-files-error`} role="alert" className="mt-2 text-sm text-red-700">
+                {fileError}
+              </p>
+            ) : null}
+
+            {attachments.length ? (
+              <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4" aria-label="Fotos elegidas">
+                {attachments.map((a, index) => (
+                  <li key={a.key} className="relative aspect-square overflow-hidden rounded-lg border border-slate-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={a.url} alt={`Foto ${index + 1}: ${a.file.name}`} className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(a.key)}
+                      aria-label={`Quitar foto ${index + 1} (${a.file.name})`}
+                      className="absolute top-1 right-1 inline-flex h-11 w-11 items-center justify-center rounded-full bg-jmv-ink/80 text-white hover:bg-red-700"
+                    >
+                      <X className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </fieldset>
+        </form>
+      </Modal>
+
+      <AlertDialog.Root open={confirmDiscard} onOpenChange={setConfirmDiscard}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay className="fixed inset-0 z-[70] bg-black/50" />
+          <AlertDialog.Content
+            data-surface="light"
+            className="fixed top-1/2 left-1/2 z-[70] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-jmv-lg"
+          >
+            <AlertDialog.Title className="text-lg font-bold text-gray-900">
+              ¿Descartar la publicación?
+            </AlertDialog.Title>
+            <AlertDialog.Description className="mt-2 text-sm text-gray-700">
+              Se perderá lo que escribiste y las fotos que elegiste.
+            </AlertDialog.Description>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <AlertDialog.Cancel className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                Seguir editando
+              </AlertDialog.Cancel>
+              <AlertDialog.Action
+                onClick={discard}
+                className={buttonVariants({ variant: "destructive", size: "sm" })}
+              >
+                Descartar
+              </AlertDialog.Action>
+            </div>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
+    </>
   );
 }
