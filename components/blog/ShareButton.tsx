@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 import { postHeading } from "@/lib/blog/posts";
 import type { Post } from "@/types/user";
 
-/** Enlace del post dentro del feed (el blog todavía no tiene página por publicación) */
+/** Página propia de la publicación (/blog/[id]) */
 export function postShareUrl(post: Post) {
-  return `${SITE.url}/blog#publicacion-${post.id}`;
+  return `${SITE.url}/blog/${post.id}`;
 }
 
 // Compartir: usa la hoja nativa del móvil si existe y, si no, abre WhatsApp

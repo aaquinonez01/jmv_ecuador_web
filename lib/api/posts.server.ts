@@ -1,12 +1,14 @@
 import { ssrFetch } from "@/lib/helpers/apiBase";
 import {
+  mapApiPost,
   mapPostsResponse,
   POSTS_PAGE_SIZE,
   postsQuery,
+  type ApiPost,
   type ApiPostsResponse,
   type PostsPage,
 } from "@/lib/blog/posts";
-import type { BlogCategory } from "@/types/user";
+import type { BlogCategory, Post } from "@/types/user";
 
 /** Primera página del blog para el render del servidor (ISR). null si el backend no responde. */
 export async function fetchInitialPosts(): Promise<PostsPage | null> {
@@ -42,4 +44,14 @@ export async function fetchPostCategories() {
     fetchCategoryList("/category-post/activity-types", "activityTypes"),
   ]);
   return { scopes, activityTypes };
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Una publicación para /blog/[id]. null si no existe (o el id no es válido). */
+export async function fetchPost(id: string): Promise<Post | null> {
+  if (!UUID_RE.test(id)) return null;
+  const res = await ssrFetch(`/posts/${id}`, { revalidate: 60, tags: ["posts"] });
+  if (!res) return null;
+  return mapApiPost((await res.json()) as ApiPost);
 }

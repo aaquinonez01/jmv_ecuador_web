@@ -85,6 +85,12 @@ export default function BlogClient({
     return () => clearTimeout(id);
   }, [notice]);
 
+  // Enlaces compartidos antes de que existiera /blog/[id] (/blog#publicacion-<id>)
+  useEffect(() => {
+    const match = /^#publicacion-([0-9a-f-]{36})$/i.exec(window.location.hash);
+    if (match) window.location.replace(`/blog/${match[1]}`);
+  }, []);
+
   const {
     posts,
     total,
