@@ -4,7 +4,12 @@ import { useCallback, useRef, useState, type KeyboardEvent } from "react";
 
 // Pestañas según el patrón WAI-ARIA Tabs: roving tabindex, flechas, Inicio/Fin
 // y activación automática. El panel inactivo se oculta con `hidden`.
-export function useTabs(count: number, idPrefix: string, initial = 0) {
+export function useTabs(
+  count: number,
+  idPrefix: string,
+  initial = 0,
+  onChange?: (index: number) => void,
+) {
   const [active, setActive] = useState(initial);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -12,9 +17,10 @@ export function useTabs(count: number, idPrefix: string, initial = 0) {
     (index: number, focus = false) => {
       const next = (index + count) % count;
       setActive(next);
+      onChange?.(next);
       if (focus) tabRefs.current[next]?.focus();
     },
-    [count],
+    [count, onChange],
   );
 
   const onKeyDown = useCallback(
