@@ -1,109 +1,119 @@
-"use client";
-
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import StarsRing from "@/components/brand/StarsRing";
+import { SITE, SOCIAL_LINKS, mailtoHref, telHref, type SocialNetwork } from "@/lib/site";
+import { whatsappLink } from "@/lib/whatsapp";
 
-type SocialLink = {
-  name: string;
-  href: string;
-  icon?: LucideIcon;
-  image?: string;
-};
+// Server Component: se oculta en /admin y /sign-in desde el layout (PublicChrome)
 
-const footerLinks = {
-  "Quiénes Somos": [
-    { name: "Nuestra Historia", href: "/quienes-somos/historia" },
-    { name: "Estructura", href: "/estructura" },
-  ],
-  "Qué Hacemos": [{ name: "Nuestros Pilares", href: "/pilares" }],
-  Formación: [
-    { name: "Ejes Formativos", href: "/formacion/ejes" },
-    { name: "Santos Vicencianos", href: "/formacion/santos" },
-  ],
-  Participar: [
-    { name: "Únete a JMV", href: "/unete" },
-    { name: "Actividades", href: "/actividades" },
-  ],
-};
-
-const socialLinks: SocialLink[] = [
+const footerLinks: { title: string; links: { name: string; href: string }[] }[] = [
   {
-    name: "Facebook",
-    href: "https://www.facebook.com/JMV.Ec2020",
-    icon: Facebook,
+    title: "Nosotros",
+    links: [
+      { name: "Quiénes somos", href: "/quienes-somos" },
+      { name: "Historia", href: "/quienes-somos/historia" },
+      { name: "Estructura", href: "/estructura" },
+      { name: "Pilares", href: "/pilares" },
+      { name: "JMV en el mundo", href: "/jmv-en-el-mundo" },
+    ],
   },
   {
-    name: "Instagram",
-    href: "https://www.instagram.com/jmv_ecuador?igsh=eGg3bXBiZnE1dnBt",
-    icon: Instagram,
+    title: "Formación",
+    links: [
+      { name: "Formación", href: "/formacion" },
+      { name: "Ejes formativos", href: "/formacion/ejes" },
+      { name: "Santos vicencianos", href: "/formacion/santos" },
+    ],
   },
   {
-    name: "Tiktok",
-    href: "https://www.tiktok.com/@jmv.ecuador?_r=1&_t=ZS-9632vWSIqWL",
-    image: "/images/tiktok.png",
+    title: "Participa",
+    links: [
+      { name: "Únete a JMV", href: "/unete" },
+      { name: "Actividades", href: "/actividades" },
+      { name: "Comunidad", href: "/blog" },
+      { name: "Contacto", href: "/contacto" },
+    ],
   },
 ];
 
+const socialIcons: Partial<Record<SocialNetwork, LucideIcon>> = {
+  facebook: Facebook,
+  instagram: Instagram,
+};
+
+const NEW_TAB = " (se abre en una pestaña nueva)";
+
 export default function Footer() {
-  const pathname = usePathname();
-  const isAdmin =
-    pathname.startsWith("/admin") || pathname.startsWith("/sign-in");
-  if (isAdmin) {
-    return null;
-  }
+  const contactLinkClass =
+    "inline-flex min-h-11 items-center gap-3 rounded-md text-blue-100 hover:text-white";
+
   return (
-    <footer className="bg-jmv-blue text-white">
-      {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Logo and Description */}
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-jmv-gold to-jmv-red flex items-center justify-center">
-                <span className="text-white font-bold text-xl">JMV</span>
-              </div>
-              <div>
-                <h1 className="text-lg font-bold">Juventudes Marianas</h1>
-                <p className="text-sm text-jmv-gold">Vicencianas Ecuador</p>
-              </div>
+    <footer className="relative overflow-hidden bg-jmv-blue text-white">
+      <StarsRing
+        className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 text-jmv-gold-text/10"
+      />
+      <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="sm:col-span-2">
+            <Link href="/" className="inline-block rounded-md" aria-label="JMV Ecuador, ir al inicio">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={288}
+                height={82}
+                sizes="240px"
+                className="h-auto w-60"
+              />
             </Link>
-            <p className="text-sm text-blue-100 mb-6">
-              Formando jóvenes comprometidos con el servicio, la fe y la
-              transformación social bajo el carisma vicenciano.
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-blue-100">
+              {SITE.shortDescription}
             </p>
 
-            {/* Contact Info */}
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-jmv-gold" />
-                <span>jmvecuador@gmail.com</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-jmv-gold" />
-                <span>+593 99 230 3481</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-jmv-gold" />
-                <span>Quito, Ecuador</span>
-              </div>
-            </div>
+            <ul className="mt-6 space-y-1 text-sm">
+              <li>
+                <a href={mailtoHref} className={contactLinkClass}>
+                  <Mail className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <span>{SITE.email}</span>
+                </a>
+              </li>
+              <li>
+                <a href={telHref} className={contactLinkClass}>
+                  <Phone className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <span>{SITE.phone}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={whatsappLink("Hola, quiero saber más sobre JMV Ecuador.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={contactLinkClass}
+                >
+                  <MessageCircle className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <span>
+                    Escríbenos por WhatsApp
+                    <span className="sr-only">{NEW_TAB}</span>
+                  </span>
+                </a>
+              </li>
+              <li className="flex min-h-11 items-center gap-3 text-blue-100">
+                <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                <span>{SITE.city}</span>
+              </li>
+            </ul>
           </div>
 
-          {/* Footer Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-lg font-semibold mb-4 text-jmv-gold">
-                {category}
-              </h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.name}>
+          {footerLinks.map((group) => (
+            <div key={group.title}>
+              <h2 className="mb-3 text-base font-semibold text-jmv-gold-text">{group.title}</h2>
+              <ul className="space-y-0.5">
+                {group.links.map((link) => (
+                  <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-blue-100 hover:text-white transition-colors duration-200"
+                      className="inline-flex min-h-11 items-center rounded-md text-sm text-blue-100 hover:text-white hover:underline hover:underline-offset-4 lg:min-h-9"
                     >
                       {link.name}
                     </Link>
@@ -113,48 +123,42 @@ export default function Footer() {
             </div>
           ))}
         </div>
-
-        {/* Newsletter Signup */}
       </div>
 
-      {/* Bottom Footer */}
-      <div className="bg-jmv-blue-dark">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            {/* Copyright */}
-            <p className="text-sm text-blue-200" suppressHydrationWarning>
-              © {new Date().getFullYear()} Juventudes Marianas Vicencianas
-              Ecuador. Todos los derechos reservados.
-            </p>
+      <div className="relative bg-[#163a68]">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 md:flex-row lg:px-8">
+          <p className="text-center text-sm text-blue-100 md:text-left">
+            © {new Date().getFullYear()} {SITE.fullName}. Todos los derechos reservados.
+          </p>
 
-            {/* Social Links */}
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <Link
-                    target="_blank"
-                    key={social.name}
+          <ul className="flex items-center gap-2" aria-label="Redes sociales">
+            {SOCIAL_LINKS.map((social) => {
+              const Icon = socialIcons[social.network];
+              return (
+                <li key={social.network}>
+                  <a
                     href={social.href}
-                    className="text-blue-200 hover:text-white transition-colors duration-200"
-                    aria-label={social.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${social.name}${NEW_TAB}`}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full text-blue-100 hover:bg-white/10 hover:text-white"
                   >
                     {Icon ? (
-                      <Icon className="h-5 w-5" />
-                    ) : social.image ? (
+                      <Icon className="h-5 w-5" aria-hidden />
+                    ) : (
                       <Image
-                        src={social.image}
-                        alt={social.name}
+                        src="/images/tiktok.png"
+                        alt=""
                         width={20}
                         height={20}
-                        className="h-5 w-5 object-contain invert opacity-80 hover:opacity-100 transition-opacity"
+                        className="h-5 w-5 object-contain opacity-90 invert"
                       />
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+                    )}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </footer>
