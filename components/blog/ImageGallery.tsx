@@ -1,349 +1,228 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { useEffect, useRef, useState, type KeyboardEvent, type TouchEvent } from "react";
+import { Dialog } from "radix-ui";
 import {
-  X,
   ChevronLeft,
   ChevronRight,
+  Download,
+  Loader2,
+  X,
   ZoomIn,
   ZoomOut,
-  RotateCw,
-  Download,
-  Share2,
-  Heart,
-  MessageCircle,
 } from "lucide-react";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { cn } from "@/lib/utils";
+import PostImage from "./PostImage";
 
 interface ImageGalleryProps {
   images: string[];
-  currentIndex: number;
+  /** Foto con la que se abre */
+  startIndex: number;
   isOpen: boolean;
   onClose: () => void;
-  postInfo?: {
-    author: string;
-    content: string;
-    likes: number;
-    comments: number;
-    shares: number;
-  };
+  /** Título de la publicación, para los textos alternativos */
+  postTitle: string;
 }
 
+const iconButton =
+  "inline-flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/20 disabled:opacity-40";
+
+// Galería a pantalla completa sobre Radix Dialog: flechas, deslizar en móvil,
+// zoom y descarga (fetch → blob, para que funcione con imágenes de Cloudinary).
 export default function ImageGallery({
   images,
-  currentIndex,
+  startIndex,
   isOpen,
   onClose,
-  postInfo,
+  postTitle,
 }: ImageGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(currentIndex);
+  const [active, setActive] = useState(startIndex);
   const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const prevFocusedEl = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setActiveIndex(currentIndex);
-  }, [currentIndex]);
+  const [downloading, setDownloading] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const total = images.length;
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
-      prevFocusedEl.current = document.activeElement as HTMLElement;
-      setTimeout(() => {
-        const closeBtn = modalRef.current?.querySelector<HTMLElement>(
-          'button[aria-label="Cerrar galería"]'
-        );
-        closeBtn?.focus();
-      }, 0);
-    } else {
-      document.body.style.overflow = "unset";
+      setActive(startIndex);
+      setZoom(1);
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+  }, [isOpen, startIndex]);
 
-  const nextImage = () => {
-    setActiveIndex((prev) => (prev + 1) % images.length);
+  const go = (delta: number) => {
+    if (total < 2) return;
+    setActive((i) => (i + delta + total) % total);
     setZoom(1);
-    setRotation(0);
   };
 
-  const prevImage = () => {
-    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
-    setZoom(1);
-    setRotation(0);
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") go(-1);
+    else if (e.key === "ArrowRight") go(1);
+    else if (e.key === "+" || e.key === "=") setZoom((z) => Math.min(z + 0.5, 3));
+    else if (e.key === "-") setZoom((z) => Math.max(z - 0.5, 1));
   };
 
-  const handleZoom = (direction: "in" | "out") => {
-    if (direction === "in") {
-      setZoom((prev) => Math.min(prev + 0.5, 3));
-    } else {
-      setZoom((prev) => Math.max(prev - 0.5, 0.5));
+  const onTouchStart = (e: TouchEvent) => {
+    touchStartX.current = zoom === 1 ? e.touches[0]?.clientX ?? null : null;
+  };
+  const onTouchEnd = (e: TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  };
+
+  const handleDownload = async () => {
+    const url = getOptimizedUrl(images[active]);
+    setDownloading(true);
+    try {
+      const res = await fetch(url, { mode: "cors" });
+      if (!res.ok) throw new Error(String(res.status));
+      const blob = await res.blob();
+      const ext = blob.type.split("/")[1]?.replace("jpeg", "jpg") || "jpg";
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `jmv-ecuador-foto-${active + 1}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      // Si el servidor de la imagen no permite descargarla, se abre en otra pestaña
+      window.open(images[active], "_blank", "noopener,noreferrer");
+    } finally {
+      setDownloading(false);
     }
   };
 
-  const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360);
-  };
-
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = images[activeIndex];
-    link.download = `jmv-gallery-${activeIndex + 1}.jpg`;
-    link.click();
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Galería JMV",
-        text: postInfo?.content || "Mira esta galería de JMV Ecuador",
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-    }
-  };
-
-  const handleClose = () => {
-    onClose();
-    if (prevFocusedEl.current) {
-      prevFocusedEl.current.focus();
-    }
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    switch (e.key) {
-      case "Escape":
-        e.stopPropagation();
-        handleClose();
-        break;
-      case "ArrowLeft":
-        prevImage();
-        break;
-      case "ArrowRight":
-        nextImage();
-        break;
-      case "+":
-      case "=":
-        handleZoom("in");
-        break;
-      case "-":
-        handleZoom("out");
-        break;
-      case "r":
-      case "R":
-        handleRotate();
-        break;
-      case "Tab": {
-        const container = modalRef.current;
-        if (!container) return;
-        const focusable = container.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        } else if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        }
-        break;
-      }
-    }
-  };
-
-  if (!isOpen) return null;
+  if (!total) return null;
+  const src = images[active] ?? images[0];
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Galería de imágenes"
-      tabIndex={-1}
-      ref={modalRef}
-      onKeyDown={onKeyDown}
-    >
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleClose}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Cerrar galería"
-              title="Cerrar galería"
-            >
-              <X className="w-6 h-6 text-white" aria-hidden="true" />
-            </button>
-            <div className="text-white">
-              <span className="text-lg font-semibold">
-                {activeIndex + 1} de {images.length}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleZoom("out")}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Alejar"
-              title="Alejar"
-            >
-              <ZoomOut className="w-5 h-5 text-white" aria-hidden="true" />
-            </button>
-            <button
-              onClick={() => handleZoom("in")}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Acercar"
-              title="Acercar"
-            >
-              <ZoomIn className="w-5 h-5 text-white" aria-hidden="true" />
-            </button>
-            <button
-              onClick={handleRotate}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Rotar"
-              title="Rotar"
-            >
-              <RotateCw className="w-5 h-5 text-white" aria-hidden="true" />
-            </button>
-            <button
-              onClick={handleDownload}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Descargar imagen"
-              title="Descargar imagen"
-            >
-              <Download className="w-5 h-5 text-white" aria-hidden="true" />
-            </button>
-            <button
-              onClick={handleShare}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors"
-              aria-label="Compartir"
-              title="Compartir"
-            >
-              <Share2 className="w-5 h-5 text-white" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Imagen Principal */}
-      <div className="flex items-center justify-center h-full pt-16 pb-20">
-        <div className="relative max-w-full max-h-full">
-          <img
-            src={getOptimizedUrl(images[activeIndex], { w: 1600 })}
-            decoding="async"
-            alt={`Galería ${activeIndex + 1}`}
-            className="max-w-full max-h-full object-contain transition-transform duration-300"
-            style={{
-              transform: `scale(${zoom}) rotate(${rotation}deg)`,
-            }}
-            draggable={false}
-          />
-        </div>
-      </div>
-
-      {/* Navegación */}
-      <div className="absolute top-1/2 left-4 transform -translate-y-1/2">
-        <button
-          onClick={prevImage}
-          className="p-3 hover:bg-white/20 rounded-full transition-colors"
-          aria-label="Imagen anterior"
-          title="Imagen anterior"
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/95" />
+        <Dialog.Content
+          className="fixed inset-0 z-[60] flex flex-col text-white"
+          onKeyDown={onKeyDown}
+          aria-describedby={undefined}
         >
-          <ChevronLeft className="w-8 h-8 text-white" aria-hidden="true" />
-        </button>
-      </div>
+          <Dialog.Title className="sr-only">Fotos de «{postTitle}»</Dialog.Title>
 
-      <div className="absolute top-1/2 right-4 transform -translate-y-1/2">
-        <button
-          onClick={nextImage}
-          className="p-3 hover:bg-white/20 rounded-full transition-colors"
-          aria-label="Imagen siguiente"
-          title="Imagen siguiente"
-        >
-          <ChevronRight className="w-8 h-8 text-white" aria-hidden="true" />
-        </button>
-      </div>
-
-      {/* Miniaturas */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveIndex(index)}
-              className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                index === activeIndex
-                  ? "border-jmv-gold"
-                  : "border-transparent hover:border-white/50"
-              }`}
-              aria-label={`Ir a imagen ${index + 1}`}
-              title={`Ir a imagen ${index + 1}`}
-            >
-              <img
-                src={getOptimizedUrl(image, { w: 300 })}
-                decoding="async"
-                alt={`Miniatura ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Información del Post */}
-      {postInfo && (
-        <div className="absolute bottom-20 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-4">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-jmv-blue/20 rounded-full flex items-center justify-center">
-              <span className="text-jmv-blue font-bold text-sm">
-                {postInfo.author.charAt(0)}
-              </span>
-            </div>
-            <span className="text-white font-medium">{postInfo.author}</span>
-          </div>
-          <p className="text-white/80 text-sm mb-3 line-clamp-2">
-            {postInfo.content}
-          </p>
-          <div className="flex items-center gap-4 text-white/60 text-sm">
+          <div className="flex items-center justify-between gap-2 p-2 sm:p-4">
+            <p className="px-2 text-base font-semibold" aria-live="polite">
+              Foto {active + 1} de {total}
+            </p>
             <div className="flex items-center gap-1">
-              <Heart className="w-4 h-4" />
-              <span>{postInfo.likes}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <MessageCircle className="w-4 h-4" />
-              <span>{postInfo.comments}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Share2 className="w-4 h-4" />
-              <span>{postInfo.shares}</span>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(z - 0.5, 1))}
+                disabled={zoom <= 1}
+                className={iconButton}
+                aria-label="Alejar"
+              >
+                <ZoomOut className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(z + 0.5, 3))}
+                disabled={zoom >= 3}
+                className={iconButton}
+                aria-label="Acercar"
+              >
+                <ZoomIn className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={handleDownload}
+                disabled={downloading}
+                className={iconButton}
+                aria-label="Descargar foto"
+              >
+                {downloading ? (
+                  <Loader2 className="h-5 w-5 motion-safe:animate-spin" aria-hidden="true" />
+                ) : (
+                  <Download className="h-5 w-5" aria-hidden="true" />
+                )}
+              </button>
+              <Dialog.Close className={iconButton} aria-label="Cerrar fotos">
+                <X className="h-6 w-6" aria-hidden="true" />
+              </Dialog.Close>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Controles de Zoom */}
-      <div className="absolute top-20 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-2">
-        <div className="text-white text-xs text-center mb-1">
-          {Math.round(zoom * 100)}%
-        </div>
-        <div className="w-20 h-1 bg-white/30 rounded-full">
           <div
-            className="h-full bg-jmv-gold rounded-full transition-all"
-            style={{ width: `${((zoom - 0.5) / 2.5) * 100}%` }}
-          />
-        </div>
-      </div>
-    </div>
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto px-2"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <PostImage
+              key={src}
+              src={src}
+              alt={`Foto ${active + 1} de ${total} de la publicación «${postTitle}»`}
+              loading="eager"
+              maxWidth={1280}
+              sizes="100vw"
+              draggable={false}
+              className="max-h-full max-w-full object-contain motion-safe:transition-transform motion-safe:duration-200"
+              style={{ transform: `scale(${zoom})` }}
+            />
+
+            {total > 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  className={cn(iconButton, "absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 sm:left-4")}
+                  aria-label="Foto anterior"
+                >
+                  <ChevronLeft className="h-7 w-7" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  className={cn(iconButton, "absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 sm:right-4")}
+                  aria-label="Foto siguiente"
+                >
+                  <ChevronRight className="h-7 w-7" aria-hidden="true" />
+                </button>
+              </>
+            ) : null}
+          </div>
+
+          {total > 1 ? (
+            <ul className="flex gap-2 overflow-x-auto p-3 sm:justify-center" aria-label="Miniaturas">
+              {images.map((image, index) => (
+                <li key={`${image}-${index}`} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActive(index);
+                      setZoom(1);
+                    }}
+                    aria-label={`Ver foto ${index + 1}`}
+                    aria-current={index === active ? "true" : undefined}
+                    className={cn(
+                      "relative block h-14 w-14 overflow-hidden rounded-lg border-2",
+                      index === active ? "border-jmv-gold-text" : "border-transparent opacity-70 hover:opacity-100"
+                    )}
+                  >
+                    <PostImage
+                      src={image}
+                      alt=""
+                      maxWidth={320}
+                      sizes="56px"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
