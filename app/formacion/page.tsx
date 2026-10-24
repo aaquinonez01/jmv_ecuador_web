@@ -1,17 +1,34 @@
+import type { Metadata } from "next";
+import { BookOpen, Star } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
 import FormacionPilar from "@/components/sections/FormacionPilar";
+import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+
+export const metadata: Metadata = {
+  title: "Formación",
+  description:
+    "La formación en JMV Ecuador: ejes formativos, santos vicencianos y el pilar de formación para crecer como persona, cristiano y vicenciano.",
+  alternates: { canonical: "/formacion" },
+};
 
 export default function FormacionPage() {
   return (
-    <main className="min-h-screen bg-gradient-jmv">
+    <>
+      <PageHero
+        eyebrow="Uno de los cuatro pilares"
+        title="Formación"
+        motto="Hasta que Cristo sea formado en ti."
+        description="Como el barro en manos del alfarero, cada joven crece en su fe, en su humanidad y en su compromiso con los pobres. Así es el camino formativo de JMV."
+        image={{ src: "/images/gallery/asamblea_2024.jpg", position: "center 40%" }}
+        motif="monogram"
+        breadcrumbs={[{ label: "Formación" }]}
+        actions={[
+          { label: "Ejes formativos", href: "/formacion/ejes", icon: BookOpen },
+          { label: "Santos vicencianos", href: "/formacion/santos", icon: Star },
+        ]}
+      />
       <FormacionPilar />
-    </main>
+      <SigueExplorando items={["ejes", "santos", "unete"]} />
+    </>
   );
 }
-
-export const metadata = {
-  title: "Formación Integral - JMV Ecuador",
-  description:
-    "Descubre nuestro proceso de formación integral basado en cinco ejes fundamentales que desarrollan líderes comprometidos con la transformación social.",
-  keywords:
-    "formación, JMV, juventud, educación integral, liderazgo, valores cristianos",
-};

@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { BookOpen, MessageCircle, Search, Users } from "lucide-react";
 
-// Fuente única de los pasos y lo que ofrece JMV, para /unete y UneteCTASection.
+// Fuente única de los pasos y lo que ofrece JMV, para /unete.
 
 export interface PasoUnete {
   numero: string;

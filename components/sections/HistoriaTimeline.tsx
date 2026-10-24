@@ -1,308 +1,145 @@
-"use client";
+import Image from "next/image";
+import { MapPin } from "lucide-react";
+import SectionHeading from "../ui/SectionHeading";
+import { MarianMonogram, StarsRing } from "../brand";
+import { SITE, yearsSinceFoundation } from "@/lib/site";
 
-import { useState } from "react";
-import { Calendar, MapPin, Users, Award, Heart, Star } from "lucide-react";
-import ScrollReveal from "../ui/ScrollReveal";
+interface Hito {
+  year: string;
+  /** Lugar solo cuando consta en el contenido histórico */
+  lugar?: string;
+  title: string;
+  description: string;
+  image?: { src: string; alt: string };
+}
 
-const timelineEvents = [
+// "De la rue du Bac a Quito": hitos ordenados desde las apariciones de 1830.
+const hitos: Hito[] = [
   {
     year: "1830",
+    lugar: "Rue du Bac, París",
     title: "Origen en París: apariciones de la Medalla Milagrosa",
     description:
-      'El 18 de julio de 1830, la Santísima Virgen se aparece a Santa Catalina Labouré en París y le revela su deseo de formar una asociación de jóvenes que imiten a Jesús. Nace bajo el nombre de "Hijas de María Inmaculada", siendo el P. Aladel su primer Director y Benigna Hairón la primera Hija de María. Las primeras reuniones se llamaban "Cenáculos Marianos".',
-    icon: Star,
-    color: "from-jmv-gold to-jmv-gold-dark",
-    image: "/images/historia/catalina.jpg",
+      'El 18 de julio de 1830, la Virgen se aparece a Santa Catalina Labouré en la capilla de la rue du Bac y le revela su deseo de formar una asociación de jóvenes que imiten a Jesús. Nace con el nombre de "Hijas de María Inmaculada", con el P. Aladel como primer director y Benigna Hairón como primera Hija de María. Las primeras reuniones se llamaban "Cenáculos Marianos".',
+    image: { src: "/images/historia/catalina.jpg", alt: "Santa Catalina Labouré" },
   },
   {
     year: "1847",
     title: "Aprobación pontificia de Pío IX",
     description:
-      "El 20 de junio de 1847, el Romano Pontífice Pío IX aprueba oficialmente la Asociación de Hijas de María, reconociendo en un primer momento a los grupos de París como obra eclesial.",
-    icon: Award,
-    color: "from-jmv-red to-jmv-red-dark",
-    image: "/images/historia/pio_9.jpg",
+      "El 20 de junio de 1847, el papa Pío IX aprueba oficialmente la Asociación de Hijas de María, reconociendo en un primer momento a los grupos de París como obra eclesial.",
+    image: { src: "/images/historia/pio_9.jpg", alt: "Retrato del papa Pío IX" },
   },
   {
     year: "1850",
     title: "Expansión y apertura a la rama masculina",
     description:
-      'El 19 de julio de 1850 se aprueban los demás grupos de Francia y del extranjero, extendiéndose a la rama masculina. La asociación pasa a llamarse "Hijos e Hijas de María Inmaculada" y se expande junto a las Hijas de la Caridad y los Padres Paúles.',
-    icon: Users,
-    color: "from-blue-600 to-blue-800",
-    image: "/images/historia/hijas_hijos.webp",
+      'El 19 de julio de 1850 se aprueban los demás grupos de Francia y del extranjero, y la asociación se abre a los jóvenes varones. Pasa a llamarse "Hijos e Hijas de María Inmaculada" y se extiende junto a las Hijas de la Caridad y los Padres Paúles.',
+    image: {
+      src: "/images/historia/hijas_hijos.webp",
+      alt: "Antiguo grupo de Hijos e Hijas de María Inmaculada",
+    },
   },
   {
     year: "1987",
-    title: 'Nace oficialmente "Juventud Mariana Vicentina"',
+    title: "Nace la asociación JMV",
     description:
-      'El 28 de abril de 1987, el Superior General de la Congregación de la Misión y de las Hijas de la Caridad reconoce y actualiza la Asociación con su nombre oficial: "Asociación Juventud Mariana Vicentina" (JMV).',
-    icon: Heart,
-    color: "from-jmv-blue to-jmv-blue-dark",
-    image: "/images/historia/fundacion.jpg",
+      'El 28 de abril de 1987, el Superior General de la Congregación de la Misión y de las Hijas de la Caridad reconoce y actualiza la asociación con su nombre oficial de entonces: "Asociación Juventud Mariana Vicentina" (JMV).',
+    image: { src: "/images/historia/fundacion.jpg", alt: "Reconocimiento de la asociación en 1987" },
   },
   {
-    year: "1995",
+    year: String(SITE.foundedYear),
+    lugar: "Quito, Ecuador",
     title: "Fundación de JMV Ecuador",
     description:
-      'El 18 de julio de 1995, tras un encuentro en México donde Sor Noemí Miño recibe la motivación e información necesaria, JMV es fundada en Ecuador. El primer grupo del país fue el de la "Medalla Milagrosa" de Quito, desde donde se formó un equipo de jóvenes para visitar y acompañar a otros grupos a nivel nacional.',
-    icon: MapPin,
-    color: "from-jmv-blue to-jmv-red",
-    image: "/images/historia/jmv_ecuador_fundacion.jpg",
+      'El 18 de julio de 1995, tras un encuentro en México donde Sor Noemí Miño recibe la motivación y la información necesarias, JMV se funda en Ecuador. El primer grupo del país fue el de la "Medalla Milagrosa" de Quito, desde donde se formó un equipo de jóvenes para visitar y acompañar a otros grupos en todo el país.',
+    image: {
+      src: "/images/historia/jmv_ecuador_fundacion.jpg",
+      alt: "Primeros jóvenes de JMV Ecuador",
+    },
   },
   {
     year: "1999",
-    title: "Aprobación de los Estatutos por R. P. Maloney",
+    title: "Aprobación de los estatutos",
     description:
-      "Los estatutos de la Asociación Juventud Mariana Vicentina son aprobados por el P. Robert P. Maloney, entonces Superior General, consolidando el marco que regiría a JMV en todo el mundo.",
-    icon: Award,
-    color: "from-jmv-gold to-jmv-gold-dark",
-    image: "/images/historia/jmv_padre_maloney.png",
+      "El P. Robert P. Maloney, entonces Superior General, aprueba los estatutos de la asociación y consolida el marco que la rige en todo el mundo.",
+    image: { src: "/images/historia/jmv_padre_maloney.png", alt: "P. Robert P. Maloney, CM" },
   },
   {
     year: "2000",
     title: "Aprobación oficial de JMV Ecuador",
     description:
-      "El 12 de junio de 2000, el P. Robert P. Maloney, Director General de la Asociación, aprueba oficialmente JMV Ecuador, dando reconocimiento internacional al primer Consejo Nacional liderado por el P. Jhon Macías, Sor Noemí Miño y Juan Carlos Cajo.",
-    icon: Calendar,
-    color: "from-emerald-600 to-emerald-800",
-    image: "/images/historia/aprobacion-ecuador-2000.jpg",
+      "El 12 de junio de 2000, el P. Robert P. Maloney, Director General de la asociación, aprueba oficialmente JMV Ecuador y reconoce al primer Consejo Nacional, liderado por el P. Jhon Macías, Sor Noemí Miño y Juan Carlos Cajo.",
   },
   {
     year: "2025",
     title: "30 años de JMV Ecuador",
     description:
-      "Tres décadas después de aquella semilla colocada en tierra ecuatoriana, JMV es un segundo hogar para miles de jóvenes que crecen como buenos cristianos, sirviendo al pobre al estilo de San Vicente de Paúl, Santa Luisa de Marillac y Santa Catalina Labouré.",
-    icon: Award,
-    color: "from-jmv-blue to-jmv-gold",
-    image: "/images/historia/jmv_20.jpg",
+      "Tres décadas después de aquella semilla en tierra ecuatoriana, JMV es un segundo hogar para miles de jóvenes que crecen como buenos cristianos y sirven al pobre al estilo de San Vicente de Paúl, Santa Luisa de Marillac y Santa Catalina Labouré.",
+    image: { src: "/images/historia/jmv_20.jpg", alt: "Celebración de los 30 años de JMV Ecuador" },
   },
 ];
 
 export default function HistoriaTimeline() {
-  const [selectedEvent, setSelectedEvent] = useState(0);
-
   return (
-    <section id="historia" className="py-20 relative overflow-hidden">
-      {/* Hero background that fades out */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--jmv-blue) 0%, var(--jmv-blue-dark) 100%)",
-          maskImage:
-            "linear-gradient(to bottom, black 0%, black 40%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 0%, black 40%, transparent 100%)",
-        }}
-      />
-      {/* Current section background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-jmv-blue-dark via-jmv-blue to-blue-800" />
+    <section
+      id="historia"
+      aria-labelledby="historia-titulo"
+      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink via-[#132f55] to-jmv-ink py-16 sm:py-20"
+    >
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading
+          id="historia-titulo"
+          eyebrow="Línea de tiempo"
+          title="De la rue du Bac a Quito"
+          description={`De las apariciones de la Medalla Milagrosa en París hasta los ${yearsSinceFoundation()} años de JMV en Ecuador.`}
+        />
 
-      {/* Background Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-jmv-blue/20 rounded-full blur-3xl opacity-30 translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl opacity-30 -translate-x-1/2 translate-y-1/2" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Header */}
-        <ScrollReveal direction="up" delay={50}>
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white font-medium mb-6">
-              <Calendar className="w-5 h-5 mr-2" />
-              Nuestra Historia
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              De París <span className="text-jmv-gold">1830</span> a Ecuador{" "}
-              <span className="text-jmv-gold">1995</span>
-            </h2>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Un recorrido por los hitos que dieron origen a la Asociación
-              Juventud Mariana Vicentina en el mundo y su llegada a Ecuador hace
-              30 años.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        {/* Timeline */}
-        <div className="relative">
-          {/* Timeline Line - Desktop: center, Mobile: left */}
-          <div className="absolute left-8 md:left-1/2 transform md:-translate-x-0.5 w-1 h-full bg-gradient-to-b from-jmv-gold via-white to-jmv-gold opacity-30"></div>
-
-          {/* Timeline Events */}
-          <div className="space-y-8 md:space-y-16">
-            {timelineEvents.map((event, index) => {
-              const Icon = event.icon;
-              const isLeft = index % 2 === 0;
-
-              return (
-                <ScrollReveal
-                  key={index}
-                  direction="up"
-                  delay={100 + index * 30}
-                >
-                  <div
-                    className="relative cursor-pointer group"
-                    onClick={() => setSelectedEvent(index)}
-                  >
-                    {/* Mobile Layout */}
-                    <div className="block md:hidden">
-                      <div className="flex items-start pl-16">
-                        <div
-                          className={`flex-1 p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 ${
-                            selectedEvent === index
-                              ? "ring-2 ring-jmv-gold shadow-2xl"
-                              : ""
-                          }`}
-                        >
-                          <div className="flex items-center mb-3">
-                            <div
-                              className={`w-10 h-10 bg-gradient-to-r ${event.color} rounded-full flex items-center justify-center mr-3`}
-                            >
-                              <Icon className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-xl font-bold text-jmv-gold">
-                              {event.year}
-                            </span>
-                          </div>
-                          <h3 className="text-lg font-bold text-white mb-2">
-                            {event.title}
-                          </h3>
-                          <p className="text-white/70 text-sm leading-relaxed">
-                            {event.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Mobile Timeline Node */}
-                      <div className="absolute left-6 top-4 transform -translate-x-1/2 z-10">
-                        <div
-                          className={`w-5 h-5 bg-gradient-to-r ${
-                            event.color
-                          } rounded-full border-3 border-white shadow-lg transition-all duration-300 ${
-                            selectedEvent === index
-                              ? "scale-125 shadow-xl"
-                              : "group-hover:scale-110"
-                          }`}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* Desktop Layout */}
+        <ol className="relative space-y-10 border-l-2 border-jmv-gold-text/40 pl-6 sm:pl-10">
+          {hitos.map((hito) => (
+            <li key={hito.year} className="relative">
+              <span
+                aria-hidden="true"
+                className="absolute -left-[2.05rem] top-1.5 h-4 w-4 rounded-full border-4 border-jmv-ink bg-jmv-gold-text sm:-left-[3.05rem]"
+              />
+              <article className="grid overflow-hidden rounded-2xl border border-white/15 bg-white/5 md:grid-cols-[1fr_16rem]">
+                <div className="p-5 sm:p-6">
+                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="text-2xl font-bold text-jmv-gold-text">{hito.year}</span>
+                    {hito.lugar && (
+                      <span className="inline-flex items-center gap-1 text-sm text-slate-300">
+                        <MapPin className="h-4 w-4" aria-hidden />
+                        {hito.lugar}
+                      </span>
+                    )}
+                  </p>
+                  <h3 className="mt-2 text-xl font-bold text-white">{hito.title}</h3>
+                  <p className="mt-3 leading-relaxed text-slate-300">{hito.description}</p>
+                </div>
+                <div className="relative order-first aspect-[16/9] bg-jmv-ink md:order-none md:aspect-auto md:min-h-56">
+                  {hito.image ? (
+                    <Image
+                      src={hito.image.src}
+                      alt={hito.image.alt}
+                      fill
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, 256px"
+                      className="object-cover"
+                    />
+                  ) : (
                     <div
-                      className={`hidden md:flex items-center justify-between ${
-                        isLeft ? "flex-row" : "flex-row-reverse"
-                      }`}
+                      aria-hidden="true"
+                      className="absolute inset-0 flex items-center justify-center text-jmv-gold-text/40"
                     >
-                      {/* Content Card */}
-                      <div
-                        className={`w-5/12 ${isLeft ? "pr-8" : "pl-8"} flex`}
-                      >
-                        <div
-                          className={`flex-1 p-6 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 ${
-                            selectedEvent === index
-                              ? "ring-2 ring-jmv-gold shadow-2xl scale-105"
-                              : ""
-                          }`}
-                        >
-                          <div className="flex items-center mb-4">
-                            <div
-                              className={`w-12 h-12 bg-gradient-to-r ${event.color} rounded-full flex items-center justify-center mr-4`}
-                            >
-                              <Icon className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold text-jmv-gold">
-                              {event.year}
-                            </span>
-                          </div>
-                          <h3 className="text-xl font-bold text-white mb-3">
-                            {event.title}
-                          </h3>
-                          <p className="text-white/70 leading-relaxed">
-                            {event.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Image on the opposite side from content */}
-                      <div
-                        className={`w-5/12 ${
-                          isLeft ? "pl-8" : "pr-8"
-                        } flex items-center`}
-                      >
-                        <div
-                          className={`relative flex-1 h-60 rounded-xl overflow-hidden border border-white/20 shadow-lg transition-all duration-300 ${
-                            selectedEvent === index
-                              ? "ring-2 ring-jmv-gold scale-105"
-                              : ""
-                          }`}
-                        >
-                          {event.image ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={event.image}
-                              alt={event.title}
-                              className="absolute inset-0 h-full w-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.style.display = "none";
-                              }}
-                            />
-                          ) : null}
-                          <div
-                            className={`absolute inset-0 bg-gradient-to-br ${event.color} ${
-                              event.image
-                                ? "opacity-25 mix-blend-multiply"
-                                : "opacity-60"
-                            }`}
-                          />
-                          {!event.image ? (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <Icon className="w-16 h-16 text-white/40" />
-                            </div>
-                          ) : null}
-                          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
-                            <p className="text-white text-sm font-semibold">
-                              {event.year}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                      <StarsRing className="absolute h-44 w-44" />
+                      <MarianMonogram className="h-20 w-16" strokeWidth={4} />
                     </div>
-
-                    {/* Desktop Timeline Node */}
-                    <div className="hidden md:block absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                      <div
-                        className={`w-6 h-6 bg-gradient-to-r ${
-                          event.color
-                        } rounded-full border-4 border-white shadow-lg transition-all duration-300 ${
-                          selectedEvent === index
-                            ? "scale-150 shadow-xl"
-                            : "group-hover:scale-125"
-                        }`}
-                      ></div>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Selected Event Details */}
-        <ScrollReveal direction="up" delay={300}>
-          <div className="mt-16 text-center">
-            <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-4xl mx-auto">
-              <h4 className="text-2xl font-bold text-white mb-4">
-                Evento Destacado: {timelineEvents[selectedEvent].year}
-              </h4>
-              <h5 className="text-xl text-jmv-gold mb-4">
-                {timelineEvents[selectedEvent].title}
-              </h5>
-              <p className="text-white/80 text-lg leading-relaxed">
-                {timelineEvents[selectedEvent].description}
-              </p>
-            </div>
-          </div>
-        </ScrollReveal>
+                  )}
+                </div>
+              </article>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

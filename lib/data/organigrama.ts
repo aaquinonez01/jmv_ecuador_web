@@ -64,7 +64,7 @@ export interface BuildOrganigramaInput {
  * Consejo Nacional (raíz) → Zonas → Comunidades (grupos).
  *
  * El detalle de miembros y asesores del Consejo Nacional NO se incrusta aquí:
- * se muestra en el panel a partir de los datos en vivo (ver NodeDetailPanel).
+ * se muestra en el panel a partir de los datos en vivo (ver ConsejoNacionalSection).
  */
 export function buildOrganigrama({
   consejo,
