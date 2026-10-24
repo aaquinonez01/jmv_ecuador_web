@@ -1,45 +1,42 @@
-export interface User {
+// Tipos del blog "Comunidad JMV" (formato ya normalizado para la interfaz)
+
+export interface BlogCategory {
   id: string;
   name: string;
-  email: string;
+}
+
+export type PostType = "moments" | "documents";
+
+export interface PostAuthor {
+  id: string;
+  name: string;
   role: string;
   avatar?: string;
-  profilePicture?: string;
-  bio?: string;
-  location?: string;
-  zone?: string;
-  joinedDate: string;
-  stats: {
-    posts: number;
-    followers: number;
-    following: number;
-  };
-  social?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-  };
 }
 
 export interface Post {
-  id: number;
-  author: {
-    id: string;
-    name: string;
-    role: string;
-    avatar?: string;
-  };
+  id: string;
+  title: string;
   content: string;
-  images?: string[];
-  scope?: string; // local, zonal, nacional
-  activityType?: string; // formacion, comunidad-juvenil, apostolado, etc.
-  subtype?: string; // convivencia, retiro, etc.
-  // Legacy fields (mantener compatibilidad temporal)
-  category?: string;
-  subcategory?: string;
-  timestamp: string;
-  likes: number;
-  comments: number;
-  shares: number;
-  isLiked?: boolean;
+  typePost: PostType;
+  /** Fecha ISO de creación */
+  createdAt: string;
+  images: string[];
+  scope: BlogCategory | null;
+  activityType: BlogCategory | null;
+  subtype: BlogCategory | null;
+  author: PostAuthor;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  role: string;
+  avatar?: string;
+  bio?: string;
+  location?: string;
+  community?: string;
+  /** Fecha ISO de registro; solo si el backend la envía */
+  joinedAt?: string;
 }

@@ -1,32 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Mail,
-  ArrowLeft,
-  Send,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
+import { ArrowLeft, Loader2, Mail, MailCheck, Send } from "lucide-react";
+import { getAxiosClient } from "@/config/axios.config";
+import { buttonVariants } from "@/components/ui/button-variants";
+import EmailField from "./EmailField";
+import FormAlert from "./FormAlert";
 
 const forgotPasswordSchema = z.object({
   email: z
     .string()
-    .min(1, "El correo electrónico es requerido")
-    .email("Por favor ingresa un correo electrónico válido"),
+    .trim()
+    .min(1, "Escribe el correo de tu cuenta")
+    .email("Revisa tu correo: debe tener el formato nombre@ejemplo.com"),
 });
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
+function requestErrorMessage(error: unknown): string {
+  const err = error as { response?: { status?: number }; request?: unknown };
+  if (!err?.response && err?.request) {
+    return "No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.";
+  }
+  if (err?.response?.status === 429) {
+    return "Ya pediste varios enlaces seguidos. Espera unos minutos antes de volver a intentarlo.";
+  }
+  return "No pudimos enviar el correo en este momento. Inténtalo de nuevo en unos minutos.";
+}
+
 export default function ForgotPasswordForm() {
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
   const [serverError, setServerError] = useState("");
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const {
     register,
@@ -37,73 +46,73 @@ export default function ForgotPasswordForm() {
     defaultValues: { email: "" },
   });
 
+  useEffect(() => {
+    if (submittedEmail) successHeadingRef.current?.focus();
+  }, [submittedEmail]);
+
   const onSubmit = async (data: ForgotPasswordFormData) => {
+    setServerError("");
     try {
-      setServerError("");
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await getAxiosClient().post("/auth/forgot-password", {
+        email: data.email,
+      });
       setSubmittedEmail(data.email);
-      setIsSuccess(true);
-      console.log("Recovery email sent to:", data.email);
     } catch (error) {
-      setServerError(
-        "No pudimos enviar el correo. Por favor intenta de nuevo."
-      );
+      setServerError(requestErrorMessage(error));
     }
   };
 
-  if (isSuccess) {
+  if (submittedEmail) {
     return (
-      <div className="animate-fade-in text-center">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full shadow-lg mb-6 animate-float">
-          <CheckCircle className="w-10 h-10 text-white" />
+      <div className="text-center">
+        <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-700 shadow-lg">
+          <MailCheck className="h-10 w-10 text-white" aria-hidden="true" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-          ¡Correo enviado!
-        </h2>
-        <p className="text-gray-600 text-sm sm:text-base mb-6 max-w-sm mx-auto">
-          Hemos enviado las instrucciones para restablecer tu contraseña a{" "}
-          <span className="font-semibold text-jmv-blue break-all">
+        <h1
+          ref={successHeadingRef}
+          tabIndex={-1}
+          className="mb-3 font-display text-3xl font-semibold text-gray-900"
+        >
+          Revisa tu correo
+        </h1>
+        <p className="mx-auto mb-6 max-w-sm text-base text-gray-700">
+          Si hay una cuenta con{" "}
+          <span className="font-semibold break-all text-jmv-blue">
             {submittedEmail}
           </span>
+          , te enviamos un enlace para crear una nueva contraseña.
         </p>
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8 text-left">
-          <h3 className="font-semibold text-blue-900 mb-2 text-sm">
-            Próximos pasos:
-          </h3>
-          <ol className="space-y-2 text-sm text-blue-800">
-            <li className="flex items-start gap-2">
-              <span className="font-bold min-w-[20px]">1.</span>
-              <span>Revisa tu bandeja de entrada y carpeta de spam</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold min-w-[20px]">2.</span>
-              <span>
-                Haz clic en el enlace del correo (válido por 24 horas)
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold min-w-[20px]">3.</span>
-              <span>Crea tu nueva contraseña segura</span>
-            </li>
+        <div className="mb-8 rounded-xl border border-blue-200 bg-blue-50 p-4 text-left">
+          <h2 className="mb-2 text-sm font-semibold text-blue-950">
+            Próximos pasos
+          </h2>
+          <ol className="list-decimal space-y-2 pl-5 text-sm text-blue-900">
+            <li>Abre el correo de JMV Ecuador. Si no lo ves, busca en spam o promociones.</li>
+            <li>Toca el enlace del correo. Vale por 1 hora y solo se puede usar una vez.</li>
+            <li>Crea tu nueva contraseña.</li>
           </ol>
         </div>
-        <p className="text-xs text-gray-500 mb-6">
-          Si no recibes el correo en 5 minutos, verifica que la dirección sea
-          correcta
-        </p>
         <div className="space-y-3">
           <Link
             href="/sign-in"
-            className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            className={buttonVariants({
+              variant: "primary",
+              className: "w-full gap-2 font-semibold",
+            })}
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
             Volver al inicio de sesión
           </Link>
           <button
-            onClick={() => setIsSuccess(false)}
-            className="w-full text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors py-2"
+            type="button"
+            onClick={() => setSubmittedEmail(null)}
+            className={buttonVariants({
+              variant: "ghost",
+              size: "sm",
+              className: "w-full",
+            })}
           >
-            Usar otra dirección de correo
+            Usar otro correo
           </button>
         </div>
       </div>
@@ -111,90 +120,56 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div>
       <Link
         href="/sign-in"
-        className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-jmv-blue transition-colors mb-6 group font-medium"
+        className="mb-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-gray-700 hover:text-jmv-blue"
       >
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Volver al inicio de sesión
       </Link>
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-jmv-gold to-jmv-gold-dark rounded-2xl shadow-lg mb-4 animate-float">
-          <Mail className="w-8 h-8 text-white" />
+      <div className="mb-8 text-center">
+        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-jmv-gold shadow-lg">
+          <Mail className="h-8 w-8 text-jmv-ink" aria-hidden="true" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="mb-2 font-display text-3xl font-semibold text-gray-900">
           ¿Olvidaste tu contraseña?
-        </h2>
-        <p className="text-gray-600 text-sm sm:text-base max-w-sm mx-auto">
-          No te preocupes, te enviaremos un enlace para restablecerla
+        </h1>
+        <p className="mx-auto max-w-sm text-base text-gray-700">
+          No te preocupes: te enviamos un enlace a tu correo para que crees una nueva.
         </p>
       </div>
 
-      {serverError && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-700">{serverError}</p>
-        </div>
-      )}
+      {serverError ? <FormAlert className="mb-6">{serverError}</FormAlert> : null}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-semibold text-gray-700 mb-2"
-          >
-            Correo electrónico
-          </label>
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Mail
-                className={`w-5 h-5 transition-colors ${
-                  errors.email
-                    ? "text-red-400"
-                    : "text-gray-400 group-focus-within:text-jmv-gold"
-                }`}
-              />
-            </div>
-            <input
-              type="email"
-              id="email"
-              {...register("email")}
-              placeholder="tu@ejemplo.com"
-              className={`w-full pl-12 pr-4 py-3.5 border-2 rounded-xl focus:ring-2 focus:ring-jmv-gold/20 transition-all duration-200 outline-none text-sm sm:text-base ${
-                errors.email
-                  ? "border-red-300 focus:border-red-500 bg-red-50/50"
-                  : "border-gray-200 focus:border-jmv-gold hover:border-gray-300"
-              }`}
-            />
-          </div>
-          {errors.email && (
-            <p className="mt-2 text-sm text-red-600 flex items-center gap-1 animate-fade-in">
-              <AlertCircle className="w-4 h-4" />
-              {errors.email.message}
-            </p>
-          )}
-          {!errors.email && (
-            <p className="mt-2 text-xs text-gray-500">
-              Ingresa el correo electrónico asociado a tu cuenta
-            </p>
-          )}
-        </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <EmailField
+          id="email"
+          placeholder="tu@ejemplo.com"
+          hint="Usa el mismo correo con el que te registraste."
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full cursor-pointer bg-gradient-to-r from-jmv-gold to-jmv-gold-dark text-white py-3.5 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 text-sm sm:text-base"
+          aria-busy={isSubmitting || undefined}
+          className={buttonVariants({
+            variant: "gold",
+            size: "md",
+            className: "w-full gap-2 font-semibold",
+          })}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Enviando...
+              <Loader2 className="h-5 w-5 motion-safe:animate-spin" aria-hidden="true" />
+              Enviando…
             </>
           ) : (
             <>
-              <Send className="w-5 h-5" />
-              Enviar instrucciones
+              <Send className="h-5 w-5" aria-hidden="true" />
+              Enviarme el enlace
             </>
           )}
         </button>
