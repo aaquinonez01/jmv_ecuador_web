@@ -37,13 +37,32 @@ type ResetFormData = z.infer<typeof resetSchema>;
 
 const VALID_TOKEN = /^[0-9a-f]{64}$/i;
 
+type ResetError = {
+  response?: { status?: number; data?: { message?: string | string[] } };
+  request?: unknown;
+};
+
+/** El backend responde 400 con message string si el token no sirve, y con un array si falla la validación */
+function isExpiredLink(error: unknown): boolean {
+  const res = (error as ResetError)?.response;
+  return res?.status === 400 && !Array.isArray(res.data?.message);
+}
+
 function resetErrorMessage(error: unknown): string {
-  const err = error as { response?: { status?: number }; request?: unknown };
+  const err = error as ResetError;
   if (!err?.response && err?.request) {
     return "No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.";
   }
-  if (err?.response?.status === 400) {
+  if (isExpiredLink(error)) {
     return "Este enlace ya no es válido: puede que haya caducado o que ya se haya usado. Pide uno nuevo.";
+  }
+  const message = err?.response?.data?.message;
+  if (err?.response?.status === 400 && Array.isArray(message)) {
+    // Si el token no pasa la validación del backend, también es un enlace que no sirve
+    if (message.includes("El enlace no es válido")) {
+      return "Este enlace no es válido. Abre el enlace completo del correo o pide uno nuevo.";
+    }
+    return "Revisa tu nueva contraseña: debe tener de 6 a 50 caracteres, una mayúscula, una minúscula y un número o símbolo.";
   }
   if (err?.response?.status === 429) {
     return "Hiciste muchos intentos seguidos. Espera unos minutos y vuelve a intentarlo.";
@@ -77,9 +96,11 @@ export default function ResetPasswordForm() {
       });
       router.replace("/sign-in?restablecida=1");
     } catch (error) {
-      const status = (error as { response?: { status?: number } })?.response
-        ?.status;
-      setLinkExpired(status === 400);
+      const message = (error as ResetError)?.response?.data?.message;
+      setLinkExpired(
+        isExpiredLink(error) ||
+          (Array.isArray(message) && message.includes("El enlace no es válido")),
+      );
       setServerError(resetErrorMessage(error));
     }
   };

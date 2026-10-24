@@ -26,6 +26,9 @@ function requestErrorMessage(error: unknown): string {
   if (!err?.response && err?.request) {
     return "No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.";
   }
+  if (err?.response?.status === 400) {
+    return "Revisa tu correo: debe tener el formato nombre@ejemplo.com";
+  }
   if (err?.response?.status === 429) {
     return "Ya pediste varios enlaces seguidos. Espera unos minutos antes de volver a intentarlo.";
   }
