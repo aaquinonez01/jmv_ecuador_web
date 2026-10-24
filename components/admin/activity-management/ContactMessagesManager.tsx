@@ -12,6 +12,7 @@ import PageHeader from "@/components/admin/layout/PageHeader";
 import { useToast } from "@/lib/hooks/useToast";
 import { formatDateTime } from "@/lib/format";
 import { whatsappLink } from "@/lib/whatsapp";
+import { toWhatsappNumber } from "@/lib/comunidades";
 import type { ContactMessageItem, ContactMessageOrigen } from "@/types/contact-message";
 import {
   ChevronLeft,
@@ -42,15 +43,6 @@ const origenOptions: { value: OrigenFilter; label: string }[] = [
   { value: "contacto", label: "Contacto" },
   { value: "unete", label: "Únete" },
 ];
-
-/** Número ecuatoriano a formato wa.me (solo móviles 09…) */
-function toWhatsapp(phone?: string | null) {
-  if (!phone) return null;
-  const digits = phone.replace(/\D/g, "");
-  if (/^5939\d{8}$/.test(digits)) return digits;
-  if (/^09\d{8}$/.test(digits)) return `593${digits.slice(1)}`;
-  return null;
-}
 
 export default function ContactMessagesManager() {
   const toast = useToast();
@@ -204,7 +196,7 @@ export default function ContactMessagesManager() {
         ) : (
           <ul className="space-y-3">
             {items.map((item) => {
-              const wa = toWhatsapp(item.telefono);
+              const wa = toWhatsappNumber(item.telefono);
               return (
                 <li
                   key={item.id}
