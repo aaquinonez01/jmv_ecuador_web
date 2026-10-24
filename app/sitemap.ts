@@ -4,6 +4,9 @@ import { calendarHref } from "@/lib/calendario";
 
 const BASE = "https://jmvecuador.org";
 
+// Se regenera cada hora para sumar las fechas nuevas del Año Vicenciano
+export const revalidate = 3600;
+
 const routes = [
   "",
   "/actividades",
