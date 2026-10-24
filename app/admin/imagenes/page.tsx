@@ -3,7 +3,7 @@ import ImagenesClient from "./ImagenesClient";
 import { mockSections } from "@/data/admin/mockSections";
 
 export const metadata: Metadata = {
-  title: "Gestión de Imágenes | Panel Administrativo | JMV Ecuador",
+  title: "Gestión de imágenes · Panel administrativo",
   description: "Administra todas las imágenes del sitio web de Juventudes Marianas Vicencianas Ecuador organizadas por secciones",
 };
 

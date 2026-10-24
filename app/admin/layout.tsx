@@ -4,7 +4,7 @@ import AdminShell from "@/components/admin/layout/AdminShell";
 import ToastContainer from "@/components/admin/ui/ToastContainer";
 
 export const metadata: Metadata = {
-  title: "Panel Administrativo | JMV Ecuador",
+  title: "Panel administrativo",
   description: "Panel administrativo de Juventudes Marianas Vicencianas Ecuador",
 };
 
