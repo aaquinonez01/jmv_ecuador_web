@@ -20,6 +20,7 @@ import {
   MessageSquareQuote,
   Settings,
   Sparkles,
+  Star,
   Users,
 } from "lucide-react";
 import { removeToken } from "@/lib/auth/token";
@@ -77,6 +78,12 @@ export default function AdminSidebar() {
             <FolderKanban className="h-[18px] w-[18px]" strokeWidth={1.85} />
           ),
           active: pathname.startsWith("/admin/actividades"),
+        },
+        {
+          label: "Año Vicenciano",
+          href: "/admin/calendario",
+          icon: <Star className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/calendario"),
         },
         {
           label: "Catálogos",
