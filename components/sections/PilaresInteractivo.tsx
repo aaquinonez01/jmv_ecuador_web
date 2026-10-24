@@ -12,6 +12,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { TwoHearts } from "@/components/brand";
 import SectionHeading from "../ui/SectionHeading";
 import { buttonVariants } from "../ui/button-variants";
 import { useTabs } from "./institucional/useTabs";
@@ -21,7 +22,8 @@ interface Pilar {
   nombre: string;
   subtitulo: string;
   icono: LucideIcon;
-  imagen: string;
+  /** Foto real del archivo; sin ella se muestra el motivo de los dos corazones */
+  imagen?: string;
   cita: { texto: string; fuente: string };
   descripcion: string[];
   puntos: { titulo: string; desc: string }[];
@@ -98,8 +100,7 @@ const pilares: Pilar[] = [
     nombre: "Apostolado",
     subtitulo: "Servir como el buen samaritano",
     icono: HandHeart,
-    // Sin foto propia de servicio todavía: imagen de banco provisional.
-    imagen: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1000&q=75&auto=format",
+    // Sin foto real de servicio todavía: se usa el motivo gráfico, no una foto de banco
     cita: {
       texto: "Servir a los pobres es servir a Jesucristo. El amor es infinitamente inventivo.",
       fuente: "San Vicente de Paúl",
@@ -296,7 +297,6 @@ export default function PilaresInteractivo() {
 
         {pilares.map((pilar, i) => {
           const Icon = pilar.icono;
-          const remota = pilar.imagen.startsWith("http");
           return (
             <div
               key={pilar.id}
@@ -304,15 +304,20 @@ export default function PilaresInteractivo() {
               className="grid grid-cols-1 gap-6 overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-5 motion-safe:animate-in motion-safe:fade-in-0 sm:p-6 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:p-8"
             >
               <div className="relative min-h-72 overflow-hidden rounded-2xl lg:min-h-[480px]">
-                <Image
-                  src={pilar.imagen}
-                  alt=""
-                  fill
-                  loading="lazy"
-                  unoptimized={remota}
-                  sizes="(max-width: 1024px) 100vw, 560px"
-                  className="object-cover"
-                />
+                {pilar.imagen ? (
+                  <Image
+                    src={pilar.imagen}
+                    alt=""
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 1024px) 100vw, 560px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-jmv" aria-hidden="true">
+                    <TwoHearts className="absolute top-8 left-1/2 w-3/4 max-w-sm -translate-x-1/2 text-jmv-gold-text/40" />
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-jmv-ink via-jmv-ink/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink shadow-lg">
