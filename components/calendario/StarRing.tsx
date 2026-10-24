@@ -330,7 +330,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
         {activeDot && tooltipPos && (
           <motion.div
             key={activeDot.entry.key}
-            role="tooltip"
+            aria-hidden="true"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}

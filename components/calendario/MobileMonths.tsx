@@ -154,7 +154,7 @@ export default function MobileMonths({
             animate={{ opacity: 1, x: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, x: direction * -60 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            drag={reduce ? false : "x"}
+            drag="x"
             dragDirectionLock
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.18}
