@@ -1,130 +1,76 @@
-"use client";
-
 import Link from "next/link";
-import { UserPlus, LogIn, Heart, Users, BookOpen, Sparkles } from "lucide-react";
+import { BookOpen, Camera, LogIn, UserPlus, Users } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button-variants";
 
+export const SIGN_IN_FROM_BLOG = "/sign-in?redirect=/blog";
+
+const BENEFITS = [
+  {
+    icon: Camera,
+    title: "Comparte tus momentos",
+    text: "Encuentros, misiones y servicio que viviste con tu comunidad.",
+  },
+  {
+    icon: BookOpen,
+    title: "Aporta recursos",
+    text: "Formaciones y materiales que pueden servir a otras comunidades.",
+  },
+  {
+    icon: Users,
+    title: "Conecta con otras zonas",
+    text: "Mira lo que viven jóvenes de JMV en todo el Ecuador.",
+  },
+];
+
+// Tarjeta para visitantes sin sesión
 export default function WelcomeCard() {
   return (
-    <div className="bg-gradient-to-br from-white via-white to-jmv-blue/5 rounded-2xl shadow-lg border border-jmv-blue/20 overflow-hidden">
-      {/* Header con degradado */}
-      <div className="bg-gradient-to-r from-jmv-blue to-jmv-blue-dark p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10" />
-        <div className="relative z-10">
-          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto">
-            <Heart className="w-8 h-8 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-center mb-2">
-            ¡Únete a nuestra comunidad!
-          </h3>
-          <p className="text-sm text-white/90 text-center">
-            Comparte momentos, aprende y crece con nosotros
-          </p>
-        </div>
+    <section
+      aria-labelledby="welcome-card-title"
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      data-surface="light"
+    >
+      <div className="bg-jmv-blue p-5 text-white">
+        <h2 id="welcome-card-title" className="font-display text-xl font-semibold">
+          Sé parte de la comunidad
+        </h2>
+        <p className="mt-1 text-sm text-white/90">
+          Para publicar necesitas una cuenta de JMV Ecuador.
+        </p>
       </div>
 
-      {/* Contenido */}
-      <div className="p-6 space-y-6">
-        {/* Beneficios */}
-        <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-jmv-gold/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Users className="w-5 h-5 text-jmv-gold" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                Conecta con jóvenes
-              </h4>
-              <p className="text-xs text-gray-600">
-                Conoce personas con tu misma fe y valores
-              </p>
-            </div>
-          </div>
+      <div className="space-y-5 p-5">
+        <ul className="space-y-3">
+          {BENEFITS.map(({ icon: Icon, title, text }) => (
+            <li key={title} className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-jmv-blue/10">
+                <Icon className="h-5 w-5 text-jmv-blue" aria-hidden="true" />
+              </span>
+              <span>
+                <strong className="block text-sm font-semibold text-gray-900">{title}</strong>
+                <span className="text-sm text-gray-700">{text}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
 
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-jmv-blue/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <BookOpen className="w-5 h-5 text-jmv-blue" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                Formación continua
-              </h4>
-              <p className="text-xs text-gray-600">
-                Accede a recursos y documentos formativos
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-jmv-red/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-5 h-5 text-jmv-red" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-900 text-sm mb-1">
-                Experiencias únicas
-              </h4>
-              <p className="text-xs text-gray-600">
-                Participa en retiros, encuentros y actividades
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Separador */}
-        <div className="border-t border-gray-200" />
-
-        {/* Botones de acción */}
-        <div className="space-y-3">
+        <div className="space-y-2">
+          <Link
+            href={SIGN_IN_FROM_BLOG}
+            className={buttonVariants({ variant: "primary", className: "w-full gap-2" })}
+          >
+            <LogIn className="h-5 w-5" aria-hidden="true" />
+            Iniciar sesión
+          </Link>
           <Link
             href="/unete"
-            className="w-full bg-gradient-to-r from-jmv-blue to-jmv-blue-dark text-white px-4 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 group"
+            className={buttonVariants({ variant: "outline", className: "w-full gap-2" })}
           >
-            <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span>Únete a JMV</span>
+            <UserPlus className="h-5 w-5" aria-hidden="true" />
+            Únete a JMV
           </Link>
-
-          <Link
-            href="/auth/signin"
-            className="w-full bg-white text-jmv-blue px-4 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2 border-2 border-jmv-blue group"
-          >
-            <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            <span>Iniciar Sesión</span>
-          </Link>
-        </div>
-
-        {/* Estadísticas de la comunidad */}
-        <div className="bg-gradient-to-r from-jmv-gold/5 to-jmv-gold/10 rounded-xl p-4 border border-jmv-gold/20">
-          <p className="text-xs text-gray-600 text-center mb-3 font-medium">
-            Más de 300 jóvenes en Ecuador
-          </p>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div>
-              <div className="text-lg font-bold text-jmv-blue">15+</div>
-              <div className="text-xs text-gray-600">Comunidades</div>
-            </div>
-            <div className="border-x border-jmv-gold/30">
-              <div className="text-lg font-bold text-jmv-blue">50+</div>
-              <div className="text-xs text-gray-600">Actividades</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-jmv-blue">15</div>
-              <div className="text-xs text-gray-600">Provincias</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Llamado a la acción final */}
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            ¿Ya tienes cuenta?{" "}
-            <Link
-              href="/auth/signin"
-              className="text-jmv-blue font-semibold hover:underline"
-            >
-              Inicia sesión aquí
-            </Link>
-          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
