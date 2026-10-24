@@ -14,6 +14,27 @@ function isValid(d: Date) {
   return !Number.isNaN(d.getTime());
 }
 
+/**
+ * Las fechas sin hora (inputs type="date" del admin) llegan como medianoche UTC.
+ * Si se mostraran en hora de Ecuador (UTC-5) saldrían un día antes.
+ */
+export function isDateOnly(value: DateInput) {
+  const d = toDate(value);
+  return (
+    isValid(d) &&
+    d.getUTCHours() === 0 &&
+    d.getUTCMinutes() === 0 &&
+    d.getUTCSeconds() === 0 &&
+    d.getUTCMilliseconds() === 0
+  );
+}
+
+/** Instante real del evento: una fecha sin hora empieza a medianoche de Ecuador */
+export function toEventInstant(value: DateInput) {
+  const d = toDate(value);
+  return isDateOnly(d) ? new Date(d.getTime() + 5 * 60 * 60 * 1000) : d;
+}
+
 /** "24 de octubre de 2026" por defecto */
 export function formatDate(
   value: DateInput,
@@ -21,7 +42,8 @@ export function formatDate(
 ) {
   const d = toDate(value);
   if (!isValid(d)) return "";
-  return new Intl.DateTimeFormat(LOCALE, { timeZone: TIME_ZONE, ...opts }).format(d);
+  const timeZone = isDateOnly(d) ? "UTC" : TIME_ZONE;
+  return new Intl.DateTimeFormat(LOCALE, { timeZone, ...opts }).format(d);
 }
 
 /** "24 de octubre de 2026, 18:30" por defecto */
@@ -38,8 +60,9 @@ export function formatDateTime(
   return formatDate(value, opts);
 }
 
-/** "18:30" */
+/** "18:30" ("" si la fecha no tiene hora) */
 export function formatTime(value: DateInput) {
+  if (isDateOnly(value)) return "";
   return formatDate(value, { hour: "2-digit", minute: "2-digit" });
 }
 

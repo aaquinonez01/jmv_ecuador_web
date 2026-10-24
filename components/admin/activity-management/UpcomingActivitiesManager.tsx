@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/lib/hooks/useToast";
+import { formatDate } from "@/lib/format";
 import type {
   ActivityCatalogItem,
   UpcomingActivityItem,
@@ -116,11 +117,7 @@ function formatDateInput(value?: string | null) {
 
 function formatDateLabel(value?: string | null) {
   if (!value) return "Sin fecha";
-  return new Intl.DateTimeFormat("es-EC", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
+  return formatDate(value, { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function statusLabel(status?: string | null) {

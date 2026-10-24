@@ -1,6 +1,7 @@
 // "Agregar a mi calendario": enlace de Google Calendar y archivo .ics (Apple/Outlook).
 
 import { SITE } from "./site";
+import { isDateOnly } from "./format";
 
 export interface CalendarEvent {
   title: string;
@@ -45,7 +46,8 @@ function utcStamp(d: Date) {
 
 /** 20261024 (fecha en hora de Ecuador, UTC-5 sin horario de verano) */
 function dateStamp(d: Date) {
-  const ec = new Date(d.getTime() - 5 * 60 * 60 * 1000);
+  // Las fechas sin hora ya vienen como medianoche UTC del día correcto
+  const ec = isDateOnly(d) ? d : new Date(d.getTime() - 5 * 60 * 60 * 1000);
   return `${ec.getUTCFullYear()}${pad(ec.getUTCMonth() + 1)}${pad(ec.getUTCDate())}`;
 }
 

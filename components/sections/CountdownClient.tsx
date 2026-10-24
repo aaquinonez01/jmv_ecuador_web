@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toEventInstant } from "@/lib/format";
 
 type CountdownTargetType = "registration_close" | "event_start" | string;
 
@@ -11,7 +12,7 @@ type Props = {
 
 function calculate(targetDate?: string | null) {
   if (!targetDate) return null;
-  const target = new Date(targetDate).getTime();
+  const target = toEventInstant(targetDate).getTime();
   if (Number.isNaN(target)) return null;
   const diff = target - Date.now();
   if (diff <= 0) {

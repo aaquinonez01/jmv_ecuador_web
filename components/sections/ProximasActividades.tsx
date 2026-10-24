@@ -185,13 +185,20 @@ export default async function ProximasActividades({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_0.9fr]">
+          // Con una sola actividad la tarjeta ocupa todo el ancho (sin columna vacía)
+          <div
+            className={
+              secondaryItems.length > 0
+                ? "grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_0.9fr]"
+                : undefined
+            }
+          >
             <article
               aria-labelledby={`evento-${featured.id}`}
               className="overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.06] shadow-2xl"
             >
               <div className="flex flex-col lg:flex-row">
-                <div className="order-2 flex-1 p-5 sm:p-6 lg:order-1 lg:p-8">
+                <div className="order-2 min-w-0 flex-1 p-5 sm:p-6 lg:order-1 lg:p-10">
                   <div className="mb-4 flex flex-wrap gap-2">
                     <StatusBadge status={featured.registrationStatus} />
                     {featured.type?.name ? (
@@ -275,18 +282,31 @@ export default async function ProximasActividades({
                   )}
                 </div>
 
-                <div className="order-1 flex w-full shrink-0 items-center justify-center bg-white/5 p-4 lg:order-2 lg:w-2/5">
+                {/* El afiche suele ser vertical: se muestra entero sobre una versión
+                    desenfocada de sí mismo, que rellena el panel sin dejar huecos */}
+                <div className="relative isolate order-1 flex w-full shrink-0 items-center justify-center overflow-hidden bg-jmv-ink/60 lg:order-2 lg:w-[42%]">
                   {featured.coverImageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={getOptimizedUrl(featured.coverImageUrl, { w: 800 })}
-                      srcSet={getSrcSet(featured.coverImageUrl, [400, 800, 1200])}
-                      sizes="(min-width: 1280px) 30vw, (min-width: 1024px) 40vw, 100vw"
-                      loading="lazy"
-                      decoding="async"
-                      alt=""
-                      className="max-h-72 w-full rounded-2xl object-contain lg:max-h-none"
-                    />
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getOptimizedUrl(featured.coverImageUrl, { w: 200 })}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 -z-10 h-full w-full scale-125 object-cover opacity-60 blur-2xl"
+                      />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getOptimizedUrl(featured.coverImageUrl, { w: 800 })}
+                        srcSet={getSrcSet(featured.coverImageUrl, [400, 800, 1200])}
+                        sizes="(min-width: 1024px) 42vw, 100vw"
+                        loading="lazy"
+                        decoding="async"
+                        alt={`Afiche de ${featured.title}`}
+                        className="h-auto max-h-[75svh] w-full object-contain p-4 drop-shadow-2xl sm:p-6 lg:max-h-[44rem] lg:p-8"
+                      />
+                    </>
                   ) : (
                     <div
                       aria-hidden="true"
