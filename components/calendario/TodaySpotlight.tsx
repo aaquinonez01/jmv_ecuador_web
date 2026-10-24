@@ -64,8 +64,9 @@ export default function TodaySpotlight({ upcoming, now }: { upcoming: CalendarEn
 
             <div className="flex items-end gap-5">
               {isToday ? (
-                <p className="font-display text-6xl font-semibold leading-none text-white sm:text-7xl" aria-hidden="true">
-                  ¡Hoy!
+                <p className="flex items-end gap-3 leading-none" aria-hidden="true">
+                  <span className="font-display text-6xl font-semibold text-white sm:text-7xl">¡Hoy!</span>
+                  <span className="pb-2 text-lg font-semibold text-jmv-gold-text">{dayLabel(main.month, main.day)}</span>
                 </p>
               ) : (
                 <p className="flex items-end gap-3 leading-none">

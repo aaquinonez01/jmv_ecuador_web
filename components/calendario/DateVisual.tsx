@@ -2,6 +2,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { getOptimizedUrl, getSrcSet } from "@/lib/helpers/cloudinary";
 import { MarianMonogram, StarsRing, TwoHearts } from "@/components/brand";
+import { starPoints } from "@/components/brand/svg-props";
 import { categoryStyle, isCloudinary, type EntryCategory } from "./shared";
 
 // Imagen de una fecha o, si no tiene, un motivo de la Medalla sobre un degradado de su categoría.
@@ -32,7 +33,11 @@ export function CategoryMotif({ category, className }: { category: EntryCategory
       <StarsRing className="absolute h-[88%] w-auto max-w-[88%] opacity-40" withCircle={motif === "stars"} />
       {motif === "monogram" && <MarianMonogram className="relative h-[38%] w-auto opacity-90" strokeWidth={5} />}
       {motif === "hearts" && <TwoHearts className="relative h-auto w-[46%] opacity-90" strokeWidth={2.4} />}
-      {motif === "stars" && <StarsRing className="relative h-[34%] w-auto opacity-90" />}
+      {motif === "stars" && (
+        <svg viewBox="0 0 40 40" className="relative h-[30%] w-auto opacity-90 drop-shadow-[0_0_18px_var(--cat)]">
+          <polygon points={starPoints(20, 21, 18)} fill="currentColor" />
+        </svg>
+      )}
     </div>
   );
 }
