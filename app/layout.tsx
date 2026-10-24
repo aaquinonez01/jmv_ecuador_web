@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Poppins, Dancing_Script } from "next/font/google";
+import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PublicChrome from "@/components/layout/PublicChrome";
 import { cn } from "@/lib/utils";
+import { SITE } from "@/lib/site";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -12,20 +14,21 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const dancingScript = Dancing_Script({
-  weight: ["400", "600"],
+// Serif editorial cálida para titulares y lemas (utilidad font-display)
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-dancing",
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Juventudes Marianas Vicencianas Ecuador",
-    template: "%s | JMV Ecuador",
+    default: SITE.fullName,
+    // Las páginas sólo ponen su título; el sufijo lo añade esta plantilla
+    template: `%s | ${SITE.name}`,
   },
-  description:
-    "Juventudes Marianas Vicencianas Ecuador - Formando jóvenes comprometidos con el servicio, la fe y la transformación social bajo el carisma vicenciano.",
+  description: `${SITE.fullName}: ${SITE.shortDescription}`,
   keywords: [
     "JMV",
     "Juventudes Marianas Vicencianas",
@@ -38,41 +41,31 @@ export const metadata: Metadata = {
     "Pastoral juvenil",
     "Carisma vicenciano",
   ],
-  authors: [{ name: "JMV Ecuador" }],
-  creator: "JMV Ecuador",
-  publisher: "JMV Ecuador",
+  authors: [{ name: SITE.name }],
+  creator: SITE.name,
+  publisher: SITE.name,
   formatDetection: {
     email: false,
     address: false,
-    telephone: false,
+    telephone: true,
   },
-  metadataBase: new URL("https://jmvecuador.org"),
+  metadataBase: new URL(SITE.url),
   alternates: {
     canonical: "/",
   },
+  // La imagen la generan app/opengraph-image.tsx y app/twitter-image.tsx
   openGraph: {
-    title: "Juventudes Marianas Vicencianas Ecuador",
-    description:
-      "Formando jóvenes comprometidos con el servicio, la fe y la transformación social bajo el carisma vicenciano.",
-    url: "https://jmvecuador.org",
-    siteName: "JMV Ecuador",
-    locale: "es_EC",
+    title: SITE.fullName,
+    description: SITE.shortDescription,
+    url: SITE.url,
+    siteName: SITE.name,
+    locale: SITE.locale,
     type: "website",
-    images: [
-      {
-        url: "/images/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "JMV Ecuador - Juventudes Marianas Vicencianas",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Juventudes Marianas Vicencianas Ecuador",
-    description:
-      "Formando jóvenes comprometidos con el servicio, la fe y la transformación social bajo el carisma vicenciano.",
-    images: ["/images/twitter-image.jpg"],
+    title: SITE.fullName,
+    description: SITE.shortDescription,
   },
   robots: {
     index: true,
@@ -95,14 +88,23 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={cn("scroll-smooth dark", "font-sans", poppins.variable)}
+      className={cn("scroll-smooth dark font-sans", poppins.variable, fraunces.variable)}
     >
-      <body
-        className={`${poppins.variable} ${dancingScript.variable} antialiased bg-slate-900 text-slate-100`}
-      >
+      <body className="antialiased">
+        <a
+          href="#contenido"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-jmv-blue focus:shadow-xl"
+          data-surface="light"
+        >
+          Saltar al contenido
+        </a>
         <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <main id="contenido" tabIndex={-1} className="min-h-screen">
+          {children}
+        </main>
+        <PublicChrome>
+          <Footer />
+        </PublicChrome>
       </body>
     </html>
   );
