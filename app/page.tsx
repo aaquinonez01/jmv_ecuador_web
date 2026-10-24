@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import HeroSection from "@/components/sections/HeroSection";
 import HomeAnnouncementBanner from "@/components/sections/HomeAnnouncementBanner";
+import ProximaFiesta from "@/components/calendario/ProximaFiesta";
 import ProximasActividades from "@/components/sections/ProximasActividades";
 import ActivitiesGalleryServer from "@/components/sections/ActivitiesGalleryServer";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
@@ -18,6 +19,9 @@ export default function Home() {
       <HeroSection />
       <Suspense fallback={null}>
         <HomeAnnouncementBanner />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ProximaFiesta />
       </Suspense>
       <Suspense
         fallback={
