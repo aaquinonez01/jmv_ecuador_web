@@ -1,13 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import ActivityGalleryModal from "./ActivityGalleryModal";
-
-const ActivityLightbox = dynamic(() => import("./ActivityLightbox"), {
-  ssr: false,
-});
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { getOptimizedUrl, getSrcSet } from "@/lib/helpers/cloudinary";
+import { createApi } from "@/config/axios.config";
+import { formatDate, toIsoString } from "@/lib/format";
+import { buttonVariants } from "@/components/ui/button-variants";
 import {
   Select,
   SelectContent,
@@ -18,294 +17,460 @@ import {
 import type {
   ActivityCatalogItem,
   ActivityItem,
+  PaginatedResponse,
 } from "@/types/activity-management";
-import {
-  CalendarDays,
-  Camera,
-  Filter,
-  Layers3,
-  MapPin,
-  Shapes,
-  Users,
-  X,
-} from "lucide-react";
+import { CalendarDays, Camera, Filter, Layers3, MapPin, RefreshCw, Shapes, Users, X } from "lucide-react";
 
-function formatDate(value?: string | null) {
-  if (!value) return "Por confirmar";
-  return new Intl.DateTimeFormat("es-EC", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
+const ActivityLightbox = dynamic(() => import("./ActivityLightbox"), {
+  ssr: false,
+});
+
+export interface AlbumSlide {
+  src: string;
+  alt: string;
 }
 
-function buildSlides(activity: ActivityItem) {
+function buildSlides(activity: ActivityItem): AlbumSlide[] {
   if (activity.gallery.length > 0) {
-    return activity.gallery.map((image) => ({
+    return activity.gallery.map((image, index) => ({
       src: image.url,
-      alt: image.alt || activity.title,
+      alt: image.alt && image.alt !== activity.title ? image.alt : `${activity.title}, foto ${index + 1}`,
     }));
   }
-
   if (activity.coverImageUrl) {
     return [{ src: activity.coverImageUrl, alt: activity.title }];
   }
-
   return [];
 }
 
-function ActivityCard({
-  activity,
-  onOpen,
-}: {
-  activity: ActivityItem;
-  onOpen: () => void;
-}) {
-  return (
-    <button
-      onClick={onOpen}
-      className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/6 text-left shadow-xl backdrop-blur-sm transition hover:-translate-y-1 hover:bg-white/8"
-    >
-      <div className="relative h-64 overflow-hidden bg-slate-900/40">
-        {activity.coverImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={getOptimizedUrl(activity.coverImageUrl, { w: 800 })}
-            decoding="async"
-            alt={activity.title}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-white/45">
-            <Camera className="h-10 w-10" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#07132F] via-[#07132F]/25 to-transparent" />
-        <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
-          {activity.type?.name ? (
-            <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-sm">
-              {activity.type.name}
-            </span>
-          ) : null}
-          {activity.pillar?.name ? (
-            <span className="rounded-full bg-jmv-gold px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
-              {activity.pillar.name}
-            </span>
-          ) : null}
-        </div>
-      </div>
+function cardDate(value?: string | null) {
+  if (!value) return null;
+  return formatDate(value, { day: "numeric", month: "short", year: "numeric" });
+}
 
-      <div className="space-y-4 p-6 text-white">
-        <div>
-          <h3 className="text-2xl font-semibold">{activity.title}</h3>
-          <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/70">
+function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: () => void }) {
+  const date = cardDate(activity.startDate);
+  const photos = activity.gallery.length;
+  return (
+    <li>
+      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/[0.06] text-left shadow-xl transition-colors hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-900/40">
+          {activity.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={getOptimizedUrl(activity.coverImageUrl, { w: 800 })}
+              srcSet={getSrcSet(activity.coverImageUrl, [400, 800, 1200])}
+              sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"
+              loading="lazy"
+              decoding="async"
+              alt=""
+              className="h-full w-full object-cover transition duration-500 motion-safe:group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-white/60">
+              <Camera className="h-10 w-10" aria-hidden />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07132F] via-[#07132F]/25 to-transparent" />
+          <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
+            {activity.type?.name ? (
+              <span className="rounded-full bg-jmv-ink/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                {activity.type.name}
+              </span>
+            ) : null}
+            {activity.pillar?.name ? (
+              <span className="rounded-full bg-jmv-gold px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-jmv-ink">
+                {activity.pillar.name}
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-4 p-6 text-white">
+          <h3 className="text-2xl font-semibold">
+            {/* Botón "estirado": toda la tarjeta abre el álbum, sin anidar contenido de bloque en el botón */}
+            <button
+              type="button"
+              onClick={onOpen}
+              className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+            >
+              {activity.title}
+              <span className="sr-only">. Ver álbum{photos ? ` de ${photos} fotos` : ""}</span>
+            </button>
+          </h3>
+          <p className="line-clamp-3 text-sm leading-6 text-slate-200">
             {activity.summary || activity.description}
           </p>
-        </div>
 
-        <div className="grid grid-cols-1 gap-3 text-sm text-white/75 sm:grid-cols-2">
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-jmv-gold" />
-            <span>{formatDate(activity.startDate)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-jmv-gold" />
-            <span>{activity.location || "Lugar por confirmar"}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-jmv-gold" />
-            <span>{activity.participantsLabel || "Participación abierta"}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Camera className="h-4 w-4 text-jmv-gold" />
-            <span>{activity.gallery.length} fotos</span>
-          </div>
+          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-slate-100 sm:grid-cols-2">
+            {date && (
+              <li className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                <time dateTime={toIsoString(activity.startDate!)}>{date}</time>
+              </li>
+            )}
+            {activity.location && (
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                {activity.location}
+              </li>
+            )}
+            {activity.participantsLabel && (
+              <li className="flex items-center gap-2">
+                <Users className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                {activity.participantsLabel}
+              </li>
+            )}
+            <li className="flex items-center gap-2" aria-hidden="true">
+              <Camera className="h-4 w-4 shrink-0 text-jmv-gold-text" />
+              {photos} {photos === 1 ? "foto" : "fotos"}
+            </li>
+          </ul>
         </div>
-      </div>
-    </button>
+      </article>
+    </li>
   );
 }
 
+const selectTrigger =
+  "h-11 w-full rounded-xl border-white/20 bg-jmv-ink/40 px-3.5 text-sm text-white data-[size=default]:h-11 hover:border-white/40 [&>svg]:text-white/80 [&_[data-placeholder]]:text-white/80";
+const selectItem =
+  "min-h-11 text-white focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold-text";
+
+function CatalogSelect({
+  id,
+  label,
+  icon: Icon,
+  allLabel,
+  value,
+  onChange,
+  options,
+}: {
+  id: string;
+  label: string;
+  icon: typeof Layers3;
+  allLabel: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: ActivityCatalogItem[];
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label
+        htmlFor={id}
+        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-200"
+      >
+        <Icon className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden />
+        {label}
+      </label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={id} className={selectTrigger}>
+          <SelectValue placeholder={allLabel} />
+        </SelectTrigger>
+        <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
+          <SelectItem value="all" className={selectItem}>
+            {allLabel}
+          </SelectItem>
+          {options.map((option) => (
+            <SelectItem key={option.id} value={option.id} className={selectItem}>
+              {option.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+type Status = "idle" | "loading" | "loadingMore" | "error";
+
 export default function ActivitiesAlbumsClient({
-  activities,
+  initial,
+  pageSize,
   pillars,
   types,
 }: {
-  activities: ActivityItem[];
+  /** null si el servidor no pudo cargar la primera página */
+  initial: PaginatedResponse<ActivityItem> | null;
+  pageSize: number;
   pillars: ActivityCatalogItem[];
   types: ActivityCatalogItem[];
 }) {
+  const [items, setItems] = useState<ActivityItem[]>(initial?.items ?? []);
+  const [total, setTotal] = useState(initial?.total ?? 0);
+  const [status, setStatus] = useState<Status>(initial ? "idle" : "loading");
   const [selectedPillar, setSelectedPillar] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [openActivity, setOpenActivity] = useState<ActivityItem | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxRoot, setLightboxRoot] = useState<HTMLElement | null>(null);
+  const requestId = useRef(0);
+  const firstNewRef = useRef<number | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
-  const filteredActivities = useMemo(() => {
-    return activities.filter((activity) => {
-      const matchesPillar =
-        selectedPillar === "all" || activity.pillar?.id === selectedPillar;
-      const matchesType =
-        selectedType === "all" || activity.type?.id === selectedType;
-      return matchesPillar && matchesType;
-    });
-  }, [activities, selectedPillar, selectedType]);
+  const hasFilters = selectedPillar !== "all" || selectedType !== "all";
+
+  const fetchPage = useCallback(
+    async (offset: number, append: boolean) => {
+      const id = ++requestId.current;
+      setStatus(append ? "loadingMore" : "loading");
+      try {
+        const { data } = await createApi().get<PaginatedResponse<ActivityItem>>("/activities/public", {
+          params: {
+            limit: pageSize,
+            offset,
+            pillarId: selectedPillar === "all" ? undefined : selectedPillar,
+            typeId: selectedType === "all" ? undefined : selectedType,
+          },
+        });
+        if (id !== requestId.current) return;
+        firstNewRef.current = append ? offset : null;
+        setItems((prev) => (append ? [...prev, ...data.items] : data.items));
+        setTotal(data.total);
+        setStatus("idle");
+      } catch {
+        if (id !== requestId.current) return;
+        setStatus("error");
+      }
+    },
+    [pageSize, selectedPillar, selectedType],
+  );
+
+  // Filtros en el backend: así el contador y "Cargar más" cuentan todo, no solo la primera página
+  // (si el servidor no pudo traer la primera página, se pide aquí)
+  const lastFilters = useRef(initial ? "all|all" : "");
+  useEffect(() => {
+    const key = `${selectedPillar}|${selectedType}`;
+    if (key === lastFilters.current) return;
+    lastFilters.current = key;
+    void fetchPage(0, false);
+  }, [selectedPillar, selectedType, fetchPage]);
+
+  // Tras "Cargar más", el foco pasa a la primera tarjeta nueva
+  useEffect(() => {
+    if (firstNewRef.current === null || status !== "idle") return;
+    const index = firstNewRef.current;
+    firstNewRef.current = null;
+    listRef.current?.querySelectorAll<HTMLButtonElement>("h3 button")[index]?.focus();
+  }, [items, status]);
+
+  const clearFilters = () => {
+    setSelectedPillar("all");
+    setSelectedType("all");
+  };
 
   const slides = openActivity ? buildSlides(openActivity) : [];
+  const canLoadMore = items.length < total;
+  const noun = total === 1 ? "actividad" : "actividades";
 
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20">
+    <section
+      id="realizadas"
+      aria-labelledby="realizadas-titulo"
+      className="relative scroll-mt-32 overflow-hidden py-16 sm:py-20"
+    >
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#07132F_0%,#0C2D69_55%,#0F4A8A_100%)]" />
-      <div className="absolute top-12 left-0 h-72 w-72 rounded-full bg-jmv-gold/12 blur-3xl" />
-      <div className="absolute right-0 bottom-12 h-72 w-72 rounded-full bg-sky-400/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-white/85 backdrop-blur-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
               Memoria visual JMV
-            </span>
-            <h2 className="mt-5 text-3xl font-bold text-white sm:text-4xl">
+            </p>
+            <h2 id="realizadas-titulo" className="mt-3 text-3xl font-bold text-white sm:text-4xl">
               Actividades realizadas
             </h2>
+            <p className="mt-3 text-lg text-slate-200">
+              Retiros, encuentros, misiones y asambleas que ya vivimos. Abre un álbum para ver las fotos.
+            </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-md">
+          <div
+            role="search"
+            aria-label="Filtrar actividades realizadas"
+            className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] p-5 shadow-2xl lg:min-w-[26rem]"
+          >
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.22em] text-white/65">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-jmv-gold/15 text-jmv-gold ring-1 ring-jmv-gold/30">
-                  <Filter className="h-3.5 w-3.5" strokeWidth={2.4} />
-                </span>
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-200">
+                <Filter className="h-4 w-4 text-jmv-gold-text" strokeWidth={2.4} aria-hidden />
                 Filtros
-              </div>
-              {(selectedPillar !== "all" || selectedType !== "all") && (
+              </p>
+              {hasFilters && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedPillar("all");
-                    setSelectedType("all");
-                  }}
-                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10.5px] font-semibold text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+                  onClick={clearFilters}
+                  className="inline-flex min-h-11 items-center gap-1 rounded-md px-3 text-sm font-semibold text-white hover:bg-white/10"
                 >
-                  <X className="h-3 w-3" strokeWidth={2.4} />
-                  Limpiar
+                  <X className="h-4 w-4" strokeWidth={2.4} aria-hidden />
+                  Limpiar filtros
                 </button>
               )}
             </div>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-white/55">
-                  <Layers3 className="h-3 w-3" strokeWidth={2.4} />
-                  Pilar
-                </label>
-                <Select
-                  value={selectedPillar}
-                  onValueChange={setSelectedPillar}
-                >
-                  <SelectTrigger className="h-11 rounded-xl border-white/10 bg-slate-950/30 px-3.5 text-[13px] text-white shadow-inner shadow-black/20 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-slate-950/40 focus:border-jmv-gold focus:ring-2 focus:ring-jmv-gold/30 [&>svg]:text-white/60 [&_[data-placeholder]]:text-white/55">
-                    <SelectValue placeholder="Todos los pilares" />
-                  </SelectTrigger>
-                  <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
-                    <SelectItem
-                      value="all"
-                      className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
-                    >
-                      Todos los pilares
-                    </SelectItem>
-                    {pillars.map((pillar) => (
-                      <SelectItem
-                        key={pillar.id}
-                        value={pillar.id}
-                        className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
-                      >
-                        {pillar.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-white/55">
-                  <Shapes className="h-3 w-3" strokeWidth={2.4} />
-                  Tipo
-                </label>
-                <Select
-                  value={selectedType}
-                  onValueChange={setSelectedType}
-                >
-                  <SelectTrigger className="h-11 rounded-xl border-white/10 bg-slate-950/30 px-3.5 text-[13px] text-white shadow-inner shadow-black/20 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-slate-950/40 focus:border-jmv-gold focus:ring-2 focus:ring-jmv-gold/30 [&>svg]:text-white/60 [&_[data-placeholder]]:text-white/55">
-                    <SelectValue placeholder="Todos los tipos" />
-                  </SelectTrigger>
-                  <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
-                    <SelectItem
-                      value="all"
-                      className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
-                    >
-                      Todos los tipos
-                    </SelectItem>
-                    {types.map((type) => (
-                      <SelectItem
-                        key={type.id}
-                        value={type.id}
-                        className="text-white/85 focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold"
-                      >
-                        {type.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <CatalogSelect
+                id="filtro-pilar"
+                label="Pilar"
+                icon={Layers3}
+                allLabel="Todos los pilares"
+                value={selectedPillar}
+                onChange={setSelectedPillar}
+                options={pillars}
+              />
+              <CatalogSelect
+                id="filtro-tipo"
+                label="Tipo"
+                icon={Shapes}
+                allLabel="Todos los tipos"
+                value={selectedType}
+                onChange={setSelectedType}
+                options={types}
+              />
             </div>
 
-            <p className="mt-3 text-[11px] text-white/50">
-              <strong className="font-bold text-white/80">
-                {filteredActivities.length}
-              </strong>{" "}
-              actividad{filteredActivities.length === 1 ? "" : "es"} encontrada
-              {filteredActivities.length === 1 ? "" : "s"}
+            <p className="mt-3 text-sm text-slate-200" aria-live="polite" aria-atomic="true">
+              {status === "loading" ? (
+                "Buscando actividades…"
+              ) : status === "error" ? (
+                ""
+              ) : (
+                <>
+                  <strong className="font-bold text-white">{total}</strong> {noun}{" "}
+                  {total === 1 ? "encontrada" : "encontradas"}
+                </>
+              )}
             </p>
           </div>
         </div>
 
-        {filteredActivities.length === 0 ? (
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-10 text-center backdrop-blur-sm">
-            <h3 className="text-2xl font-semibold text-white">
-              No hay actividades para esos filtros
-            </h3>
+        {status === "error" && items.length === 0 ? (
+          <div role="alert" className="rounded-[2rem] border border-white/15 bg-white/5 p-8 text-center sm:p-10">
+            <h3 className="text-2xl font-semibold text-white">No pudimos cargar las actividades</h3>
+            <p className="mt-2 text-slate-200">Revisa tu conexión e inténtalo de nuevo en un momento.</p>
+            <button
+              type="button"
+              onClick={() => void fetchPage(0, false)}
+              className={buttonVariants({ variant: "gold", size: "md", className: "mt-6" })}
+            >
+              <RefreshCw className="mr-2 h-5 w-5" aria-hidden />
+              Reintentar
+            </button>
+          </div>
+        ) : status === "loading" && items.length === 0 ? (
+          <AlbumGridSkeleton />
+        ) : items.length === 0 ? (
+          <div className="rounded-[2rem] border border-white/15 bg-white/5 p-8 text-center sm:p-10">
+            {hasFilters ? (
+              <>
+                <h3 className="text-2xl font-semibold text-white">No hay actividades con esos filtros</h3>
+                <p className="mt-2 text-slate-200">Prueba con otro pilar o tipo de actividad.</p>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className={buttonVariants({ variant: "gold", size: "md", className: "mt-6" })}
+                >
+                  Limpiar filtros
+                </button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-2xl font-semibold text-white">Pronto compartiremos los álbumes</h3>
+                <p className="mt-2 text-slate-200">Aquí verás las fotos de nuestras actividades.</p>
+              </>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            {filteredActivities.map((activity) => (
-              <ActivityCard
-                key={activity.id}
-                activity={activity}
-                onOpen={() => setOpenActivity(activity)}
-              />
-            ))}
-          </div>
+          <>
+            <ul
+              ref={listRef}
+              aria-busy={status === "loading" || undefined}
+              className={`grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 ${
+                status === "loading" ? "opacity-60" : ""
+              }`}
+            >
+              {items.map((activity) => (
+                <ActivityCard key={activity.id} activity={activity} onOpen={() => setOpenActivity(activity)} />
+              ))}
+            </ul>
+
+            {status === "error" && (
+              <p role="alert" className="mt-6 text-center text-slate-100">
+                No pudimos cargar más actividades.{" "}
+                <button
+                  type="button"
+                  onClick={() => void fetchPage(items.length, true)}
+                  className="min-h-11 font-semibold text-jmv-gold-text underline underline-offset-4"
+                >
+                  Reintentar
+                </button>
+              </p>
+            )}
+
+            {canLoadMore && status !== "error" && (
+              <div className="mt-10 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void fetchPage(items.length, true)}
+                  disabled={status === "loadingMore"}
+                  className={buttonVariants({ variant: "outlineLight", size: "md" })}
+                >
+                  {status === "loadingMore" ? "Cargando…" : "Cargar más actividades"}
+                </button>
+                <p className="text-sm text-slate-200">
+                  Mostrando {items.length} de {total}
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
       <ActivityGalleryModal
         activity={openActivity}
         slides={slides}
-        onClose={() => setOpenActivity(null)}
+        lightboxOpen={lightboxOpen}
+        onPortalReady={setLightboxRoot}
+        onClose={() => {
+          setLightboxOpen(false);
+          setOpenActivity(null);
+        }}
         onOpenLightbox={(index) => {
           setLightboxIndex(index);
           setLightboxOpen(true);
         }}
       />
 
-      {openActivity && slides.length ? (
+      {openActivity && slides.length && lightboxRoot ? (
         <ActivityLightbox
           open={lightboxOpen}
           close={() => setLightboxOpen(false)}
           index={lightboxIndex}
           slides={slides}
+          portalRoot={lightboxRoot}
         />
       ) : null}
     </section>
+  );
+}
+
+export function AlbumGridSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <ul aria-hidden="true" className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <li key={i} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.06]">
+          <div className="aspect-[4/3] bg-white/10 motion-safe:animate-pulse" />
+          <div className="space-y-3 p-6">
+            <div className="h-7 w-3/4 rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="h-4 w-full rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="h-4 w-5/6 rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="h-4 rounded bg-white/10 motion-safe:animate-pulse" />
+              <div className="h-4 rounded bg-white/10 motion-safe:animate-pulse" />
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
