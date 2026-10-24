@@ -12,6 +12,7 @@ import {
   FolderKanban,
   HeartHandshake,
   ImageIcon,
+  Inbox,
   Layers3,
   LogOut,
   MapPinned,
@@ -111,6 +112,17 @@ export default function AdminSidebar() {
           href: "/admin/imagenes",
           icon: <ImageIcon className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/imagenes"),
+        },
+      ],
+    },
+    {
+      label: "Comunicación",
+      items: [
+        {
+          label: "Mensajes",
+          href: "/admin/mensajes",
+          icon: <Inbox className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/mensajes"),
         },
       ],
     },
