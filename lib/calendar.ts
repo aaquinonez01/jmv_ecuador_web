@@ -5,7 +5,7 @@ import { SITE } from "./site";
 export interface CalendarEvent {
   title: string;
   start: Date | string;
-  /** Si falta, se asume 2 horas (o el día completo si allDay) */
+  /** Si falta, se asume 2 horas (o el día completo si allDay). En allDay es el último día, inclusive */
   end?: Date | string;
   allDay?: boolean;
   description?: string;
@@ -21,13 +21,18 @@ function toDate(v: Date | string) {
   return v instanceof Date ? v : new Date(v);
 }
 
+// En .ics y Google Calendar el final de un evento de día completo es exclusivo:
+// se suma un día al último día para que no se pierda.
 function resolveEnd(event: CalendarEvent) {
   const start = toDate(event.start);
+  if (event.allDay) {
+    const last = event.end ? toDate(event.end) : start;
+    const end = new Date(Math.max(last.getTime(), start.getTime()));
+    end.setUTCDate(end.getUTCDate() + 1);
+    return end;
+  }
   if (event.end) return toDate(event.end);
-  const end = new Date(start);
-  if (event.allDay) end.setUTCDate(end.getUTCDate() + 1);
-  else end.setTime(start.getTime() + 2 * 60 * 60 * 1000);
-  return end;
+  return new Date(start.getTime() + 2 * 60 * 60 * 1000);
 }
 
 /** 20261024T183000Z */
@@ -110,5 +115,6 @@ export function downloadIcs(event: CalendarEvent, filename = "evento-jmv.ics") {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  // Safari/iOS y algunos Firefox cancelan la descarga si se revoca de inmediato
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
