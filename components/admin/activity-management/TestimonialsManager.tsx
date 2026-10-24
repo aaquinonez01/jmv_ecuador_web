@@ -17,7 +17,6 @@ import type { TestimonialItem } from "@/types/activity-management";
 import {
   CheckCircle2,
   ChevronDown,
-  Download,
   Globe2,
   LayoutGrid,
   List,
@@ -278,14 +277,6 @@ export default function TestimonialsManager() {
         breadcrumbs={[{ label: "Contenido" }, { label: "Testimonios" }]}
         actions={
           <>
-            <button
-              type="button"
-              className="inline-flex h-9 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3.5 text-[13px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-              title="Exportar (próximamente)"
-            >
-              <Download className="h-3.5 w-3.5" />
-              Exportar
-            </button>
             <Button
               variant="primary"
               size="md"
