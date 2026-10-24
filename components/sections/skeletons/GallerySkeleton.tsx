@@ -1,6 +1,6 @@
 export default function GallerySkeleton() {
   return (
-    <section className="relative overflow-hidden py-16 sm:py-20">
+    <section aria-hidden="true" className="relative overflow-hidden py-16 sm:py-20">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#081633_0%,#0C275F_50%,#0A1638_100%)]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 h-10 w-72 animate-pulse rounded-full bg-white/10" />
