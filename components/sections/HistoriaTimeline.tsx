@@ -42,7 +42,7 @@ const hitos: Hito[] = [
   },
   {
     year: "1987",
-    title: "Nace la Juventud Mariana Vicenciana",
+    title: "Nace la asociación JMV",
     description:
       'El 28 de abril de 1987, el Superior General de la Congregación de la Misión y de las Hijas de la Caridad reconoce y actualiza la asociación con su nombre oficial de entonces: "Asociación Juventud Mariana Vicentina" (JMV).',
     image: { src: "/images/historia/fundacion.jpg", alt: "Reconocimiento de la asociación en 1987" },
