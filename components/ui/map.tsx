@@ -25,6 +25,26 @@ const defaultStyles = {
   light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
 };
 
+// Textos de la interfaz de MapLibre en español
+const SPANISH_LOCALE: Record<string, string> = {
+  "AttributionControl.ToggleAttribution": "Mostrar u ocultar créditos",
+  "AttributionControl.MapFeedback": "Comentarios sobre el mapa",
+  "FullscreenControl.Enter": "Pantalla completa",
+  "FullscreenControl.Exit": "Salir de pantalla completa",
+  "GeolocateControl.FindMyLocation": "Ir a mi ubicación",
+  "GeolocateControl.LocationNotAvailable": "Ubicación no disponible",
+  "LogoControl.Title": "Logo de MapLibre",
+  "Map.Title": "Mapa",
+  "Marker.Title": "Marcador del mapa",
+  "NavigationControl.ResetBearing": "Arrastra para girar el mapa, haz clic para orientarlo al norte",
+  "NavigationControl.ZoomIn": "Acercar",
+  "NavigationControl.ZoomOut": "Alejar",
+  "Popup.Close": "Cerrar",
+  "CooperativeGesturesHandler.WindowsHelpText": "Usa Ctrl + rueda del ratón para acercar el mapa",
+  "CooperativeGesturesHandler.MacHelpText": "Usa ⌘ + rueda del ratón para acercar el mapa",
+  "CooperativeGesturesHandler.MobileHelpText": "Usa dos dedos para mover el mapa",
+};
+
 type Theme = "light" | "dark";
 
 // Check document class for theme (works with next-themes, etc.)
@@ -148,9 +168,9 @@ function DefaultLoader() {
   return (
     <div className="bg-background/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs">
       <div className="flex gap-1">
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full" />
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full [animation-delay:150ms]" />
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full [animation-delay:300ms]" />
+        <span className="bg-muted-foreground/60 size-1.5 motion-safe:animate-pulse rounded-full" />
+        <span className="bg-muted-foreground/60 size-1.5 motion-safe:animate-pulse rounded-full [animation-delay:150ms]" />
+        <span className="bg-muted-foreground/60 size-1.5 motion-safe:animate-pulse rounded-full [animation-delay:300ms]" />
       </div>
     </div>
   );
@@ -228,6 +248,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
         compact: true,
       },
       ...props,
+      locale: { ...SPANISH_LOCALE, ...props.locale },
       ...viewport,
     });
 
@@ -369,6 +390,8 @@ type MapMarkerProps = {
   onDrag?: (lngLat: { lng: number; lat: number }) => void;
   /** Callback when marker drag ends (requires draggable: true) */
   onDragEnd?: (lngLat: { lng: number; lat: number }) => void;
+  /** Nombre accesible del marcador (por defecto "Marcador del mapa") */
+  ariaLabel?: string;
 } & Omit<MarkerOptions, "element">;
 
 function MapMarker({
@@ -382,6 +405,7 @@ function MapMarker({
   onDrag,
   onDragEnd,
   draggable = false,
+  ariaLabel,
   ...markerOptions
 }: MapMarkerProps) {
   const { map } = useMap();
@@ -404,9 +428,11 @@ function MapMarker({
   };
 
   const marker = useMemo(() => {
+    const element = document.createElement("div");
+    if (ariaLabel) element.setAttribute("aria-label", ariaLabel);
     const markerInstance = new MapLibreGL.Marker({
       ...markerOptions,
-      element: document.createElement("div"),
+      element,
       draggable,
     }).setLngLat([longitude, latitude]);
 
@@ -523,10 +549,10 @@ function PopupCloseButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      aria-label="Close popup"
-      className="focus-visible:ring-ring hover:bg-muted text-foreground absolute top-0.5 right-0.5 z-10 inline-flex size-5 cursor-pointer items-center justify-center rounded-sm transition-colors focus:outline-none focus-visible:ring-2"
+      aria-label="Cerrar"
+      className="hover:bg-muted text-foreground absolute top-0.5 right-0.5 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-md transition-colors"
     >
-      <X className="size-3.5" />
+      <X className="size-4" aria-hidden />
     </button>
   );
 }
@@ -594,7 +620,7 @@ function MarkerPopup({
     <div
       className={cn(
         "bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md",
-        "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
+        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 duration-200 ease-out",
         className,
       )}
     >
@@ -671,7 +697,7 @@ function MarkerTooltip({
     <div
       className={cn(
         "bg-foreground text-background pointer-events-none rounded-md px-2 py-1 text-xs text-balance shadow-md",
-        "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
+        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 duration-200 ease-out",
         className,
       )}
     >
@@ -763,10 +789,10 @@ function ControlButton({
       aria-label={label}
       type="button"
       className={cn(
-        "flex size-8 items-center justify-center transition-all",
+        "flex size-11 items-center justify-center transition-colors sm:size-9",
         "first:rounded-t-md last:rounded-b-md",
         "hover:bg-accent dark:hover:bg-accent/40",
-        "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset",
+        "focus-visible:ring-ring focus-visible:ring-3 focus-visible:ring-inset",
         "disabled:pointer-events-none disabled:opacity-50",
       )}
       disabled={disabled}
@@ -845,10 +871,10 @@ function MapControls({
     >
       {showZoom && (
         <ControlGroup>
-          <ControlButton onClick={handleZoomIn} label="Zoom in">
+          <ControlButton onClick={handleZoomIn} label="Acercar">
             <Plus className="size-4" />
           </ControlButton>
-          <ControlButton onClick={handleZoomOut} label="Zoom out">
+          <ControlButton onClick={handleZoomOut} label="Alejar">
             <Minus className="size-4" />
           </ControlButton>
         </ControlGroup>
@@ -862,11 +888,11 @@ function MapControls({
         <ControlGroup>
           <ControlButton
             onClick={handleLocate}
-            label="Find my location"
+            label="Ir a mi ubicación"
             disabled={waitingForLocation}
           >
             {waitingForLocation ? (
-              <Loader2 className="size-4 animate-spin" />
+              <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden />
             ) : (
               <Locate className="size-4" />
             )}
@@ -875,7 +901,7 @@ function MapControls({
       )}
       {showFullscreen && (
         <ControlGroup>
-          <ControlButton onClick={handleFullscreen} label="Toggle fullscreen">
+          <ControlButton onClick={handleFullscreen} label="Pantalla completa">
             <Maximize className="size-4" />
           </ControlButton>
         </ControlGroup>
@@ -910,7 +936,7 @@ function CompassButton({ onClick }: { onClick: () => void }) {
   }, [map]);
 
   return (
-    <ControlButton onClick={onClick} label="Reset bearing to north">
+    <ControlButton onClick={onClick} label="Orientar el mapa al norte">
       <svg
         ref={compassRef}
         viewBox="0 0 24 24"
@@ -1015,7 +1041,7 @@ function MapPopup({
     <div
       className={cn(
         "bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md",
-        "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
+        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 duration-200 ease-out",
         className,
       )}
     >

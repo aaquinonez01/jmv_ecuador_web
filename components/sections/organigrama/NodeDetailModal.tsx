@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useRef } from "react";
+import { Dialog } from "radix-ui";
 import {
   X,
   Crown,
@@ -9,18 +9,11 @@ import {
   Map as MapIcon,
   Users,
   MapPin,
-  Phone,
-  Mail,
-  Star,
-  Quote,
-  User,
-  Calendar,
-  Sparkles,
+  ArrowDown,
   type LucideIcon,
 } from "lucide-react";
 import type { OrgEntidad, OrgNivel } from "@/lib/data/organigrama";
-import type { Asesor, ConsejoMember, ConsejoPeriod } from "@/types/consejo";
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import ContactoLinks from "./contacto";
 
 const NIVEL_ICON: Record<OrgNivel, LucideIcon> = {
   internacional: Crown,
@@ -30,455 +23,140 @@ const NIVEL_ICON: Record<OrgNivel, LucideIcon> = {
 };
 
 const NIVEL_LABEL: Record<OrgNivel, string> = {
-  internacional: "Nivel Internacional",
-  nacional: "Nivel Nacional",
-  zona: "Zona Pastoral",
-  grupo: "Grupo / Comunidad",
+  internacional: "Nivel internacional",
+  nacional: "Nivel nacional",
+  zona: "Zona pastoral",
+  grupo: "Grupo local",
 };
-
-const ORDEN_CARGOS: Record<string, number> = {
-  coordinador: 1,
-  vicecoordinador: 2,
-  secretario: 3,
-  tesorero: 4,
-  vocal: 5,
-};
-
-function sortMembers(members: ConsejoMember[]): ConsejoMember[] {
-  return [...members].sort((a, b) => {
-    const orderA = ORDEN_CARGOS[a.tipoCargo] ?? 99;
-    const orderB = ORDEN_CARGOS[b.tipoCargo] ?? 99;
-    if (orderA !== orderB) return orderA - orderB;
-    return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
-  });
-}
-
-function formatDate(value?: string | null) {
-  if (!value) return null;
-  try {
-    return new Date(value).toLocaleDateString("es-EC", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  } catch {
-    return value;
-  }
-}
 
 interface NodeDetailModalProps {
   entidad: OrgEntidad | null;
-  consejo: ConsejoPeriod | null;
-  asesores: Asesor[];
   onClose: () => void;
 }
 
-export default function NodeDetailModal({
-  entidad,
-  consejo,
-  asesores,
-  onClose,
-}: NodeDetailModalProps) {
-  // Cerrar con Escape y bloquear el scroll del fondo mientras está abierto.
-  useEffect(() => {
-    if (!entidad) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [entidad, onClose]);
-
-  const isNacional = entidad?.nivel === "nacional";
+// Detalle de un nodo del organigrama sobre Radix Dialog: título asociado, foco
+// atrapado y devuelto al nodo, Escape y clic fuera.
+export default function NodeDetailModal({ entidad, onClose }: NodeDetailModalProps) {
+  // Al ir al Consejo Nacional no se devuelve el foco al nodo (evita volver a subir)
+  const irAlConsejo = useRef(false);
 
   return (
-    <AnimatePresence>
-      {entidad && (
-        <motion.div
-          className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm sm:items-center sm:p-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
+    <Dialog.Root open={Boolean(entidad)} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0" />
+        <Dialog.Content
+          {...(!entidad?.descripcion && { "aria-describedby": undefined })}
+          onCloseAutoFocus={(e) => {
+            if (!irAlConsejo.current) return;
+            irAlConsejo.current = false;
+            e.preventDefault();
+            const destino = document.getElementById("consejo-nacional");
+            destino?.scrollIntoView({ block: "start" });
+            destino?.focus({ preventScroll: true });
+          }}
+          className="fixed left-1/2 top-1/2 z-50 flex max-h-[90svh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/15 bg-jmv-ink text-white shadow-2xl motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=open]:zoom-in-95"
         >
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            className={`relative my-auto w-full overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-jmv-blue-dark via-blue-900 to-jmv-blue shadow-2xl ${
-              isNacional ? "max-w-5xl" : "max-w-xl"
-            }`}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", stiffness: 260, damping: 26 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ModalHeader entidad={entidad} onClose={onClose} />
-
-            <div className="max-h-[72vh] overflow-y-auto px-6 py-6 sm:px-8">
-              <ModalBody
-                entidad={entidad}
-                consejo={consejo}
-                asesores={asesores}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          {entidad && (
+            <Contenido
+              entidad={entidad}
+              onIrAlConsejo={() => {
+                irAlConsejo.current = true;
+                onClose();
+              }}
+            />
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
-function ModalHeader({
+function Contenido({
   entidad,
-  onClose,
+  onIrAlConsejo,
 }: {
   entidad: OrgEntidad;
-  onClose: () => void;
+  onIrAlConsejo: () => void;
 }) {
   const Icon = NIVEL_ICON[entidad.nivel];
   return (
-    <div className="sticky top-0 z-10 flex items-center gap-4 border-b border-white/10 bg-jmv-blue-dark/80 px-6 py-5 backdrop-blur-md sm:px-8">
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-jmv-gold/20 text-jmv-gold">
-        <Icon className="h-7 w-7" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <span className="inline-flex items-center rounded-full bg-jmv-gold/20 px-3 py-0.5 text-xs font-medium text-jmv-gold">
-          {NIVEL_LABEL[entidad.nivel]}
+    <>
+      <div className="flex items-start gap-4 border-b border-white/10 px-6 py-5">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-jmv-gold-text">
+          <Icon className="h-6 w-6" aria-hidden />
         </span>
-        <h3 className="mt-1 truncate text-2xl font-bold text-white">
-          {entidad.nombre}
-        </h3>
-        {entidad.subtitulo && (
-          <p className="truncate text-sm text-white/70">{entidad.subtitulo}</p>
-        )}
-      </div>
-      <button
-        onClick={onClose}
-        aria-label="Cerrar"
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-      >
-        <X className="h-5 w-5" />
-      </button>
-    </div>
-  );
-}
-
-function ModalBody({
-  entidad,
-  consejo,
-  asesores,
-}: {
-  entidad: OrgEntidad;
-  consejo: ConsejoPeriod | null;
-  asesores: Asesor[];
-}) {
-  return (
-    <div className="space-y-8">
-      {entidad.descripcion && (
-        <p className="text-base leading-relaxed text-white/80">
-          {entidad.descripcion}
-        </p>
-      )}
-
-      {entidad.coordinador && (
-        <InfoRow icon={Crown} label="Coordinador">
-          {entidad.coordinador}
-        </InfoRow>
-      )}
-
-      {entidad.provincias && entidad.provincias.length > 0 && (
-        <div>
-          <SectionTitle icon={MapPin}>
-            {entidad.nivel === "zona" ? "Ciudades" : "Provincias"}
-          </SectionTitle>
-          <div className="flex flex-wrap gap-2">
-            {entidad.provincias.map((p) => (
-              <span
-                key={p}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-sm text-white/80"
-              >
-                {p}
-              </span>
-            ))}
-          </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-jmv-gold-text">{NIVEL_LABEL[entidad.nivel]}</p>
+          <Dialog.Title className="text-2xl font-bold text-white">{entidad.nombre}</Dialog.Title>
+          {entidad.subtitulo && <p className="text-sm text-slate-300">{entidad.subtitulo}</p>}
         </div>
-      )}
+        <Dialog.Close
+          aria-label="Cerrar"
+          className="-m-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+        >
+          <X className="h-5 w-5" aria-hidden />
+        </Dialog.Close>
+      </div>
 
-      {entidad.contacto &&
-        (entidad.contacto.telefono || entidad.contacto.email) && (
+      <div className="space-y-6 overflow-y-auto px-6 py-6">
+        {entidad.descripcion && (
+          <Dialog.Description className="leading-relaxed text-slate-200">
+            {entidad.descripcion}
+          </Dialog.Description>
+        )}
+
+        {entidad.coordinador && (
+          <p className="flex items-start gap-3">
+            <Crown className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+            <span>
+              <span className="block text-sm text-slate-300">Coordinación</span>
+              <span className="font-medium">{entidad.coordinador}</span>
+            </span>
+          </p>
+        )}
+
+        {entidad.provincias && entidad.provincias.length > 0 && (
+          <div>
+            <h3 className="mb-3 flex items-center gap-2 font-semibold">
+              <MapPin className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+              {entidad.nivel === "zona" ? "Ciudades" : "Provincias"}
+            </h3>
+            <ul className="flex flex-wrap gap-2">
+              {entidad.provincias.map((p) => (
+                <li key={p} className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-sm text-slate-200">
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {entidad.contacto && (
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <h4 className="mb-3 text-sm font-semibold text-white">Contacto</h4>
-            <div className="space-y-2">
-              {entidad.contacto.telefono && (
-                <div className="flex items-center gap-3 text-sm text-white/75">
-                  <Phone className="h-4 w-4 text-jmv-gold" />
-                  {entidad.contacto.telefono}
-                </div>
-              )}
-              {entidad.contacto.email && (
-                <div className="flex items-center gap-3 text-sm text-white/75">
-                  <Mail className="h-4 w-4 text-jmv-gold" />
-                  {entidad.contacto.email}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-      {/* El Consejo Nacional muestra miembros y asesores reales con fotos. */}
-      {entidad.nivel === "nacional" && (
-        <ConsejoDetalle consejo={consejo} asesores={asesores} />
-      )}
-    </div>
-  );
-}
-
-function ConsejoDetalle({
-  consejo,
-  asesores,
-}: {
-  consejo: ConsejoPeriod | null;
-  asesores: Asesor[];
-}) {
-  const miembros = consejo ? sortMembers(consejo.miembros ?? []) : [];
-  const asesoresActivos = asesores.filter((a) => a.active);
-
-  return (
-    <div className="space-y-10">
-      <div>
-        <SectionTitle icon={Crown}>Miembros del Consejo</SectionTitle>
-        {miembros.length === 0 ? (
-          <EmptyHint>Aún no se ha publicado el Consejo Nacional.</EmptyHint>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {miembros.map((m) => (
-              <MemberCard key={m.id} miembro={m} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <SectionTitle icon={Sparkles}>Asesores Nacionales</SectionTitle>
-        {asesoresActivos.length === 0 ? (
-          <EmptyHint>Aún no se han publicado los asesores.</EmptyHint>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2">
-            {asesoresActivos.map((a) => (
-              <AsesorCard key={a.id} asesor={a} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function MemberCard({ miembro }: { miembro: ConsejoMember }) {
-  return (
-    <div className="flex h-full flex-col rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
-      <div className="relative mb-4">
-        <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-gradient-to-r from-jmv-gold/20 to-jmv-red/20">
-          {miembro.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={getOptimizedUrl(miembro.imageUrl, { w: 400 })}
-              decoding="async"
-              alt={miembro.nombre}
-              className="h-full w-full object-cover"
+            <h3 className="mb-1 text-sm font-semibold">Contacto</h3>
+            <ContactoLinks
+              telefono={entidad.contacto.telefono}
+              email={entidad.contacto.email}
+              nombre={entidad.nombre}
+              className="-mx-2"
             />
-          ) : (
-            <User className="h-14 w-14 text-jmv-gold" />
-          )}
-        </div>
-        <div className="absolute -top-1 left-1/2 -translate-x-1/2 translate-y-0">
-          <div className="rounded-full border border-white/30 bg-gradient-to-r from-jmv-gold to-jmv-gold-dark p-1.5">
-            <Crown className="h-3.5 w-3.5 text-white" />
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-3 text-center">
-        <h4 className="text-lg font-bold text-white">{miembro.nombre}</h4>
-        <p className="font-medium text-jmv-gold">{miembro.cargo}</p>
-        {miembro.edad ? (
-          <p className="text-sm text-white/60">{miembro.edad} años</p>
-        ) : null}
-      </div>
-
-      <div className="flex-1 space-y-2.5 text-sm">
-        {miembro.comunidad && (
-          <CardRow icon={MapPin} label="Comunidad">
-            {miembro.comunidad}
-          </CardRow>
-        )}
-        {miembro.santoFavorito && (
-          <CardRow icon={Star} label="Santo favorito">
-            {miembro.santoFavorito}
-          </CardRow>
-        )}
-        {miembro.email && (
-          <CardRow icon={Mail} label="Email">
-            <span className="break-all">{miembro.email}</span>
-          </CardRow>
-        )}
-        {miembro.telefono && (
-          <CardRow icon={Phone} label="Teléfono">
-            {miembro.telefono}
-          </CardRow>
-        )}
-        {miembro.citaBiblica && (
-          <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-            <div className="flex items-start gap-2">
-              <Quote className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold" />
-              <p className="text-xs italic leading-relaxed text-white/70">
-                {miembro.citaBiblica}
-              </p>
-            </div>
           </div>
         )}
-        {miembro.descripcion && (
-          <p className="pt-1 text-xs text-white/70">{miembro.descripcion}</p>
+
+        {entidad.nivel === "nacional" && (
+          <a
+            href="#consejo-nacional"
+            onClick={(e) => {
+              e.preventDefault();
+              onIrAlConsejo();
+            }}
+            className="inline-flex min-h-11 items-center gap-2 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+          >
+            Ver miembros y asesores del Consejo Nacional
+            <ArrowDown className="h-4 w-4" aria-hidden />
+          </a>
         )}
       </div>
-    </div>
-  );
-}
-
-function AsesorCard({ asesor }: { asesor: Asesor }) {
-  const periodo =
-    asesor.fechaInicio || asesor.fechaFin
-      ? `${formatDate(asesor.fechaInicio) ?? "—"} — ${
-          formatDate(asesor.fechaFin) ?? "—"
-        }`
-      : null;
-
-  return (
-    <div className="flex h-full flex-col rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
-      <div className="mb-4 flex items-center gap-4">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-gradient-to-r from-jmv-gold/20 to-jmv-red/20">
-          {asesor.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={getOptimizedUrl(asesor.imageUrl, { w: 400 })}
-              decoding="async"
-              alt={asesor.nombre}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <User className="h-10 w-10 text-jmv-gold" />
-          )}
-        </div>
-        <div className="min-w-0">
-          <h4 className="text-lg font-bold text-white">{asesor.nombre}</h4>
-          <p className="font-medium text-jmv-gold">{asesor.cargo}</p>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-2.5 text-sm">
-        {asesor.comunidad && (
-          <CardRow icon={MapPin} label="Comunidad">
-            {asesor.comunidad}
-          </CardRow>
-        )}
-        {asesor.santoFavorito && (
-          <CardRow icon={Star} label="Santo favorito">
-            {asesor.santoFavorito}
-          </CardRow>
-        )}
-        {periodo && (
-          <CardRow icon={Calendar} label="Período">
-            {periodo}
-          </CardRow>
-        )}
-        {asesor.email && (
-          <CardRow icon={Mail} label="Email">
-            <span className="break-all">{asesor.email}</span>
-          </CardRow>
-        )}
-        {asesor.descripcion && (
-          <p className="pt-1 text-xs text-white/70">{asesor.descripcion}</p>
-        )}
-        {asesor.citaBiblica && (
-          <div className="rounded-lg border border-white/10 bg-white/5 p-3">
-            <div className="flex items-start gap-2">
-              <Quote className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold" />
-              <p className="text-xs italic leading-relaxed text-white/70">
-                {asesor.citaBiblica}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SectionTitle({
-  icon: Icon,
-  children,
-}: {
-  icon: LucideIcon;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
-      <Icon className="h-5 w-5 text-jmv-gold" />
-      {children}
-    </div>
-  );
-}
-
-function InfoRow({
-  icon: Icon,
-  label,
-  children,
-}: {
-  icon: LucideIcon;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold" />
-      <div>
-        <p className="text-xs uppercase tracking-wide text-white/50">{label}</p>
-        <p className="font-medium text-white">{children}</p>
-      </div>
-    </div>
-  );
-}
-
-function CardRow({
-  icon: Icon,
-  label,
-  children,
-}: {
-  icon: LucideIcon;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-start gap-2 text-white/80">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold" />
-      <div className="min-w-0">
-        <span className="text-white/50">{label}: </span>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function EmptyHint({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-5 text-center text-sm text-white/60">
-      {children}
-    </div>
+    </>
   );
 }

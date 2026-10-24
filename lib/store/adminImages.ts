@@ -41,7 +41,6 @@ export const useAdminImagesStore = create<AdminImagesStore>((set, get) => ({
   loadImages: (sectionId) => {
     // TODO: En fase futura, cargar desde API
     // Por ahora, trabajamos con mock data
-    console.log("Loading images for section:", sectionId);
   },
 
   addImage: (sectionId, image) =>

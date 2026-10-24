@@ -1,21 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
-import ScrollReveal from "../ui/ScrollReveal";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useReducedMotion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Pause, Play, Quote } from "lucide-react";
 import type { TestimonialItem } from "@/types/activity-management";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { cn } from "@/lib/utils";
+import SectionHeading from "../ui/SectionHeading";
+import { buttonVariants } from "../ui/button-variants";
 
-function renderStars(rating: number) {
-  return Array.from({ length: 5 }, (_, index) => (
-    <Star
-      key={index}
-      className={`h-5 w-5 ${
-        index < rating ? "fill-current text-white/90" : "text-blue-400/60"
-      }`}
-    />
-  ));
-}
+const AUTOPLAY_MS = 8000;
 
 function initials(name: string) {
   return name
@@ -26,208 +21,184 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+// Carrusel accesible (patrón WAI-ARIA): autoplay pausable con botón visible,
+// se detiene con foco o puntero encima y no arranca con "reducir movimiento".
 export default function TestimonialsSectionClient({
   testimonials,
 }: {
   testimonials: TestimonialItem[];
 }) {
+  const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [userPaused, setUserPaused] = useState(false);
+  const [hoverOrFocus, setHoverOrFocus] = useState(false);
+
+  const total = testimonials.length;
+  const canAutoplay = total > 1 && !reduceMotion;
+  const isPlaying = canAutoplay && !userPaused && !hoverOrFocus;
 
   useEffect(() => {
     setCurrentIndex(0);
-  }, [testimonials.length]);
+  }, [total]);
 
   useEffect(() => {
-    if (!isAutoPlaying || testimonials.length <= 1) return;
-
+    if (!isPlaying) return;
     const interval = window.setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-
+      setCurrentIndex((prev) => (prev + 1) % total);
+    }, AUTOPLAY_MS);
     return () => window.clearInterval(interval);
-  }, [isAutoPlaying, testimonials.length]);
+  }, [isPlaying, total]);
 
-  if (!testimonials.length) {
+  const goTo = useCallback((index: number) => setCurrentIndex((index + total) % total), [total]);
+
+  if (!total) {
     return null;
   }
 
   const activeItem = testimonials[currentIndex];
 
   return (
-    <section className="relative overflow-hidden py-20">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom right, var(--jmv-blue-dark), var(--jmv-blue), #1e40af)",
-          maskImage:
-            "linear-gradient(to bottom, black 0%, black 35%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 0%, black 35%, transparent 100%)",
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-jmv-blue-dark to-blue-800" />
-
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-white/3 blur-3xl" />
-        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute top-1/2 left-1/4 h-64 w-64 rounded-full bg-white/3 blur-2xl" />
-      </div>
-
+    <section
+      aria-labelledby="testimonios-titulo"
+      className="relative overflow-hidden bg-gradient-to-b from-jmv-ink via-[#132f55] to-jmv-ink py-16 sm:py-20"
+    >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-16 text-center">
-          <ScrollReveal direction="up" delay={100}>
-            <div className="mb-6 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
-              <Quote className="mr-2 h-4 w-4" />
-              Testimonios
+        <SectionHeading
+          id="testimonios-titulo"
+          eyebrow="Testimonios"
+          title="Voces que transforman"
+          description="Jóvenes que han encontrado en JMV un espacio para crecer en la fe, servir y hacer amigos para toda la vida."
+        />
+
+        <div
+          role="region"
+          aria-roledescription="carrusel"
+          aria-label="Testimonios de jóvenes de JMV"
+          className="relative mx-auto max-w-4xl"
+          onMouseEnter={() => setHoverOrFocus(true)}
+          onMouseLeave={() => setHoverOrFocus(false)}
+          onFocus={() => setHoverOrFocus(true)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHoverOrFocus(false);
+          }}
+        >
+          {total > 1 && (
+            <div className="mb-4 flex justify-end">
+              {canAutoplay && (
+                <button
+                  type="button"
+                  onClick={() => setUserPaused((p) => !p)}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm font-medium text-white hover:bg-white/10"
+                >
+                  {userPaused ? (
+                    <Play className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <Pause className="h-4 w-4" aria-hidden />
+                  )}
+                  {userPaused ? "Reanudar" : "Pausar"}
+                  <span className="sr-only"> el carrusel de testimonios</span>
+                </button>
+              )}
             </div>
-          </ScrollReveal>
+          )}
 
-          <ScrollReveal direction="up" delay={200}>
-            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
-              Voces que <span className="text-white/90">Transforman</span>
-            </h2>
-          </ScrollReveal>
+          <div aria-live={isPlaying ? "off" : "polite"} aria-atomic="true">
+            <figure
+              key={activeItem.id}
+              role="group"
+              aria-roledescription="testimonio"
+              aria-label={`${currentIndex + 1} de ${total}`}
+              className="rounded-3xl border border-white/15 bg-white/5 p-6 text-center shadow-2xl sm:p-10 md:p-12"
+            >
+              <Quote className="mx-auto mb-6 h-10 w-10 text-jmv-gold-text" aria-hidden />
+              <blockquote className="font-display text-xl leading-relaxed text-white sm:text-2xl md:text-3xl">
+                <p>“{activeItem.quote}”</p>
+              </blockquote>
 
-          <ScrollReveal direction="up" delay={300}>
-            <p className="mx-auto max-w-3xl text-xl text-blue-100">
-              Conoce las experiencias de jóvenes que han encontrado en JMV un
-              espacio de crecimiento, servicio y fraternidad vicenciana.
-            </p>
-          </ScrollReveal>
+              <figcaption className="mt-8 flex items-center justify-center gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jmv-blue text-lg font-bold text-white">
+                  {activeItem.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={getOptimizedUrl(activeItem.imageUrl, { w: 160 })}
+                      loading="lazy"
+                      decoding="async"
+                      width={56}
+                      height={56}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span aria-hidden>{initials(activeItem.name)}</span>
+                  )}
+                </div>
+                <div className="text-left">
+                  <p className="text-lg font-semibold text-white">{activeItem.name}</p>
+                  {activeItem.role && <p className="text-sm text-slate-300">{activeItem.role}</p>}
+                  <p className="text-sm text-slate-400">{activeItem.location || "JMV Ecuador"}</p>
+                </div>
+              </figcaption>
+            </figure>
+          </div>
+
+          {total > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => goTo(currentIndex - 1)}
+                aria-label="Testimonio anterior"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+              >
+                <ChevronLeft className="h-6 w-6" aria-hidden />
+              </button>
+
+              <div className="flex items-center">
+                {testimonials.map((item, index) => {
+                  const active = index === currentIndex;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => goTo(index)}
+                      aria-label={`Ver testimonio ${index + 1} de ${total}: ${item.name}`}
+                      aria-current={active ? "true" : undefined}
+                      className="group inline-flex h-11 w-8 items-center justify-center"
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "block h-3 rounded-full transition-[width,background-color] duration-300",
+                          active ? "w-6 bg-jmv-gold-text" : "w-3 bg-white/40 group-hover:bg-white/70",
+                        )}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => goTo(currentIndex + 1)}
+                aria-label="Testimonio siguiente"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+              >
+                <ChevronRight className="h-6 w-6" aria-hidden />
+              </button>
+            </div>
+          )}
         </div>
 
-        <ScrollReveal direction="up" delay={400}>
-          <div
-            className="relative mx-auto mb-12 max-w-4xl"
-            onMouseEnter={() => setIsAutoPlaying(false)}
-            onMouseLeave={() => setIsAutoPlaying(true)}
-          >
-            <div className="rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-md md:p-12">
-              <div className="text-center">
-                <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
-                  <Quote className="h-8 w-8 text-white/80" />
-                </div>
-
-                <div className="mb-6 flex justify-center space-x-1">
-                  {renderStars(activeItem.rating || 5)}
-                </div>
-
-                <blockquote className="mb-8 text-2xl leading-relaxed font-light text-white italic md:text-3xl">
-                  "{activeItem.quote}"
-                </blockquote>
-
-                <div className="flex items-center justify-center space-x-4">
-                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-blue-700 to-blue-600 text-lg font-bold text-white">
-                    {activeItem.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={getOptimizedUrl(activeItem.imageUrl, { w: 400 })}
-                        decoding="async"
-                        alt={activeItem.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      initials(activeItem.name)
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <h4 className="text-xl font-semibold text-white">
-                      {activeItem.name}
-                    </h4>
-                    <p className="text-blue-200">{activeItem.role}</p>
-                    <p className="text-sm text-blue-300">
-                      {activeItem.location || "JMV Ecuador"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {testimonials.length > 1 ? (
-              <>
-                <button
-                  onClick={() =>
-                    setCurrentIndex(
-                      (prev) => (prev - 1 + testimonials.length) % testimonials.length
-                    )
-                  }
-                  className="absolute top-1/2 left-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-                  }
-                  className="absolute top-1/2 right-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            ) : null}
-          </div>
-        </ScrollReveal>
-
-        {testimonials.length > 1 ? (
-          <>
-            <ScrollReveal direction="up" delay={600}>
-              <div className="mb-12 flex justify-center space-x-3">
-                {testimonials.map((item, index) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`h-3 w-3 rounded-full transition-all duration-300 ${
-                      index === currentIndex
-                        ? "scale-125 bg-white/90"
-                        : "bg-white/30 hover:bg-white/50"
-                    }`}
-                  />
-                ))}
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={700}>
-              <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                {testimonials.map((item, index) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`aspect-square rounded-2xl transition-all duration-300 ${
-                      index === currentIndex
-                        ? "scale-105 ring-4 ring-white/80"
-                        : "opacity-60 hover:opacity-80"
-                    }`}
-                  >
-                    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-gradient-to-br from-blue-700 to-blue-600 p-3 text-white">
-                      <div className="text-center">
-                        <div className="mb-1 text-sm font-bold">
-                          {item.name.split(" ")[0]}
-                        </div>
-                        <div className="text-xs opacity-80">
-                          {(item.location || "JMV Ecuador").split(",")[0]}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </ScrollReveal>
-          </>
-        ) : null}
-
-        <ScrollReveal direction="up" delay={800}>
-          <div className="mt-16 text-center">
-            <h3 className="mb-4 text-2xl font-bold text-white">
-              ¿Quieres ser parte de estas historias de transformación?
-            </h3>
-            <p className="mx-auto max-w-2xl text-blue-200">
-              Únete a nuestra familia vicenciana y descubre cómo tu vida puede
-              ser una fuente de bendición para otros.
-            </p>
-          </div>
-        </ScrollReveal>
+        <div className="mt-14 text-center">
+          <h3 className="mb-3 text-2xl font-bold text-white">
+            ¿Quieres ser parte de estas historias?
+          </h3>
+          <p className="mx-auto mb-6 max-w-2xl text-slate-300">
+            Escríbenos y te ayudamos a encontrar un grupo de JMV cerca de ti.
+          </p>
+          <Link href="/unete" className={buttonVariants({ variant: "gold" })}>
+            Encuentra tu grupo
+          </Link>
+        </div>
       </div>
     </section>
   );

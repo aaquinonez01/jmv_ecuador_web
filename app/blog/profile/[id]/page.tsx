@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import ProfilePageClient from "./ProfilePageClient";
 
 export const metadata: Metadata = {
-  title: "Perfil | JMV Ecuador",
-  description: "Perfil de usuario en JMV Ecuador",
-  keywords: ["JMV Ecuador", "perfil"],
+  title: "Mi perfil",
+  description: "Tu perfil en la Comunidad JMV Ecuador.",
+  robots: { index: false, follow: false },
 };
 
 export default function ProfilePage() {

@@ -1,155 +1,125 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fetchPostsPage } from "@/lib/blog/posts.client";
 import {
-  getAllPosts,
-  type Post,
+  POSTS_PAGE_SIZE,
   type PostFilters,
-  type PostsResponse,
-} from "@/actions/posts";
+  type PostsPage,
+} from "@/lib/blog/posts";
+import type { Post } from "@/types/user";
+
+type FeedStatus = "idle" | "loading" | "loadingMore" | "error";
 
 interface UsePostsDataOptions {
-  initialFilters?: PostFilters;
-  autoFetch?: boolean;
+  /** Primera página renderizada en el servidor (sin filtros) */
+  initialPage?: PostsPage | null;
+  pageSize?: number;
 }
 
+const keyOf = (f: PostFilters) =>
+  JSON.stringify([f.typePost, f.scope, f.activityType, f.subtype, f.search]);
+
 /**
- * Custom hook para manejar la obtención y filtrado de posts desde el backend
- * Soporta filtros dinámicos por scope, activityType, subtype, typePost y búsqueda
+ * Feed del blog: filtros, primera página (o la del servidor) y "Cargar más"
+ * que añade la página siguiente sin reemplazar lo que ya se ve.
  */
-export function usePostsData(options: UsePostsDataOptions = {}) {
-  const { initialFilters = {}, autoFetch = true } = options;
+export function usePostsData({
+  initialPage,
+  pageSize = POSTS_PAGE_SIZE,
+}: UsePostsDataOptions = {}) {
+  const [filters, setFilters] = useState<PostFilters>({});
+  const [posts, setPosts] = useState<Post[]>(initialPage?.posts ?? []);
+  const [total, setTotal] = useState(initialPage?.total ?? 0);
+  const [status, setStatus] = useState<FeedStatus>(
+    initialPage ? "idle" : "loading"
+  );
+  const [loadMoreFailed, setLoadMoreFailed] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    offset: 0,
-    total: 0,
-  });
+  const requestId = useRef(0);
+  // Clave de filtros ya cargada: evita repetir la petición de la página del servidor
+  const loadedKey = useRef<string | null>(initialPage ? keyOf({}) : null);
+  const filtersKey = keyOf(filters);
 
-  // Filtros activos
-  const [filters, setFilters] = useState<PostFilters>(initialFilters);
-
-  /**
-   * Función para obtener posts con los filtros actuales
-   */
-  const fetchPosts = useCallback(async (customFilters?: PostFilters) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const appliedFilters = customFilters || filters;
-      const response: PostsResponse = await getAllPosts(appliedFilters);
-
-      setPosts(response.posts);
-      setPagination({
-        page: response.page,
-        limit: response.limit,
-        offset: response.offset,
-        total: response.total,
-      });
-    } catch (err: any) {
-      setError(err.message || "Error al cargar las publicaciones");
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters]);
-
-  /**
-   * Actualizar filtro de scope
-   */
-  const setScope = useCallback((scope?: string) => {
-    setFilters((prev) => ({ ...prev, scope, offset: 0 }));
-  }, []);
-
-  /**
-   * Actualizar filtro de activityType
-   */
-  const setActivityType = useCallback((activityType?: string) => {
-    setFilters((prev) => ({ ...prev, activityType, offset: 0 }));
-  }, []);
-
-  /**
-   * Actualizar filtro de subtype
-   */
-  const setSubtype = useCallback((subtype?: string) => {
-    setFilters((prev) => ({ ...prev, subtype, offset: 0 }));
-  }, []);
-
-  /**
-   * Actualizar filtro de typePost (moments/documents)
-   */
-  const setTypePost = useCallback((typePost?: "moments" | "documents") => {
-    setFilters((prev) => ({ ...prev, typePost, offset: 0 }));
-  }, []);
-
-  /**
-   * Actualizar búsqueda
-   */
-  const setSearch = useCallback((search?: string) => {
-    setFilters((prev) => ({ ...prev, search, offset: 0 }));
-  }, []);
-
-  /**
-   * Actualizar todos los filtros de una vez
-   */
-  const updateFilters = useCallback((newFilters: Partial<PostFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters, offset: 0 }));
-  }, []);
-
-  /**
-   * Limpiar todos los filtros
-   */
-  const clearFilters = useCallback(() => {
-    setFilters({ limit: 10, offset: 0 });
-  }, []);
-
-  /**
-   * Cambiar página (paginación)
-   */
-  const changePage = useCallback((page: number) => {
-    setFilters((prev) => ({
-      ...prev,
-      offset: (page - 1) * (prev.limit || 10),
-    }));
-  }, []);
-
-  /**
-   * Recargar posts manualmente
-   */
-  const refresh = useCallback(() => {
-    fetchPosts();
-  }, [fetchPosts]);
-
-  // Auto-fetch cuando los filtros cambian
   useEffect(() => {
-    if (autoFetch) {
-      fetchPosts();
+    if (loadedKey.current === filtersKey) return;
+    loadedKey.current = filtersKey;
+    const id = ++requestId.current;
+    setStatus("loading");
+    setLoadMoreFailed(false);
+    fetchPostsPage(filters, pageSize, 0)
+      .then((page) => {
+        if (id !== requestId.current) return;
+        setPosts(page.posts);
+        setTotal(page.total);
+        setStatus("idle");
+      })
+      .catch(() => {
+        if (id !== requestId.current) return;
+        loadedKey.current = null;
+        setStatus("error");
+      });
+    // filters cambia junto con filtersKey
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersKey, pageSize, reloadToken]);
+
+  const loadMore = useCallback(async () => {
+    if (status !== "idle" || posts.length >= total) return;
+    const id = ++requestId.current;
+    setStatus("loadingMore");
+    setLoadMoreFailed(false);
+    try {
+      const page = await fetchPostsPage(filters, pageSize, posts.length);
+      if (id !== requestId.current) return;
+      setPosts((prev) => {
+        const seen = new Set(prev.map((p) => p.id));
+        return [...prev, ...page.posts.filter((p) => !seen.has(p.id))];
+      });
+      setTotal(page.total);
+    } catch {
+      if (id === requestId.current) setLoadMoreFailed(true);
+    } finally {
+      if (id === requestId.current) setStatus("idle");
     }
-  }, [filters, autoFetch, fetchPosts]);
+  }, [status, posts.length, total, filters, pageSize]);
+
+  /** Vuelve a pedir la primera página con los filtros actuales */
+  const refresh = useCallback(() => {
+    loadedKey.current = null;
+    setReloadToken((t) => t + 1);
+  }, []);
+
+  const setFilter = useCallback(
+    <K extends keyof PostFilters>(key: K, value: PostFilters[K] | undefined) => {
+      setFilters((prev) => {
+        const next: PostFilters = { ...prev, [key]: value || undefined };
+        // El subtipo depende del tipo de actividad
+        if (key === "activityType") next.subtype = undefined;
+        return next;
+      });
+    },
+    []
+  );
+
+  const clearFilters = useCallback(() => setFilters({}), []);
+
+  const hasFilters = useMemo(
+    () => Object.values(filters).some(Boolean),
+    [filters]
+  );
 
   return {
-    // Data
     posts,
-    loading,
-    error,
-    pagination,
+    total,
+    status,
+    loadMoreFailed,
+    hasMore: posts.length < total,
     filters,
-
-    // Actions
-    setScope,
-    setActivityType,
-    setSubtype,
-    setTypePost,
-    setSearch,
-    updateFilters,
+    hasFilters,
+    setFilter,
     clearFilters,
-    changePage,
+    loadMore,
     refresh,
-    fetchPosts,
   };
 }

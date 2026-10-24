@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { FileQuestion } from "lucide-react";
-import Button from "@/components/admin/ui/Button";
 
 export default function NotFound() {
   return (
@@ -15,8 +14,11 @@ export default function NotFound() {
         <p className="text-gray-600 mb-6">
           La sección que buscas no existe
         </p>
-        <Link href="/admin/imagenes">
-          <Button variant="primary">Volver a Secciones</Button>
+        <Link
+          href="/admin/imagenes"
+          className="inline-flex h-10 items-center justify-center rounded-md bg-jmv-blue px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-jmv-blue-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-jmv-blue/40 focus-visible:ring-offset-1"
+        >
+          Volver a secciones
         </Link>
       </div>
     </div>

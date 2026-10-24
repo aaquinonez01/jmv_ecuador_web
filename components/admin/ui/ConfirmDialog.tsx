@@ -33,7 +33,7 @@ export default function ConfirmDialog({
   const iconBg = variant === "danger" ? "bg-red-100" : "bg-jmv-blue/10";
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="sm" showCloseButton={false}>
+    <Modal isOpen={isOpen} onClose={onClose} size="sm" showCloseButton={false} ariaLabel={title}>
       <div className="p-5">
         <div className="flex gap-3">
           <div

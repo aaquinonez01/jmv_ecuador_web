@@ -5,90 +5,42 @@ import {
   type CreatePostData,
 } from "@/lib/helpers/form-data.helper";
 
-export interface CreatePostResponse {
-  id: string;
-  title?: string;
-  content: string;
-  typePost: string;
-  createdAt: string;
-  updatedAt: string;
-  images: Array<{ id: string; url: string }>;
-  scope?: { id: string; name: string };
-  activityType?: { id: string; name: string };
-  subtype?: { id: string; name: string };
-  user: {
-    id: string;
-    fullName: string;
-    email: string;
-    profilePicture?: string | null;
-    role: string;
-  };
-}
-
 /**
- * Crea un nuevo post con imágenes
- * @param data - Datos del post incluyendo archivos
- * @returns Post creado con toda la información
+ * Crea un post (las fotos son opcionales; el backend acepta 0 a 10).
+ * Se ejecuta en el navegador: usa el token guardado por getAxiosClient.
+ * Lanza Error con un mensaje listo para mostrar a la persona.
  */
-export async function createPost(
-  data: CreatePostData
-): Promise<CreatePostResponse> {
+export async function createPost(data: CreatePostData): Promise<void> {
+  const validation = validatePostFiles(data.files);
+  if (!validation.isValid) throw new Error(validation.error);
+
   try {
-    // Validar archivos antes de enviar
-    const validation = validatePostFiles(data.files);
-    if (!validation.isValid) {
-      throw new Error(validation.error);
-    }
-
-    // Construir FormData
-    const formData = buildPostFormData(data);
-
-    // Hacer request al backend
-    const api = getAxiosClient();
-    const response = await api.post<CreatePostResponse>("/posts", formData);
-
-    return response.data;
+    await getAxiosClient().post("/posts", buildPostFormData(data));
   } catch (error: any) {
-    console.error("Error creating post:", error);
+    const status: number | undefined = error?.response?.status;
+    const message = error?.response?.data?.message;
 
-    // Manejar errores específicos
-    if (error.response) {
-      const status = error.response.status;
-      const message = error.response.data?.message;
-
-      if (status === 401) {
-        throw new Error("Debes iniciar sesión para crear publicaciones");
-      }
-
-      if (status === 400) {
-        throw new Error(message || "Datos inválidos. Verifica el formulario");
-      }
-
-      if (status === 413) {
-        throw new Error("Uno o más archivos son demasiado grandes (máx 10MB)");
-      }
-
-      if (status === 500) {
-        throw new Error(
-          "Error del servidor al crear la publicación. Intenta nuevamente"
-        );
-      }
-
+    if (!error?.response && error?.request) {
       throw new Error(
-        message || `Error al crear la publicación (${status})`
+        "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
       );
     }
-
-    // Error de red o timeout
-    if (error.request) {
+    if (status === 401 || status === 403) {
+      throw new Error("Tu sesión terminó. Vuelve a iniciar sesión para publicar.");
+    }
+    if (status === 413) {
+      throw new Error("Una o más fotos pesan demasiado (máximo 10 MB cada una).");
+    }
+    if (status === 400) {
+      const detail = Array.isArray(message) ? message.join(". ") : message;
       throw new Error(
-        "No se pudo conectar con el servidor. Verifica tu conexión"
+        detail
+          ? `Revisa los datos de la publicación: ${detail}`
+          : "Revisa los datos de la publicación e inténtalo de nuevo."
       );
     }
-
-    // Otro tipo de error
     throw new Error(
-      error.message || "Error desconocido al crear la publicación"
+      "No pudimos publicar en este momento. Inténtalo de nuevo en unos minutos."
     );
   }
 }

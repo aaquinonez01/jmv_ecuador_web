@@ -1,5 +1,3 @@
-"use server";
-
 import TestimonialsSectionClient from "./TestimonialsSectionClient";
 import { ssrFetch } from "@/lib/helpers/apiBase";
 import type {

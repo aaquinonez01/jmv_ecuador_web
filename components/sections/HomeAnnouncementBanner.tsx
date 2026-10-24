@@ -1,13 +1,18 @@
 import Link from 'next/link'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { ArrowRight, Megaphone } from 'lucide-react'
 import { fetchActiveAnnouncements } from '@/lib/api/consejo.server'
 import type { HomeAnnouncement } from '@/types/consejo'
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { buttonVariants } from "@/components/ui/button-variants";
+import StarsRing from "@/components/brand/StarsRing";
+import MarianMonogram from "@/components/brand/MarianMonogram";
 
 function pickPrimary(items: HomeAnnouncement[]): HomeAnnouncement | null {
   if (!items.length) return null
   return items[0]
 }
+
+const isExternal = (url: string) => /^https?:\/\//i.test(url)
 
 export default async function HomeAnnouncementBanner() {
   const announcements = await fetchActiveAnnouncements()
@@ -16,55 +21,71 @@ export default async function HomeAnnouncementBanner() {
   if (!primary) return null
 
   return (
-    <section className="py-12 bg-gradient-to-br from-jmv-blue-dark via-jmv-blue to-blue-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(217,143,6,0.18),transparent_60%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.08),transparent_55%)]" />
-
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl overflow-hidden shadow-2xl">
-          <div className="grid md:grid-cols-[280px_1fr]">
+    <section
+      aria-labelledby="anuncio-destacado"
+      className="relative overflow-hidden bg-gradient-to-br from-jmv-ink via-[#163a68] to-jmv-blue py-12 sm:py-16"
+    >
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-3xl border border-white/15 bg-white/5 shadow-2xl">
+          <div className="grid md:grid-cols-[minmax(0,320px)_1fr]">
             {primary.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={getOptimizedUrl(primary.imageUrl, { w: 1200 })}
+                src={getOptimizedUrl(primary.imageUrl, { w: 800 })}
+                loading="lazy"
                 decoding="async"
-                alt={primary.titulo}
-                className="w-full h-56 md:h-full object-cover"
+                sizes="(min-width: 768px) 320px, 100vw"
+                alt=""
+                className="h-56 w-full object-cover md:h-full"
               />
             ) : (
-              <div className="w-full h-56 md:h-full bg-gradient-to-br from-jmv-gold via-jmv-gold-dark to-jmv-red flex items-center justify-center">
-                <Sparkles className="w-24 h-24 text-white/90" />
+              <div className="relative flex h-48 w-full items-center justify-center bg-jmv-blue text-jmv-gold-text md:h-full">
+                <StarsRing aria-hidden className="absolute h-44 w-44 opacity-60" />
+                <MarianMonogram aria-hidden className="h-20 w-16" strokeWidth={5} />
               </div>
             )}
 
-            <div className="p-6 md:p-8 flex flex-col justify-center">
-              <div className="inline-flex items-center self-start px-4 py-1.5 bg-jmv-gold/20 border border-jmv-gold/30 rounded-full text-jmv-gold text-xs font-semibold uppercase tracking-wide mb-4">
-                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+            <div className="flex flex-col justify-center p-6 md:p-8">
+              <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+                <Megaphone className="h-4 w-4" aria-hidden />
                 Anuncio destacado
-              </div>
+              </p>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+              <h2 id="anuncio-destacado" className="mb-2 text-2xl font-bold text-white md:text-3xl">
                 {primary.titulo}
               </h2>
 
               {primary.subtitulo && (
-                <p className="text-jmv-gold font-medium mb-3">
+                <p className="mb-3 font-medium text-jmv-gold-text">
                   {primary.subtitulo}
                 </p>
               )}
 
-              <p className="text-white/85 leading-relaxed mb-5">
+              <p className="mb-6 leading-relaxed text-slate-200">
                 {primary.mensaje}
               </p>
 
               {primary.ctaUrl && primary.ctaLabel && (
-                <Link
-                  href={primary.ctaUrl}
-                  className="inline-flex items-center self-start px-5 py-2.5 bg-jmv-gold hover:bg-jmv-gold-dark text-white font-semibold rounded-full transition-colors group"
-                >
-                  {primary.ctaLabel}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                isExternal(primary.ctaUrl) ? (
+                  <a
+                    href={primary.ctaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonVariants({ variant: "gold", className: "self-start" })}
+                  >
+                    {primary.ctaLabel}
+                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                    <span className="sr-only"> (se abre en una pestaña nueva)</span>
+                  </a>
+                ) : (
+                  <Link
+                    href={primary.ctaUrl}
+                    className={buttonVariants({ variant: "gold", className: "self-start" })}
+                  >
+                    {primary.ctaLabel}
+                    <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+                  </Link>
+                )
               )}
             </div>
           </div>

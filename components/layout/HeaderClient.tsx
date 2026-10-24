@@ -1,10 +1,20 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown, Heart } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { Accordion, Dialog } from "radix-ui";
+import { ChevronDown, Heart, Menu, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { isChromelessPath } from "@/lib/site";
 
 export type NavItem = {
   name: string;
@@ -17,162 +27,308 @@ type Props = {
   logo: ReactNode;
 };
 
-export default function HeaderClient({ navigation, logo }: Props) {
-  const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+// Header azul de marca con texto blanco (8.4:1) y acentos dorados
+// (jmv-gold-text sobre jmv-blue = 4.7:1). El dorado #D98F06 con texto blanco
+// daba 2.7:1 y además ocultaba la franja dorada del logo.
 
-  const isAdminRoute =
-    pathname?.startsWith("/admin") || pathname?.startsWith("/sign-in");
+function normalize(path: string) {
+  return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
+}
+
+/** Página exacta: aria-current="page" */
+function isCurrent(pathname: string, href: string) {
+  return normalize(pathname) === normalize(href);
+}
+
+/** Sección activa (incluye subrutas): sólo estilo visual */
+function isInSection(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+export default function HeaderClient({ navigation, logo }: Props) {
+  const pathname = usePathname() ?? "/";
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const baseId = useId();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Al navegar se cierran el menú móvil y los submenús
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isMenuOpen]);
+    setIsMenuOpen(false);
+    setOpenSubmenu(null);
+  }, [pathname]);
 
-  if (isAdminRoute) {
+  // Clic/toque fuera del submenú de escritorio
+  useEffect(() => {
+    if (!openSubmenu) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!navRef.current?.contains(e.target as Node)) setOpenSubmenu(null);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [openSubmenu]);
+
+  if (isChromelessPath(pathname)) {
     return null;
   }
+
+  const sectionActive = (item: NavItem) =>
+    item.href
+      ? isInSection(pathname, item.href)
+      : (item.children ?? []).some((c) => isInSection(pathname, c.href));
+
+  const activeAccordion = navigation.find((i) => i.children && sectionActive(i))?.name;
 
   return (
     <header
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300 bg-[#D98F06]",
-        scrolled ? "shadow-xl" : "",
+        "fixed top-0 z-50 w-full bg-jmv-blue text-white transition-shadow duration-300",
+        scrolled ? "shadow-xl shadow-black/20" : "shadow-none",
       )}
-      style={{ backgroundColor: "#D98F06" }}
     >
-      <div className=" mx-auto px-3 sm:px-4 md:px-6 lg:px-8 w-full">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
+      <div className="mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-2 sm:h-20 sm:gap-4">
           {logo}
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
-            {navigation.map((item) => (
-              <div key={item.name} className="relative group">
-                <Link
-                  href={item.href || "#"}
-                  className="flex items-center px-4 py-3 text-sm font-bold text-white/90 hover:text-white transition-all duration-200 rounded-lg hover:bg-white/10 hover:scale-105"
-                >
-                  {item.name}
-                  {item.children && <ChevronDown className="ml-1 h-3 w-3" />}
-                </Link>
+          {/* Navegación de escritorio */}
+          <nav ref={navRef} aria-label="Principal" className="hidden lg:block">
+            <ul className="flex items-center gap-0.5 xl:gap-1">
+              {navigation.map((item) => {
+                const active = sectionActive(item);
+                if (!item.children) {
+                  const current = isCurrent(pathname, item.href!);
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        href={item.href!}
+                        aria-current={current ? "page" : undefined}
+                        className={cn(
+                          "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white xl:px-4",
+                          active &&
+                            "text-white after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  );
+                }
 
-                {item.children && (
-                  <div className="absolute top-full left-0 w-56 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-3 group-hover:translate-y-0 mt-1">
-                    <div className="py-3">
-                      <div className="px-4 py-2 border-b border-gray-200">
-                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                          {item.name}
-                        </span>
-                      </div>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          className="flex items-center px-4 py-3 text-sm text-gray-700 hover:text-jmv-blue hover:bg-jmv-blue/10 transition-all duration-200 hover:pl-6 group/item"
-                        >
-                          <span className="w-1.5 h-1.5 bg-jmv-blue rounded-full mr-3 opacity-0 group-hover/item:opacity-100 transition-opacity"></span>
-                          {child.name}
-                        </Link>
-                      ))}
+                const panelId = `${baseId}-${item.name}`;
+                const isOpen = openSubmenu === item.name;
+                const close = () => setOpenSubmenu(null);
+                const onBlur = (e: FocusEvent<HTMLLIElement>) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node | null)) close();
+                };
+                const onKeyDown = (e: KeyboardEvent<HTMLLIElement>) => {
+                  if (e.key === "Escape" && isOpen) {
+                    e.stopPropagation();
+                    close();
+                    (e.currentTarget.querySelector("button") as HTMLButtonElement | null)?.focus();
+                  }
+                };
+
+                return (
+                  <li
+                    key={item.name}
+                    className="relative"
+                    onMouseEnter={() => setOpenSubmenu(item.name)}
+                    onMouseLeave={close}
+                    onBlur={onBlur}
+                    onKeyDown={onKeyDown}
+                  >
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => setOpenSubmenu(isOpen ? null : item.name)}
+                      className={cn(
+                        "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white xl:px-4",
+                        (active || isOpen) && "text-white",
+                        active &&
+                          "after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
+                      )}
+                    >
+                      {item.name}
+                      <ChevronDown
+                        aria-hidden
+                        className={cn(
+                          "ml-1 h-4 w-4 transition-transform duration-200",
+                          isOpen && "rotate-180",
+                        )}
+                      />
+                    </button>
+
+                    {/* pt-2 mantiene el hover al bajar el puntero hacia el panel */}
+                    <div id={panelId} hidden={!isOpen} className="absolute left-0 top-full w-60 pt-2">
+                      <ul
+                        data-surface="light"
+                        className="rounded-xl border border-slate-200 bg-white py-2 shadow-2xl"
+                      >
+                        {item.children.map((child) => {
+                          const current = isCurrent(pathname, child.href);
+                          return (
+                            <li key={child.href}>
+                              <Link
+                                href={child.href}
+                                aria-current={current ? "page" : undefined}
+                                className={cn(
+                                  "flex min-h-11 items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-jmv-blue/10 hover:text-jmv-blue",
+                                  current && "bg-jmv-blue/5 font-semibold text-jmv-blue",
+                                )}
+                              >
+                                <span
+                                  aria-hidden
+                                  className={cn(
+                                    "h-1.5 w-1.5 rounded-full",
+                                    current ? "bg-jmv-gold" : "bg-slate-300",
+                                  )}
+                                />
+                                {child.name}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
-
-            <Link
-              href="/unete"
-              className="bg-jmv-red text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-jmv-red-dark transition-all duration-200 ml-4 whitespace-nowrap shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-            >
-              <span className="hidden md:inline">Únete a JMV</span>
-              <span className="md:hidden">Únete</span>
-            </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </nav>
 
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-            className="lg:hidden p-2 sm:p-3 rounded-lg text-white hover:bg-white/10 transition-all duration-200 hover:scale-110 active:scale-95 flex-shrink-0"
-          >
-            {isMenuOpen ? (
-              <X className="h-4 w-4 sm:h-5 sm:w-5" />
-            ) : (
-              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
-            )}
-          </button>
-        </div>
-      </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/unete"
+              aria-current={isCurrent(pathname, "/unete") ? "page" : undefined}
+              className="hidden min-h-11 items-center whitespace-nowrap rounded-lg bg-jmv-gold px-5 text-sm font-bold text-jmv-ink shadow-md hover:bg-jmv-gold-text sm:inline-flex"
+            >
+              Únete
+            </Link>
 
-      {isMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-50 bg-[#D98F06] overflow-y-auto"
-          style={{ backgroundColor: "#D98F06", top: "64px" }}
-        >
-          <div className="min-h-full flex flex-col px-5 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8">
-            <div className="flex-1 space-y-3">
-              {navigation.map((item) => (
-                <div
-                  key={item.name}
-                  className="border-b border-white/10 pb-5 last:border-b-0"
-                >
-                  <Link
-                    href={item.href || "#"}
-                    className="flex items-center justify-between px-4 py-3.5 text-lg sm:text-xl font-bold text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                    {item.children && (
-                      <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6 opacity-60" />
-                    )}
-                  </Link>
-                  {item.children && (
-                    <div className="ml-4 sm:ml-5 mt-3 space-y-2 pl-4 sm:pl-5 border-l-2 border-white/20">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.name}
-                          href={child.href}
-                          className="flex items-center px-3 py-2.5 text-base sm:text-lg font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-md transition-all duration-200 hover:pl-5"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-3"></span>
-                          {child.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-6 mt-auto">
-              <Link
-                href="/unete"
-                className="flex items-center justify-center w-full bg-jmv-red text-white px-6 py-4 rounded-xl font-bold hover:bg-jmv-red-dark transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
-                onClick={() => setIsMenuOpen(false)}
+            {/* Menú móvil: Radix Dialog a pantalla completa (foco atrapado, Escape) */}
+            <Dialog.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <Dialog.Trigger
+                aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white hover:bg-white/10 lg:hidden"
               >
-                <Heart className="w-5 h-5 mr-2" />
-                Únete a JMV
-              </Link>
-            </div>
+                <Menu className="h-6 w-6" aria-hidden />
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Content
+                  aria-describedby={undefined}
+                  className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-jmv-blue text-white lg:hidden data-[state=open]:animate-in data-[state=open]:fade-in-0"
+                >
+                  <Dialog.Title className="sr-only">Menú de navegación</Dialog.Title>
+                  <div className="flex h-16 shrink-0 items-center justify-between gap-2 px-3 sm:h-20 sm:px-4 md:px-6">
+                    {logo}
+                    <Dialog.Close
+                      aria-label="Cerrar menú"
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white hover:bg-white/10"
+                    >
+                      <X className="h-6 w-6" aria-hidden />
+                    </Dialog.Close>
+                  </div>
+
+                  <nav aria-label="Principal" className="flex flex-1 flex-col px-4 pb-8 pt-2 sm:px-6">
+                    <Accordion.Root
+                      type="single"
+                      collapsible
+                      defaultValue={activeAccordion}
+                      asChild
+                    >
+                      <ul className="flex-1 divide-y divide-white/10">
+                        {navigation.map((item) => {
+                          if (!item.children) {
+                            const current = isCurrent(pathname, item.href!);
+                            return (
+                              <li key={item.name}>
+                                <Link
+                                  href={item.href!}
+                                  aria-current={current ? "page" : undefined}
+                                  onClick={() => setIsMenuOpen(false)}
+                                  className={cn(
+                                    "flex min-h-14 items-center rounded-lg px-3 text-lg font-semibold text-white/90 hover:bg-white/10 hover:text-white",
+                                    sectionActive(item) && "text-jmv-gold-text",
+                                  )}
+                                >
+                                  {item.name}
+                                </Link>
+                              </li>
+                            );
+                          }
+                          return (
+                            <Accordion.Item key={item.name} value={item.name} asChild>
+                              <li>
+                                <Accordion.Header asChild>
+                                  <div>
+                                    <Accordion.Trigger
+                                      className={cn(
+                                        "group flex min-h-14 w-full items-center justify-between rounded-lg px-3 text-left text-lg font-semibold text-white/90 hover:bg-white/10 hover:text-white",
+                                        sectionActive(item) && "text-jmv-gold-text",
+                                      )}
+                                    >
+                                      {item.name}
+                                      <ChevronDown
+                                        aria-hidden
+                                        className="h-6 w-6 opacity-80 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                                      />
+                                    </Accordion.Trigger>
+                                  </div>
+                                </Accordion.Header>
+                                <Accordion.Content asChild>
+                                  <ul className="mb-3 ml-3 border-l-2 border-jmv-gold-text/40 pl-3">
+                                    {item.children.map((child) => {
+                                      const current = isCurrent(pathname, child.href);
+                                      return (
+                                        <li key={child.href}>
+                                          <Link
+                                            href={child.href}
+                                            aria-current={current ? "page" : undefined}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className={cn(
+                                              "flex min-h-12 items-center rounded-md px-3 text-base text-white/85 hover:bg-white/10 hover:text-white",
+                                              current && "font-semibold text-jmv-gold-text",
+                                            )}
+                                          >
+                                            {child.name}
+                                          </Link>
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                </Accordion.Content>
+                              </li>
+                            </Accordion.Item>
+                          );
+                        })}
+                      </ul>
+                    </Accordion.Root>
+
+                    <Link
+                      href="/unete"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="mt-6 flex min-h-14 w-full items-center justify-center rounded-xl bg-jmv-gold px-6 text-lg font-bold text-jmv-ink shadow-lg hover:bg-jmv-gold-text"
+                    >
+                      <Heart className="mr-2 h-5 w-5" aria-hidden />
+                      Únete a JMV
+                    </Link>
+                  </nav>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

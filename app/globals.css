@@ -20,6 +20,16 @@
   --jmv-gray-light: #f8fafc;
   --jmv-gray: #64748b;
   --jmv-gray-dark: #334155;
+  /* Texto accesible (WCAG AA). El dorado de marca #D98F06 no sirve para texto
+     sobre fondos claros ni admite texto blanco encima (blanco/#D98F06 = 2.7:1).
+     - Sobre fondo oscuro (slate-900 / jmv-blue): text-jmv-gold-text (10:1 / 4.7:1)
+     - Sobre fondo claro (blanco / slate-50): text-jmv-gold-ink (5.9:1)
+     - Sobre bg-jmv-gold: texto text-jmv-ink o slate-900 (6.7:1), nunca blanco */
+  --jmv-gold-text: #F5B83D;
+  --jmv-gold-ink: #8A5A00;
+  --jmv-ink: #0f172a;
+  /* Anillo de foco; en superficies claras usar data-surface="light" */
+  --focus-ring: #F5B83D;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -69,15 +79,19 @@
   --color-jmv-gold: var(--jmv-gold);
   --color-jmv-gold-light: var(--jmv-gold-light);
   --color-jmv-gold-dark: var(--jmv-gold-dark);
+  --color-jmv-gold-text: var(--jmv-gold-text);
+  --color-jmv-gold-ink: var(--jmv-gold-ink);
+  --color-jmv-ink: var(--jmv-ink);
   --color-jmv-white: var(--jmv-white);
   --color-jmv-gray-light: var(--jmv-gray-light);
   --color-jmv-gray: var(--jmv-gray);
   --color-jmv-gray-dark: var(--jmv-gray-dark);
 
-  /* Typography */
-  --font-poppins: 'Poppins', sans-serif;
-  --font-dancing: 'Dancing Script', cursive;
-  --font-sans: var(--font-poppins);
+  /* Typography: --font-poppins y --font-fraunces los inyecta next/font en <html> */
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  /* Alias heredado: font-dancing ahora usa la serif editorial */
+  --font-dancing: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -116,34 +130,35 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Forced dark theme - removed automatic theme detection */
+/* Tema oscuro forzado (clase .dark en <html>) */
 
 body {
-  font-family: var(--font-poppins);
+  font-family: var(--font-sans);
   line-height: 1.6;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  scrollbar-color: #334155 var(--jmv-ink);
 }
 
-/* Custom scrollbar */
+/* Scrollbar acorde al tema oscuro */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--jmv-gray-light);
+  background: var(--jmv-ink);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--jmv-blue);
-  border-radius: 4px;
+  background: #334155;
+  border: 2px solid var(--jmv-ink);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--jmv-blue-dark);
+  background: var(--jmv-blue);
 }
 
 /* Glass morphism utilities */
@@ -170,6 +185,16 @@ html {
   background: linear-gradient(135deg, rgba(29, 78, 138, 0.1) 0%, rgba(211, 48, 47, 0.1) 50%, rgba(217, 143, 6, 0.1) 100%);
 }
 
+.bg-gradient-jmv-soft {
+  background: linear-gradient(135deg, rgba(29, 78, 138, 0.1) 0%, rgba(211, 48, 47, 0.1) 50%, rgba(217, 143, 6, 0.1) 100%);
+}
+
+/* Degradado de marca oscuro y semitransparente: sirve como fondo de sección
+   y como velo sobre fotografía (deja ver la foto) */
+.bg-gradient-jmv {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(29, 78, 138, 0.88) 55%, rgba(122, 31, 30, 0.82) 100%);
+}
+
 /* Fixed dark JMV gradient that ignores system theme preference */
 .bg-gradient-jmv-dark-fixed {
   background: linear-gradient(135deg, #0f172a 0%, #1D4E8A 25%, #D3302F 60%, #D98F06 100%) !important;
@@ -192,6 +217,16 @@ html {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Barra de carga (app/loading.tsx) */
+.animate-loading-bar {
+  animation: jmv-loading 1.2s ease-in-out infinite;
+}
+
+@keyframes jmv-loading {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
 }
 
 /* Custom shadows */
@@ -259,14 +294,11 @@ html {
   animation: scaleIn 0.2s ease-out forwards;
 }
 
-/* Smooth transitions for all interactive elements */
-button,
-a,
-input,
-textarea,
-select,
+/* Transición específica (no "all") para elementos que la pidan */
 .transition-smooth {
-  transition: all 0.2s ease-in-out;
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
 }
 
 /* Admin modal backdrop */
@@ -290,8 +322,9 @@ select,
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  /* Fondo del sitio público: slate-900 con texto slate-100 */
+  --background: #0f172a;
+  --foreground: #f1f5f9;
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
@@ -333,10 +366,63 @@ select,
   html {
     @apply font-sans;
   }
+  /* Transición sólo de propiedades baratas; las utilidades transition-* la sustituyen */
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    transition-property: color, background-color, border-color, opacity, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: ease-in-out;
+  }
+  /* Foco visible global: dorado claro, visible sobre slate-900 y sobre el header azul */
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  [data-surface="light"] {
+    --focus-ring: var(--jmv-blue);
+  }
+  /* Destino del enlace "Saltar al contenido": no necesita anillo */
+  main:focus {
+    outline: none;
+  }
   .maplibregl-popup-content {
     @apply bg-transparent! shadow-none! p-0! rounded-none!;
   }
   .maplibregl-popup-tip {
     @apply hidden!;
+  }
+}
+
+/* Movimiento reducido: sin animaciones infinitas ni scroll suave */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float,
+  .animate-bounce,
+  .animate-pulse,
+  .animate-ping,
+  .animate-loading-bar,
+  .animate-fade-in,
+  .animate-slide-in-right,
+  .animate-slide-in-bottom,
+  .animate-scale-in {
+    animation: none !important;
+  }
+  /* Los spinners de carga comunican estado: se mantienen, más lentos */
+  .animate-spin {
+    animation-duration: 1.5s !important;
+    animation-iteration-count: infinite !important;
   }
 }

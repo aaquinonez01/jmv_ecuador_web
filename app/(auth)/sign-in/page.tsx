@@ -3,8 +3,9 @@ import { Metadata } from "next";
 import SignInForm from "@/components/auth/SignInForm";
 
 export const metadata: Metadata = {
-  title: "Iniciar Sesión | JMV Ecuador",
-  description: "Ingresa a tu cuenta de Juventudes Marianas Vicencianas Ecuador para acceder a la comunidad y compartir experiencias.",
+  title: "Iniciar sesión",
+  description:
+    "Ingresa a tu cuenta de Juventudes Marianas Vicencianas Ecuador para compartir momentos y recursos con la comunidad.",
 };
 
 export default function SignInPage() {

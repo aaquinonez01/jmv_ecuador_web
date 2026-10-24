@@ -29,7 +29,6 @@ export function useImageReorder(initialImages: AdminImage[]) {
 
   const saveOrder = () => {
     // TODO: Aquí se enviaría al backend el nuevo orden
-    console.log("Guardando nuevo orden:", images.map((img) => img.id));
     setIsReordering(false);
     // Retornar las imágenes reordenadas para actualizar el estado padre
     return images;
