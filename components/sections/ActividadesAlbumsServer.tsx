@@ -1,5 +1,3 @@
-"use server";
-
 import ActivitiesAlbumsClient from "./ActivitiesAlbumsClient";
 import { ssrFetch } from "@/lib/helpers/apiBase";
 import type {
@@ -8,59 +6,45 @@ import type {
   PaginatedResponse,
 } from "@/types/activity-management";
 
-export default async function ActividadesAlbumsServer() {
-  let activities: ActivityItem[] = [];
-  let pillars: ActivityCatalogItem[] = [];
-  let types: ActivityCatalogItem[] = [];
+const ALBUMS_PAGE_SIZE = 12;
 
-  const [activitiesRes, pillarsRes, typesRes] = await Promise.all([
-    ssrFetch("/activities/public", {
+async function readCatalog(path: string, tag: string) {
+  try {
+    const res = await ssrFetch(path, { revalidate: 86400, tags: [tag] });
+    if (!res) return [];
+    return ((await res.json()) as ActivityCatalogItem[]).filter((item) => item.active);
+  } catch {
+    return [];
+  }
+}
+
+// Primera página de álbumes en el servidor; los filtros y "Cargar más" piden
+// las siguientes al backend desde el navegador (GET /activities/public).
+export default async function ActividadesAlbumsServer() {
+  let initial: PaginatedResponse<ActivityItem> | null = null;
+
+  const [activitiesRes, pillars, types] = await Promise.all([
+    ssrFetch(`/activities/public?limit=${ALBUMS_PAGE_SIZE}&offset=0`, {
       revalidate: 86400,
       tags: ["activities_public"],
-    }),
-    ssrFetch("/activity-pillars", {
-      revalidate: 86400,
-      tags: ["activity_pillars_public"],
-    }),
-    ssrFetch("/activity-types", {
-      revalidate: 86400,
-      tags: ["activity_types_public"],
-    }),
+    }).catch(() => null),
+    readCatalog("/activity-pillars", "activity_pillars_public"),
+    readCatalog("/activity-types", "activity_types_public"),
   ]);
 
   if (activitiesRes) {
     try {
-      const data =
-        (await activitiesRes.json()) as PaginatedResponse<ActivityItem>;
-      activities = data.items || [];
+      const data = (await activitiesRes.json()) as PaginatedResponse<ActivityItem>;
+      initial = { total: data.total ?? data.items?.length ?? 0, items: data.items ?? [] };
     } catch {
-      activities = [];
-    }
-  }
-
-  if (pillarsRes) {
-    try {
-      pillars = ((await pillarsRes.json()) as ActivityCatalogItem[]).filter(
-        (item) => item.active
-      );
-    } catch {
-      pillars = [];
-    }
-  }
-
-  if (typesRes) {
-    try {
-      types = ((await typesRes.json()) as ActivityCatalogItem[]).filter(
-        (item) => item.active
-      );
-    } catch {
-      types = [];
+      initial = null;
     }
   }
 
   return (
     <ActivitiesAlbumsClient
-      activities={activities}
+      initial={initial}
+      pageSize={ALBUMS_PAGE_SIZE}
       pillars={pillars}
       types={types}
     />

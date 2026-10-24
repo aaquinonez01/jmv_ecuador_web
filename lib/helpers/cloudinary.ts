@@ -14,3 +14,8 @@ export function getOptimizedUrl(url: string, opts?: { w?: number; q?: 'auto' | '
   }
 }
 
+/** srcset con transformaciones de Cloudinary (sin pasar por el optimizador de Next) */
+export function getSrcSet(url: string, widths: number[] = [400, 800, 1200]) {
+  if (!url.includes('res.cloudinary.com')) return undefined;
+  return widths.map((w) => `${getOptimizedUrl(url, { w })} ${w}w`).join(', ');
+}

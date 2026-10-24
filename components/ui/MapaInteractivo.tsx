@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  Map,
-  MapControls,
-  MapMarker,
-  MarkerContent,
-  MarkerPopup,
-} from "@/components/ui/map";
-import { getComunidadesAPI } from "@/actions/comunidades";
+import { Map, MapControls, MapMarker, MarkerContent, MarkerPopup } from "@/components/ui/map";
 import type { ComunidadItem } from "@/types/territory-management";
-import { Mail, MapPin, Phone, Users } from "lucide-react";
+import { comunidadWhatsappLink, hasCoords } from "@/lib/comunidades";
+import { Mail, MapPin, MessageCircle, Phone, Users } from "lucide-react";
 
 const ECUADOR_CENTER: [number, number] = [-78.1834, -1.8312];
 const ECUADOR_ZOOM = 6.2;
@@ -28,166 +21,64 @@ const ECUADOR_BOUNDS: [[number, number], [number, number]] = [
 ];
 const ECUADOR_MIN_ZOOM = 6;
 
-function hasCoords(c: ComunidadItem): c is ComunidadItem & {
-  latitud: number;
-  longitud: number;
-} {
-  return (
-    typeof c.latitud === "number" &&
-    typeof c.longitud === "number" &&
-    Number.isFinite(c.latitud) &&
-    Number.isFinite(c.longitud)
-  );
-}
+const popupLink =
+  "flex min-h-11 items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] font-medium text-slate-800 transition-colors hover:bg-jmv-blue/5 hover:text-jmv-blue";
 
 function ComunidadPopupCard({ comunidad }: { comunidad: ComunidadItem }) {
-  const initials = (comunidad.zona?.nombre ?? comunidad.nombre)
-    .split(" ")
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const whatsapp = comunidadWhatsappLink(comunidad);
 
   return (
-    <div className="w-[300px] overflow-hidden rounded-2xl border border-jmv-gold/30 bg-white shadow-2xl">
+    <div className="w-[min(300px,80vw)] overflow-hidden rounded-2xl border border-jmv-gold/30 bg-white shadow-2xl" data-surface="light">
       <div className="bg-gradient-to-br from-jmv-blue via-jmv-blue-dark to-jmv-blue px-4 py-3.5">
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs font-bold text-white ring-1 ring-white/30 backdrop-blur-sm">
-            {initials || "JMV"}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="truncate font-poppins text-base font-bold leading-tight text-white">
-              {comunidad.nombre}
-            </h3>
-            <p className="mt-0.5 text-[11px] uppercase tracking-wider text-white/75">
-              Comunidad JMV
-            </p>
-          </div>
-        </div>
+        <h3 className="pr-8 text-base font-bold leading-tight text-white">{comunidad.nombre}</h3>
+        <p className="mt-0.5 text-xs text-white/90">Comunidad JMV · {comunidad.ciudad}</p>
         {comunidad.zona?.nombre ? (
-          <div className="mt-3">
-            <span className="inline-flex items-center rounded-full bg-jmv-gold/95 px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-white shadow-sm">
-              <Users className="mr-1 size-3" strokeWidth={2.5} />
-              {comunidad.zona.nombre}
-            </span>
-          </div>
+          <span className="mt-3 inline-flex items-center rounded-full bg-jmv-gold px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-jmv-ink">
+            <Users className="mr-1 size-3" strokeWidth={2.5} aria-hidden />
+            {comunidad.zona.nombre}
+          </span>
         ) : null}
       </div>
 
-      <div className="space-y-2.5 px-4 py-3.5">
-        <div className="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <MapPin className="mt-0.5 size-4 shrink-0 text-jmv-blue" strokeWidth={2} />
-          <div className="min-w-0">
-            <div className="font-semibold text-slate-900">{comunidad.ciudad}</div>
-            {comunidad.direccion ? (
-              <div className="mt-0.5 text-[11.5px] leading-snug text-slate-500">
-                {comunidad.direccion}
-              </div>
-            ) : null}
-          </div>
-        </div>
+      <div className="px-3 py-3">
+        {comunidad.direccion ? (
+          <p className="mb-2 flex items-start gap-2.5 px-2 text-[12.5px] text-slate-700">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-jmv-blue" aria-hidden />
+            {comunidad.direccion}
+          </p>
+        ) : null}
 
-        <div className="my-1 border-t border-dashed border-slate-200" />
-
-        <div className="space-y-1.5">
-          <a
-            href={`mailto:${comunidad.correoElectronico}`}
-            className="group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-700 transition-colors hover:bg-jmv-blue/5"
-          >
-            <Mail
-              className="size-4 shrink-0 text-jmv-blue transition-transform group-hover:scale-110"
-              strokeWidth={2}
-            />
-            <span className="truncate font-medium group-hover:text-jmv-blue">
-              {comunidad.correoElectronico}
-            </span>
+        <a href={whatsapp.href} target="_blank" rel="noopener noreferrer" className={popupLink}>
+          <MessageCircle className="size-4 shrink-0 text-jmv-blue" aria-hidden />
+          Escribir por WhatsApp
+          <span className="sr-only">
+            {whatsapp.isCommunityPhone ? "" : " a JMV Ecuador"} (se abre en una pestaña nueva)
+          </span>
+        </a>
+        {comunidad.telefono ? (
+          <a href={`tel:${comunidad.telefono.replace(/\s+/g, "")}`} className={popupLink}>
+            <Phone className="size-4 shrink-0 text-jmv-blue" aria-hidden />
+            Llamar al {comunidad.telefono}
           </a>
-
-          {comunidad.telefono ? (
-            <a
-              href={`tel:${comunidad.telefono.replace(/\s+/g, "")}`}
-              className="group flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-700 transition-colors hover:bg-jmv-blue/5"
-            >
-              <Phone
-                className="size-4 shrink-0 text-jmv-blue transition-transform group-hover:scale-110"
-                strokeWidth={2}
-              />
-              <span className="font-medium group-hover:text-jmv-blue">
-                {comunidad.telefono}
-              </span>
-            </a>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="border-t border-slate-100 bg-gradient-to-b from-slate-50/40 to-white px-4 py-2.5">
-        <p className="text-center font-dancing text-[13px] leading-tight text-jmv-blue">
-          ¡Acércate, te esperamos!
-        </p>
+        ) : null}
+        {comunidad.correoElectronico ? (
+          <a href={`mailto:${comunidad.correoElectronico}`} className={popupLink}>
+            <Mail className="size-4 shrink-0 text-jmv-blue" aria-hidden />
+            <span className="truncate">{comunidad.correoElectronico}</span>
+          </a>
+        ) : null}
       </div>
     </div>
   );
 }
 
-function MapSkeleton({ message }: { message: string }) {
-  return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-jmv-blue/30 backdrop-blur-sm">
-      <div className="flex flex-col items-center gap-3 rounded-2xl bg-white/90 px-6 py-4 shadow-lg">
-        <MapPin className="size-6 animate-bounce text-jmv-blue" />
-        <div className="text-sm font-medium text-jmv-blue">{message}</div>
-      </div>
-    </div>
-  );
-}
-
-function EmptyMapState() {
-  return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-jmv-blue/40 backdrop-blur-sm">
-      <div className="max-w-md rounded-2xl bg-white/95 px-8 py-6 text-center shadow-xl">
-        <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-jmv-gold/15">
-          <MapPin className="size-6 text-jmv-gold" />
-        </div>
-        <h3 className="font-poppins text-base font-bold text-jmv-blue">
-          Aún no hay comunidades con ubicación
-        </h3>
-        <p className="mt-2 text-sm text-slate-600">
-          Pronto agregaremos las comunidades JMV en el mapa. Mientras tanto, contáctanos
-          directamente.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default function MapaInteractivo() {
-  const [comunidades, setComunidades] = useState<ComunidadItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    getComunidadesAPI()
-      .then((data) => {
-        if (!active) return;
-        setComunidades(data.filter(hasCoords));
-        setError(false);
-      })
-      .catch(() => {
-        if (!active) return;
-        setError(true);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+// Mapa de apoyo al buscador de comunidades: la lista HTML de /unete es la vía
+// principal (y accesible); el mapa recibe los mismos datos.
+export default function MapaInteractivo({ comunidades }: { comunidades: ComunidadItem[] }) {
+  const conUbicacion = comunidades.filter(hasCoords);
 
   return (
-    <div className="relative h-[600px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl md:h-[720px]">
+    <div className="relative h-[60svh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl md:h-[640px]">
       <Map
         center={ECUADOR_CENTER}
         zoom={ECUADOR_ZOOM}
@@ -195,46 +86,49 @@ export default function MapaInteractivo() {
         styles={{ light: MAP_STYLE, dark: MAP_STYLE }}
         maxBounds={ECUADOR_BOUNDS}
         minZoom={ECUADOR_MIN_ZOOM}
+        cooperativeGestures
       >
-        <MapControls
-          position="top-right"
-          showZoom
-          showCompass
-          showFullscreen
-        />
+        <MapControls position="top-right" showZoom showCompass showFullscreen />
 
-        {comunidades.map((comunidad) => (
+        {conUbicacion.map((comunidad) => (
           <MapMarker
             key={comunidad.id}
-            longitude={comunidad.longitud as number}
-            latitude={comunidad.latitud as number}
+            longitude={comunidad.longitud}
+            latitude={comunidad.latitud}
+            ariaLabel={`Comunidad ${comunidad.nombre}, ${comunidad.ciudad}`}
           >
             <MarkerContent>
-              <div className="group relative cursor-pointer">
-                <span className="absolute -inset-1 animate-ping rounded-full bg-red-500/40" />
-                <span className="absolute -inset-0.5 rounded-full bg-red-500/30 blur-sm" />
-                <div className="relative flex size-5 items-center justify-center rounded-full border-2 border-white bg-red-600 shadow-lg transition-transform duration-200 group-hover:scale-125">
-                  <MapPin
-                    className="size-3 text-white drop-shadow"
-                    strokeWidth={2.5}
-                    fill="white"
-                  />
-                </div>
+              <div className="group relative flex size-11 items-center justify-center">
+                <span className="absolute inset-2.5 rounded-full bg-red-500/40 motion-safe:animate-ping" />
+                <span className="relative flex size-6 items-center justify-center rounded-full border-2 border-white bg-red-600 shadow-lg transition-transform duration-200 motion-safe:group-hover:scale-125">
+                  <MapPin className="size-3.5 text-white drop-shadow" strokeWidth={2.5} fill="white" aria-hidden />
+                </span>
               </div>
             </MarkerContent>
 
-            <MarkerPopup>
+            <MarkerPopup
+              closeButton
+              className="max-w-none border-0 bg-transparent p-0 shadow-none [&>button]:top-2 [&>button]:right-2 [&>button]:text-white [&>button]:hover:bg-white/15"
+            >
               <ComunidadPopupCard comunidad={comunidad} />
             </MarkerPopup>
           </MapMarker>
         ))}
       </Map>
 
-      {loading && <MapSkeleton message="Cargando comunidades..." />}
-      {!loading && error && (
-        <MapSkeleton message="No se pudo cargar el mapa." />
+      {conUbicacion.length === 0 && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-jmv-blue/40 p-4 backdrop-blur-sm">
+          <div className="max-w-md rounded-2xl bg-white px-8 py-6 text-center shadow-xl">
+            <MapPin className="mx-auto size-8 text-jmv-gold-ink" aria-hidden />
+            <h3 className="mt-3 text-base font-bold text-jmv-blue">
+              Aún no hay comunidades ubicadas en el mapa
+            </h3>
+            <p className="mt-2 text-sm text-slate-700">
+              Usa la lista de comunidades o escríbenos y te ponemos en contacto.
+            </p>
+          </div>
+        </div>
       )}
-      {!loading && !error && comunidades.length === 0 && <EmptyMapState />}
     </div>
   );
 }
