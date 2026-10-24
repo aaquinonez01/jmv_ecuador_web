@@ -188,14 +188,3 @@ export function BrandBar({ height }: { height: number }) {
 export function monthName(month: number) {
   return MONTHS[month - 1] ?? "";
 }
-
-/** Nombre de archivo sin tildes ni símbolos */
-export function fileSlug(text: string) {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-}

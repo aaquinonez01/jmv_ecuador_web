@@ -10,11 +10,11 @@ import {
   categoryColor,
   clampText,
   featuredPhrase,
-  fileSlug,
   loadOgFonts,
   loadOgLogo,
   monthName,
 } from "@/lib/og/calendario";
+import { storyFilename } from "@/components/calendario/shared";
 
 // Imagen vertical 1080x1920 para historias de Instagram y estados de WhatsApp
 const W = 1080;
@@ -251,7 +251,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   headers.set("Content-Type", "image/png");
   headers.set(
     "Content-Disposition",
-    `inline; filename="ano-vicenciano-${fileSlug(item.slug)}-historia.png"`
+    `inline; filename="${storyFilename(item.slug)}"`
   );
   headers.set("Cache-Control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800");
   return new Response(image.body, { status: 200, headers });

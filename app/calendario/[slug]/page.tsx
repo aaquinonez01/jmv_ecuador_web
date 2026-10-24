@@ -13,7 +13,7 @@ import DateVisual from "@/components/calendario/DateVisual";
 import DetailActions from "@/components/calendario/DetailActions";
 import DetailCountdown from "@/components/calendario/DetailCountdown";
 import StarField from "@/components/calendario/StarField";
-import { categoryStyle, entryToEvent, slugifyFile } from "@/components/calendario/shared";
+import { categoryStyle, entryToEvent, slugifyFile, storyFilename } from "@/components/calendario/shared";
 
 // ISR: ver app/calendario/page.tsx
 export const revalidate = 3600;
@@ -187,7 +187,7 @@ export default async function CalendarDatePage({ params }: Props) {
               shareText={shareText}
               shareUrl={url}
               storyHref={`${calendarHref(item.slug)}/historia`}
-              storyFilename={`${item.slug}-historia.png`}
+              storyFilename={storyFilename(item.slug)}
             />
           </div>
         </aside>

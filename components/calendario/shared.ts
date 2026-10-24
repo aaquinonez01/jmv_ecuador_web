@@ -45,8 +45,14 @@ export function slugifyFile(text: string) {
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-zA-Z0-9]+/g, "-")
       .toLowerCase()
-      .replace(/^-|-$/g, "") || "fecha-jmv"
+      .replace(/^-|-$/g, "")
+      .slice(0, 60) || "fecha-jmv"
   );
+}
+
+/** Nombre del PNG para historias (el mismo en la descarga y en la respuesta) */
+export function storyFilename(slug: string) {
+  return `ano-vicenciano-${slugifyFile(slug)}-historia.png`;
 }
 
 const FEED_HOST = new URL(SITE.url).host;
