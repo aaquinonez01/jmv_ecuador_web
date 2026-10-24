@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { contactPayloadSchema } from "@/lib/contactValidation";
 import { getApiBase } from "@/lib/helpers/apiBase";
+import { clientIpHeaders } from "@/lib/helpers/client-ip";
 import { whatsappLink } from "@/lib/whatsapp";
 
 // Valida el formulario en el servidor y lo reenvía a POST /contact-messages del
@@ -18,16 +19,6 @@ function serviceDown() {
   return fail(503, "No pudimos enviar tu mensaje. Escríbenos por WhatsApp.", {
     whatsapp: WHATSAPP_FALLBACK,
   });
-}
-
-/** IP del visitante para que el límite del backend no agrupe a todos bajo la IP de Next */
-function forwardedHeaders(request: Request): Record<string, string> {
-  const headers: Record<string, string> = {};
-  const cf = request.headers.get("cf-connecting-ip");
-  const xff = request.headers.get("x-forwarded-for");
-  if (cf) headers["cf-connecting-ip"] = cf;
-  if (xff) headers["x-forwarded-for"] = xff;
-  return headers;
 }
 
 export async function POST(request: Request) {
@@ -57,7 +48,7 @@ export async function POST(request: Request) {
   try {
     res = await fetch(`${getApiBase()}/contact-messages`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...forwardedHeaders(request) },
+      headers: { "Content-Type": "application/json", ...clientIpHeaders(request) },
       body: JSON.stringify(payload),
       cache: "no-store",
       signal: AbortSignal.timeout(10000),
