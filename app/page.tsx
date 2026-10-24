@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <Suspense fallback={<div className="h-12" aria-hidden />}>
+      <Suspense fallback={null}>
         <HomeAnnouncementBanner />
       </Suspense>
       <Suspense
