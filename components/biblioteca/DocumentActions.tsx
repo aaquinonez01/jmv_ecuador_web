@@ -21,7 +21,7 @@ export type ActionDoc = Pick<
 >;
 
 const secondary =
-  "inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/15 disabled:opacity-60";
+  "inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 py-2 text-sm font-semibold text-fg shadow-card transition-colors hover:bg-surface-2 disabled:opacity-60 dark:hover:bg-white/15";
 
 type LinkState = { url: string | null; error: "auth" | "red" | null; loading: boolean };
 
@@ -174,31 +174,31 @@ export default function DocumentActions({
           ))}
 
         {doc.kind !== "pdf" && (
-          <button type="button" onClick={toggleFinished} aria-pressed={finished} className={cn(secondary, "min-h-12 px-5", finished && "border-emerald-400/60 bg-emerald-500/15")}>
-            {finished ? <CheckCircle2 className="h-5 w-5 text-emerald-400" aria-hidden /> : <Check className="h-5 w-5 text-jmv-gold-text" aria-hidden />}
+          <button type="button" onClick={toggleFinished} aria-pressed={finished} className={cn(secondary, "min-h-12 px-5", finished && "border-emerald-600/50 bg-emerald-500/10 dark:border-emerald-400/60 dark:bg-emerald-500/15")}>
+            {finished ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden /> : <Check className="h-5 w-5 text-accent-gold" aria-hidden />}
             {finished ? "Terminado" : "Marcar como terminado"}
           </button>
         )}
       </div>
 
       {doc.kind === "pdf" && progress && !finished && progress.page > 1 && (
-        <p className="mt-3 text-sm text-slate-300">
+        <p className="mt-3 text-sm text-fg-muted">
           Vas en la {pageLabel(progress.page, progress.pageCount || doc.pageCount).toLowerCase()} ({progressPercent(progress)} %)
         </p>
       )}
       {doc.kind === "pdf" && finished && (
-        <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-300">
+        <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-300">
           <CheckCircle2 className="h-4 w-4" aria-hidden />
           Ya lo terminaste en este teléfono
         </p>
       )}
       {link.error === "red" && (
-        <p className="mt-3 text-sm text-slate-200">
+        <p className="mt-3 text-sm text-fg-soft">
           No pudimos abrir el recurso. Revisa tu conexión y vuelve a cargar la página.
         </p>
       )}
       {(doc.kind === "enlace" || (doc.kind === "video" && !video)) && host && (
-        <p className="mt-3 text-sm text-slate-300">Se abre en {host}</p>
+        <p className="mt-3 text-sm text-fg-muted">Se abre en {host}</p>
       )}
 
       <div className="mt-5 flex flex-wrap gap-2">
@@ -207,32 +207,32 @@ export default function DocumentActions({
             session.status === "in" && (
               <button type="button" onClick={download} disabled={downloading} className={secondary}>
                 {downloading ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-jmv-gold-text" aria-hidden />
+                  <Loader2 className="h-4 w-4 animate-spin text-accent-gold" aria-hidden />
                 ) : (
-                  <Download className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+                  <Download className="h-4 w-4 text-accent-gold" aria-hidden />
                 )}
                 Descargar PDF
               </button>
             )
           ) : (
             <a href={downloadHref(fileHref)} download={`${doc.slug}.pdf`} className={secondary}>
-              <Download className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+              <Download className="h-4 w-4 text-accent-gold" aria-hidden />
               Descargar PDF
             </a>
           ))}
         <a href={whatsappShareLink(shareText, shareUrl)} target="_blank" rel="noopener noreferrer" className={secondary}>
-          <Send className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+          <Send className="h-4 w-4 text-accent-gold" aria-hidden />
           WhatsApp
           <span className="sr-only"> (compartir, se abre en una pestaña nueva)</span>
         </a>
         {canShare && (
           <button type="button" onClick={share} className={secondary}>
-            <Share2 className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+            <Share2 className="h-4 w-4 text-accent-gold" aria-hidden />
             Compartir…
           </button>
         )}
       </div>
-      <p role="status" className="mt-3 min-h-5 text-sm text-slate-200">
+      <p role="status" className="mt-3 min-h-5 text-sm text-fg-soft">
         {message}
       </p>
     </div>

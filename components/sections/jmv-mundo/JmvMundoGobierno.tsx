@@ -70,7 +70,7 @@ export default function JmvMundoGobierno() {
     <section
       id="gobierno-internacional"
       aria-labelledby="gobierno-titulo"
-      className="scroll-mt-24 bg-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -84,52 +84,52 @@ export default function JmvMundoGobierno() {
           {ORGANOS.map((org) => {
             const Icon = org.icon;
             return (
-              <li key={org.titulo} className="h-full rounded-2xl border border-white/15 bg-white/5 p-6">
-                <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-jmv-gold-text">
+              <li key={org.titulo} className="h-full rounded-2xl border border-fg/15 bg-surface p-6 shadow-card">
+                <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
-                <h3 className="mb-2 text-lg font-bold text-white">{org.titulo}</h3>
-                <p className="text-sm leading-relaxed text-slate-300">{org.texto}</p>
+                <h3 className="mb-2 text-lg font-bold text-fg">{org.titulo}</h3>
+                <p className="text-sm leading-relaxed text-fg-muted">{org.texto}</p>
               </li>
             );
           })}
         </ul>
 
-        <h3 className="mb-6 text-center text-2xl font-bold text-white md:text-3xl">
+        <h3 className="mb-6 text-center text-2xl font-bold text-fg md:text-3xl">
           Liderazgo del Consejo Internacional
         </h3>
         <ul className="mb-14 grid gap-5 md:grid-cols-3">
           {CONSEJO.map((m) => (
             <li
               key={m.nombre}
-              className="flex h-full flex-col items-center rounded-2xl border border-white/15 bg-white/5 p-6 text-center"
+              className="flex h-full flex-col items-center rounded-2xl border border-fg/15 bg-surface p-6 shadow-card text-center"
             >
               <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-jmv-gold text-jmv-ink">
                 <Crown className="h-7 w-7" aria-hidden />
               </span>
-              <h4 className="text-lg font-bold text-white">{m.nombre}</h4>
-              <p className="mb-2 font-medium text-jmv-gold-text">{m.cargo}</p>
-              <p className="text-sm text-slate-300">{m.detalle}</p>
+              <h4 className="text-lg font-bold text-fg">{m.nombre}</h4>
+              <p className="mb-2 font-medium text-accent-gold">{m.cargo}</p>
+              <p className="text-sm text-fg-muted">{m.detalle}</p>
             </li>
           ))}
         </ul>
 
-        <div className="rounded-2xl border border-white/15 bg-white/5 p-6 sm:p-8">
-          <h3 className="mb-6 flex items-center text-2xl font-bold text-white">
-            <Building2 className="mr-3 h-7 w-7 text-jmv-gold-text" aria-hidden />
+        <div className="rounded-2xl border border-fg/15 bg-surface p-6 shadow-card sm:p-8">
+          <h3 className="mb-6 flex items-center text-2xl font-bold text-fg">
+            <Building2 className="mr-3 h-7 w-7 text-accent-gold" aria-hidden />
             Secretariado Internacional
           </h3>
 
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <p className="mb-6 leading-relaxed text-slate-200">
+              <p className="mb-6 leading-relaxed text-fg-soft">
                 Su misión es centralizar la información de la asociación y
                 promover la comunicación entre los países miembros. Lo integran
                 el Subdirector General, la Delegada Internacional y un equipo de
                 jóvenes voluntarios, uno por cada idioma oficial de la JMV.
               </p>
-              <figure className="mb-6 flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-white/20">
+              <figure className="mb-6 flex items-center gap-4 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-line-strong">
                   <Image
                     src="/images/historia/jmv_padre_maloney.png"
                     alt="P. Robert Maloney, CM"
@@ -139,30 +139,30 @@ export default function JmvMundoGobierno() {
                     className="object-cover"
                   />
                 </div>
-                <figcaption className="text-sm text-slate-200">
-                  El <span className="font-semibold text-white">P. Robert Maloney, CM</span>{" "}
+                <figcaption className="text-sm text-fg-soft">
+                  El <span className="font-semibold text-fg">P. Robert Maloney, CM</span>{" "}
                   estableció el Secretariado Internacional en Madrid en 1999.
                 </figcaption>
               </figure>
-              <ul className="space-y-3 text-slate-200">
+              <ul className="space-y-3 text-fg-soft">
                 <li className="flex items-start gap-3">
-                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                   <span>
                     Sede en <strong>Madrid (España)</strong> desde 1999; trasladada a{" "}
                     <strong>Manila (Filipinas)</strong> en 2022.
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Languages className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <Languages className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                   <span>Idiomas oficiales: español, inglés, francés y portugués.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <ExternalLink className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <ExternalLink className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                   <a
                     href="https://jmvinter.org"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline decoration-jmv-gold-text/60 underline-offset-4 hover:text-white"
+                    className="underline decoration-accent-gold/60 underline-offset-4 hover:text-fg"
                   >
                     jmvinter.org
                     <span className="sr-only"> (sitio internacional, se abre en una pestaña nueva)</span>
@@ -171,24 +171,24 @@ export default function JmvMundoGobierno() {
               </ul>
             </div>
 
-            <div className="rounded-xl border border-white/10 bg-jmv-ink/50 p-6">
-              <h4 className="mb-4 text-lg font-semibold text-white">Equipo del Secretariado</h4>
+            <div className="rounded-xl border border-line bg-surface-sunken p-6 dark:bg-jmv-ink/50">
+              <h4 className="mb-4 text-lg font-semibold text-fg">Equipo del Secretariado</h4>
               <ul className="space-y-3 text-sm">
-                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                  <span className="font-medium text-white">P. Francisco Magnaye Jr., CM</span>
-                  <span className="text-jmv-gold-text">Subdirector</span>
+                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-card px-3 py-2">
+                  <span className="font-medium text-fg">P. Francisco Magnaye Jr., CM</span>
+                  <span className="text-accent-gold">Subdirector</span>
                 </li>
-                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                  <span className="font-medium text-white">Sor Isabel Higueras, DC</span>
-                  <span className="text-jmv-gold-text">Delegada Internacional</span>
+                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-card px-3 py-2">
+                  <span className="font-medium text-fg">Sor Isabel Higueras, DC</span>
+                  <span className="text-accent-gold">Delegada Internacional</span>
                 </li>
               </ul>
 
-              <h5 className="mb-3 mt-5 text-sm font-semibold text-white">Voluntarios por idioma</h5>
+              <h5 className="mb-3 mt-5 text-sm font-semibold text-fg">Voluntarios por idioma</h5>
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {VOLUNTARIOS.map((v) => (
                   <li key={v.nombre} className="flex flex-col items-center text-center">
-                    <span className="relative mb-2 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-jmv-blue">
+                    <span className="relative mb-2 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-jmv-blue">
                       {v.img ? (
                         <Image src={v.img} alt="" fill loading="lazy" sizes="64px" className="object-cover" />
                       ) : (
@@ -197,8 +197,8 @@ export default function JmvMundoGobierno() {
                         </span>
                       )}
                     </span>
-                    <span className="text-sm font-medium leading-tight text-white">{v.nombre}</span>
-                    <span className="text-xs text-jmv-gold-text">{v.idioma}</span>
+                    <span className="text-sm font-medium leading-tight text-fg">{v.nombre}</span>
+                    <span className="text-xs text-accent-gold">{v.idioma}</span>
                   </li>
                 ))}
               </ul>

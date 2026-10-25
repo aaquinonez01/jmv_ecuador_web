@@ -40,12 +40,12 @@ export default async function CalendarioPage() {
   const empty = items.length === 0 && activityEntries.length === 0;
 
   return (
-    <div className="bg-jmv-ink pb-4">
+    <div className="bg-page pb-4">
       <CalendarioHero />
       {empty ? (
         <EmptyState />
       ) : (
-        <CalendarioExplorer items={lightItems}activities={activityEntries} renderedAt={new Date().toISOString()} />
+        <CalendarioExplorer items={lightItems} activities={activityEntries} renderedAt={new Date().toISOString()} />
       )}
       <SubscribeBlock />
     </div>

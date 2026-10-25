@@ -4,9 +4,9 @@ export default function Loading() {
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 top-16 z-40 h-1 overflow-hidden bg-white/10 sm:top-20"
+      className="pointer-events-none fixed inset-x-0 top-16 z-40 h-1 overflow-hidden bg-fg/10 sm:top-20"
     >
-      <div className="h-full w-1/3 animate-loading-bar rounded-full bg-jmv-gold-text motion-reduce:w-full motion-reduce:animate-none motion-reduce:opacity-70" />
+      <div className="h-full w-1/3 animate-loading-bar rounded-full bg-jmv-gold dark:bg-jmv-gold-text motion-reduce:w-full motion-reduce:animate-none motion-reduce:opacity-70" />
       <span className="sr-only">Cargando…</span>
     </div>
   );

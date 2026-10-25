@@ -25,14 +25,14 @@ export default function ContactoLinks({ telefono, email, nombre, className }: Co
   if (!telefono && !email) return null;
 
   const linkClass =
-    "inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-slate-200 underline-offset-4 hover:bg-white/10 hover:text-white hover:underline";
+    "inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-fg-muted underline-offset-4 hover:bg-surface-2 hover:text-fg hover:underline dark:text-slate-200";
 
   return (
     <ul className={cn("flex flex-wrap gap-x-2 gap-y-1", className)}>
       {telefono && (
         <li>
           <a href={e164 ? `tel:+${e164}` : `tel:${telefono}`} className={linkClass}>
-            <Phone className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+            <Phone className="h-4 w-4 text-accent-gold" aria-hidden />
             <span className="sr-only">Llamar al </span>
             {telefono}
           </a>
@@ -49,7 +49,7 @@ export default function ContactoLinks({ telefono, email, nombre, className }: Co
             rel="noopener noreferrer"
             className={linkClass}
           >
-            <MessageCircle className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+            <MessageCircle className="h-4 w-4 text-accent-gold" aria-hidden />
             WhatsApp
             <span className="sr-only"> (se abre en una pestaña nueva)</span>
           </a>
@@ -58,7 +58,7 @@ export default function ContactoLinks({ telefono, email, nombre, className }: Co
       {email && (
         <li>
           <a href={`mailto:${email}`} className={cn(linkClass, "break-all")}>
-            <Mail className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+            <Mail className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
             <span className="sr-only">Escribir a </span>
             {email}
           </a>

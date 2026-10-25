@@ -8,10 +8,14 @@ import { Mail, MapPin, MessageCircle, Phone, Users } from "lucide-react";
 const ECUADOR_CENTER: [number, number] = [-78.1834, -1.8312];
 const ECUADOR_ZOOM = 6.2;
 
-// Estilo "Liberty" de OpenFreeMap (gratuito, sin API key): mapa pastel pero
-// con color —verdes para vegetación, azul para agua, calles y ciudades—, en
-// lugar del estilo casi blanco anterior.
-const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+// Estilos de OpenFreeMap (gratuitos, sin API key). Claro: "Liberty", pastel pero
+// con color —verdes para vegetación, azul para agua, calles y ciudades—.
+// Oscuro: "Fiord", azul noche a juego con el sitio. <Map> observa la clase de
+// <html> y cambia con map.setStyle: no re-renderiza la página ni pierde marcadores.
+const MAP_STYLES = {
+  light: "https://tiles.openfreemap.org/styles/liberty",
+  dark: "https://tiles.openfreemap.org/styles/fiord",
+};
 
 // Limita el mapa a Ecuador continental: no se puede arrastrar fuera del país
 // ni alejar para ver Colombia/Perú. Formato [[oeste, sur], [este, norte]].
@@ -78,12 +82,12 @@ export default function MapaInteractivo({ comunidades }: { comunidades: Comunida
   const conUbicacion = comunidades.filter(hasCoords);
 
   return (
-    <div className="relative h-[60svh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-white/20 shadow-2xl md:h-[640px]">
+    <div className="relative h-[60svh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-line-strong shadow-card-lg dark:shadow-2xl md:h-[640px]">
       <Map
         center={ECUADOR_CENTER}
         zoom={ECUADOR_ZOOM}
         className="h-full w-full"
-        styles={{ light: MAP_STYLE, dark: MAP_STYLE }}
+        styles={MAP_STYLES}
         maxBounds={ECUADOR_BOUNDS}
         minZoom={ECUADOR_MIN_ZOOM}
         cooperativeGestures

@@ -6,7 +6,7 @@ import { downloadIcs, googleCalendarUrl, type CalendarEvent } from "@/lib/calend
 import { whatsappShareLink } from "@/lib/whatsapp";
 
 const secondary =
-  "inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20";
+  "inline-flex min-h-11 items-center gap-2 rounded-xl border border-line-strong bg-surface px-4 py-2 text-sm font-semibold text-fg transition-colors hover:bg-surface-2 dark:border-white/25 dark:bg-white/10 dark:hover:bg-white/20";
 
 const external = <span className="sr-only"> (se abre en una pestaña nueva)</span>;
 
@@ -59,7 +59,7 @@ export default function EventActions({
           rel="noopener noreferrer"
           className={secondary}
         >
-          <Share2 className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+          <Share2 className="h-4 w-4 text-accent-gold" aria-hidden />
           Compartir por WhatsApp
           {external}
         </a>
@@ -67,11 +67,11 @@ export default function EventActions({
 
       {event && (
         <div role="group" aria-label={`Agregar ${title} a mi calendario`} className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <span className="w-full text-sm font-semibold text-slate-200 sm:w-auto" aria-hidden="true">
+          <span className="w-full text-sm font-semibold text-fg-soft sm:w-auto" aria-hidden="true">
             Agregar a mi calendario:
           </span>
           <a href={googleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className={secondary}>
-            <CalendarPlus className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+            <CalendarPlus className="h-4 w-4 text-accent-gold" aria-hidden />
             Google Calendar
             {external}
           </a>
@@ -80,7 +80,7 @@ export default function EventActions({
             onClick={() => downloadIcs(event, `${slugify(title) || "evento-jmv"}.ics`)}
             className={secondary}
           >
-            <Download className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+            <Download className="h-4 w-4 text-accent-gold" aria-hidden />
             Apple u Outlook (.ics)
           </button>
         </div>

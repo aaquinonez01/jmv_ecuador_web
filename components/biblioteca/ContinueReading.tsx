@@ -30,8 +30,8 @@ export default function ContinueReading({ docs }: { docs: LibraryCardDoc[] }) {
   return (
     <section aria-labelledby="sigue-leyendo-title" className="relative">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 id="sigue-leyendo-title" className="flex items-center gap-2.5 font-display text-2xl font-semibold text-white sm:text-3xl">
-          <BookOpenText className="h-6 w-6 text-jmv-gold-text" aria-hidden />
+        <h2 id="sigue-leyendo-title" className="flex items-center gap-2.5 font-display text-2xl font-semibold text-fg sm:text-3xl">
+          <BookOpenText className="h-6 w-6 text-accent-gold" aria-hidden />
           Sigue leyendo
         </h2>
       </div>
@@ -47,17 +47,17 @@ export default function ContinueReading({ docs }: { docs: LibraryCardDoc[] }) {
               transition={{ duration: 0.4, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
               className="w-[86vw] max-w-[24rem] shrink-0 snap-start"
             >
-              <div className="relative flex h-full gap-4 rounded-3xl border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-4">
+              <div className="relative flex h-full gap-4 rounded-3xl border border-line bg-surface p-4 shadow-card dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]">
                 <Link href={libraryHref(doc.slug)} tabIndex={-1} aria-hidden="true" className="w-20 shrink-0 sm:w-24">
                   <BookCover doc={doc} sizes="96px" />
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <h3 className="line-clamp-2 font-semibold leading-snug text-white">
-                    <Link href={libraryHref(doc.slug)} className="hover:text-jmv-gold-text">
+                  <h3 className="line-clamp-2 font-semibold leading-snug text-fg">
+                    <Link href={libraryHref(doc.slug)} className="hover:text-accent-gold">
                       {doc.title}
                     </Link>
                   </h3>
-                  <p className="mt-1 text-sm text-slate-300">{pageLabel(progress.page, total)}</p>
+                  <p className="mt-1 text-sm text-fg-muted">{pageLabel(progress.page, total)}</p>
                   <div
                     role="progressbar"
                     aria-label={`Avance en ${doc.title}`}
@@ -65,7 +65,7 @@ export default function ContinueReading({ docs }: { docs: LibraryCardDoc[] }) {
                     aria-valuemax={100}
                     aria-valuenow={percent}
                     aria-valuetext={`${percent} %`}
-                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15"
+                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-fg/15"
                   >
                     <div className="h-full rounded-full bg-gradient-to-r from-jmv-gold to-jmv-gold-text" style={{ width: `${Math.max(percent, 3)}%` }} />
                   </div>

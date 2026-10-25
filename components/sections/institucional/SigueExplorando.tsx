@@ -101,7 +101,7 @@ export default function SigueExplorando({ items, title = "Sigue explorando" }: P
   return (
     <section
       aria-labelledby="sigue-explorando-titulo"
-      className="bg-jmv-ink py-14 sm:py-16"
+      className="bg-page py-14 sm:py-16"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -121,27 +121,27 @@ export default function SigueExplorando({ items, title = "Sigue explorando" }: P
                   href={d.href}
                   className={`group flex h-full items-start gap-4 rounded-2xl border p-5 transition-colors ${
                     destacado
-                      ? "border-jmv-gold-text/60 bg-jmv-gold-text/10 hover:bg-jmv-gold-text/15"
-                      : "border-white/15 bg-white/5 hover:bg-white/10"
+                      ? "border-accent-gold/60 bg-accent-gold/10 hover:bg-accent-gold/15"
+                      : "border-line-card bg-surface-card shadow-card hover:bg-surface-2 dark:hover:bg-white/10"
                   }`}
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-jmv-gold-text">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
                     <Icon className="h-5 w-5" aria-hidden />
                   </span>
                   <span className="min-w-0 flex-1">
                     {destacado && (
-                      <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+                      <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-accent-gold">
                         Siguiente paso
                       </span>
                     )}
-                    <span className="flex items-center gap-2 text-lg font-semibold text-white">
+                    <span className="flex items-center gap-2 text-lg font-semibold text-fg">
                       {d.label}
                       <ArrowRight
                         className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1"
                         aria-hidden
                       />
                     </span>
-                    <span className="mt-1 block text-sm leading-relaxed text-slate-300">
+                    <span className="mt-1 block text-sm leading-relaxed text-fg-muted">
                       {d.description}
                     </span>
                   </span>

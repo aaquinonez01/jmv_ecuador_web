@@ -17,7 +17,6 @@ import CategoryFilter from "./CategoryFilter";
 import DateCard from "./DateCard";
 import MobileRing from "./MobileRing";
 import StarRing from "./StarRing";
-import TodaySpotlight from "./TodaySpotlight";
 import YearList from "./YearList";
 import EmptyState from "./EmptyState";
 import { entryToEvent, slugifyFile, type EntryCategory } from "./shared";
@@ -38,8 +37,8 @@ function initialMonth(entries: CalendarEntry[], now: Date) {
 }
 
 /**
- * Parte interactiva de /calendario: "Hoy / Se acerca", filtros, anillo (md+),
- * carrusel y línea de tiempo (móvil) y la lista de todo el año.
+ * Parte interactiva de /calendario: filtros, anillo (md+), anillo móvil con su
+ * carrusel y la lista de todo el año.
  * renderedAt es el "hoy" con el que se generó la página (ISR); tras montar se usa el real.
  */
 export default function CalendarioExplorer({
@@ -69,7 +68,6 @@ export default function CalendarioExplorer({
   }, []);
 
   const entries = useMemo(() => [...datesToEntries(items, now), ...activities], [items, activities, now]);
-  const upcoming = useMemo(() => sortByUpcoming(entries.filter((e) => daysUntil(e.date, now) >= 0)), [entries, now]);
   const filtered = useMemo(
     () => (category ? entries.filter((e) => e.category === category) : entries),
     [entries, category],
@@ -109,19 +107,15 @@ export default function CalendarioExplorer({
 
   return (
     <>
-      <div className="relative -mt-16 sm:-mt-20">
-        <TodaySpotlight upcoming={upcoming} now={now} />
-      </div>
-
-      <section aria-labelledby="explora-title" className="relative mx-auto max-w-7xl px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8">
+      <section aria-labelledby="explora-title" className="relative mx-auto max-w-7xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8">
         <div className="max-w-2xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
             El anillo de las 12 estrellas
           </p>
-          <h2 id="explora-title" className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl">
+          <h2 id="explora-title" className="font-display text-3xl font-semibold leading-tight text-fg sm:text-4xl md:text-5xl">
             Explora el año
           </h2>
-          <p className="mt-3 text-base leading-relaxed text-slate-300 sm:text-lg">
+          <p className="mt-3 text-base leading-relaxed text-fg-muted sm:text-lg">
             Como en el reverso de la Medalla Milagrosa, cada estrella es un mes. Elige uno y descubre a quién
             celebramos.
           </p>
@@ -159,20 +153,20 @@ export default function CalendarioExplorer({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-3xl border border-dashed border-white/15 p-8 text-center"
+                  className="rounded-3xl border border-dashed border-fg/15 p-8 text-center"
                 >
-                  <p className="font-display text-2xl text-white">{MONTHS[month - 1]} está en calma</p>
-                  <p className="mt-2 text-sm text-slate-300">
+                  <p className="font-display text-2xl text-fg">{MONTHS[month - 1]} está en calma</p>
+                  <p className="mt-2 text-sm text-fg-muted">
                     {category ? "No hay fechas de esta categoría este mes." : "Aún no tenemos fechas en este mes."}
                   </p>
                   {nextMonth && (
                     <button
                       type="button"
                       onClick={() => changeMonth(nextMonth)}
-                      className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                      className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-jmv-blue/10 px-5 text-sm font-semibold text-fg transition-colors hover:bg-jmv-blue/15 dark:bg-white/10 dark:hover:bg-white/20"
                     >
                       Ir a {MONTHS[nextMonth - 1].toLowerCase()}
-                      <ArrowRight className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+                      <ArrowRight className="h-4 w-4 text-accent-gold" aria-hidden />
                     </button>
                   )}
                 </motion.div>
@@ -196,8 +190,8 @@ export default function CalendarioExplorer({
 
       <section aria-labelledby="todo-el-anio" className="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8">
         <div className="mb-8 max-w-2xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">De enero a diciembre</p>
-          <h2 id="todo-el-anio" className="font-display text-3xl font-semibold text-white sm:text-4xl">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">De enero a diciembre</p>
+          <h2 id="todo-el-anio" className="font-display text-3xl font-semibold text-fg sm:text-4xl">
             Todo el año
           </h2>
         </div>

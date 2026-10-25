@@ -15,8 +15,11 @@ interface BreadcrumbsProps {
   includeHome?: boolean;
   /** Emite JSON-LD BreadcrumbList para buscadores */
   jsonLd?: boolean;
-  /** "dark" para fondos oscuros/fotografía, "light" para fondos claros */
-  tone?: "dark" | "light";
+  /**
+   * "auto" (por defecto): sigue el tema (y las islas data-tone).
+   * "dark": texto blanco fijo (sobre foto sin data-tone). "light": texto oscuro fijo.
+   */
+  tone?: "auto" | "dark" | "light";
   className?: string;
 }
 
@@ -24,9 +27,14 @@ export default function Breadcrumbs({
   items,
   includeHome = true,
   jsonLd = false,
-  tone = "dark",
+  tone = "auto",
   className,
 }: BreadcrumbsProps) {
+  const toneClass = {
+    auto: { list: "text-slate-600 dark:text-white/80", link: "hover:text-jmv-blue dark:hover:text-white", current: "text-fg" },
+    dark: { list: "text-white/80", link: "hover:text-white", current: "text-white" },
+    light: { list: "text-slate-600", link: "hover:text-jmv-blue", current: "text-slate-900" },
+  }[tone];
   const all: BreadcrumbItem[] = includeHome ? [{ label: "Inicio", href: "/" }, ...items] : items;
 
   const structured = jsonLd
@@ -47,7 +55,7 @@ export default function Breadcrumbs({
       <ol
         className={cn(
           "flex flex-wrap items-center gap-x-1 gap-y-1 text-sm",
-          tone === "dark" ? "text-white/80" : "text-slate-600",
+          toneClass.list,
         )}
       >
         {all.map((item, i) => {
@@ -59,7 +67,7 @@ export default function Breadcrumbs({
                   href={item.href}
                   className={cn(
                     "rounded px-1 py-1 underline-offset-4 hover:underline",
-                    tone === "dark" ? "hover:text-white" : "hover:text-jmv-blue",
+                    toneClass.link,
                   )}
                 >
                   {item.label}
@@ -67,7 +75,7 @@ export default function Breadcrumbs({
               ) : (
                 <span
                   aria-current={isLast ? "page" : undefined}
-                  className={cn("px-1 py-1 font-medium", tone === "dark" ? "text-white" : "text-slate-900")}
+                  className={cn("px-1 py-1 font-medium", toneClass.current)}
                 >
                   {item.label}
                 </span>

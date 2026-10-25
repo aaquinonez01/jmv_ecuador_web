@@ -8,11 +8,47 @@ import type { CalendarEvent } from "@/lib/calendar";
 
 export type EntryCategory = CalendarCategory | "actividad";
 
-/** Variables CSS de la categoría: --cat (acento) y --cat-soft (fondo suave) */
+/**
+ * Color de cada categoría en modo claro: tonos oscuros del mismo matiz que llegan a
+ * 4.5:1 como texto sobre blanco, marfil y su propio fondo suave (y el blanco sobre
+ * ellos, para el chip activo), y también sobre el cielo de amanecer de la cabecera
+ * del detalle (#e5dcce): por eso santos y ecuador son algo más oscuros. El modo oscuro
+ * usa CATEGORY_META tal cual.
+ */
+const CATEGORY_LIGHT: Record<EntryCategory, string> = {
+  maria: "#1d5fb4",
+  fundadores: "#b42318",
+  santos: "#7a4f00",
+  familia: "#0b6b45",
+  jmv: "#6d3fc0",
+  ecuador: "#8f4400",
+  actividad: "#334155",
+};
+
+const softOf = (hex: string, alpha: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+};
+
+/**
+ * Variables CSS de la categoría: --cat (acento) y --cat-soft (fondo suave).
+ * El estilo inline trae los valores de los dos temas y la clase CAT_VARS elige uno
+ * con la variante dark: (sin JS ni re-render al cambiar de tema). Van siempre juntos:
+ * style={categoryStyle(c)} className={cn(CAT_VARS, ...)}.
+ */
 export function categoryStyle(category: EntryCategory): CSSProperties {
   const meta = CATEGORY_META[category];
-  return { "--cat": meta.color, "--cat-soft": meta.soft } as CSSProperties;
+  const light = CATEGORY_LIGHT[category];
+  return {
+    "--cat-d": meta.color,
+    "--cat-soft-d": meta.soft,
+    "--cat-l": light,
+    "--cat-soft-l": softOf(light, 0.1),
+  } as CSSProperties;
 }
+
+export const CAT_VARS =
+  "[--cat:var(--cat-l)] [--cat-soft:var(--cat-soft-l)] dark:[--cat:var(--cat-d)] dark:[--cat-soft:var(--cat-soft-d)]";
 
 export const MONTHS_SHORT = MONTHS.map((m) => m.slice(0, 3));
 

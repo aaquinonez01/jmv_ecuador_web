@@ -22,8 +22,9 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Tarjeta blanca fija en ambos modos; en claro el fondo es el marfil del tema
   return (
-    <div className="relative min-h-svh bg-slate-100">
+    <div className="relative min-h-svh bg-page dark:bg-slate-100">
       <div className="relative flex min-h-svh items-start justify-center px-4 pt-24 pb-10 sm:px-6 sm:pt-28 md:px-8">
         <div className="w-full max-w-5xl">
           <Link
@@ -35,7 +36,7 @@ export default function AuthLayout({
             Volver al inicio
           </Link>
 
-          <div className="overflow-hidden rounded-3xl border border-white/60 bg-white shadow-2xl">
+          <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-card-lg dark:border-white/60 dark:shadow-2xl">
             <div className="h-2 bg-gradient-to-r from-jmv-blue via-jmv-red to-jmv-gold" />
 
             <div className="grid md:grid-cols-2">

@@ -47,7 +47,7 @@ export default function ContactForm() {
         ref={successRef}
         tabIndex={-1}
         role="status"
-        className="rounded-2xl bg-white p-6 text-slate-900 shadow-jmv sm:p-8"
+        className="rounded-2xl bg-white p-6 text-slate-900 shadow-jmv ring-1 ring-line sm:p-8"
         data-surface="light"
       >
         <CheckCircle2 className="h-12 w-12 text-emerald-600" aria-hidden />
@@ -88,7 +88,7 @@ export default function ContactForm() {
       onSubmit={handleSubmit(onSubmit)}
       noValidate
       aria-labelledby="contacto-form-titulo"
-      className="relative rounded-2xl bg-white p-6 text-slate-900 shadow-jmv sm:p-8"
+      className="relative rounded-2xl bg-white p-6 text-slate-900 shadow-jmv ring-1 ring-line sm:p-8"
       data-surface="light"
     >
       <h2 id="contacto-form-titulo" className="text-2xl font-bold text-jmv-blue">

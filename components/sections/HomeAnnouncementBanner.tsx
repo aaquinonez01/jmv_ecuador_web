@@ -23,10 +23,10 @@ export default async function HomeAnnouncementBanner() {
   return (
     <section
       aria-labelledby="anuncio-destacado"
-      className="relative overflow-hidden bg-gradient-to-br from-jmv-ink via-[#163a68] to-jmv-blue py-12 sm:py-16"
+      className="relative overflow-hidden bg-hero-plain py-12 sm:py-16"
     >
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl border border-white/15 bg-white/5 shadow-2xl">
+        <div className="overflow-hidden rounded-3xl border border-line-card bg-surface-card shadow-card-lg dark:shadow-2xl">
           <div className="grid md:grid-cols-[minmax(0,320px)_1fr]">
             {primary.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -46,22 +46,22 @@ export default async function HomeAnnouncementBanner() {
             )}
 
             <div className="flex flex-col justify-center p-6 md:p-8">
-              <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+              <p className="mb-3 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
                 <Megaphone className="h-4 w-4" aria-hidden />
                 Anuncio destacado
               </p>
 
-              <h2 id="anuncio-destacado" className="mb-2 text-2xl font-bold text-white md:text-3xl">
+              <h2 id="anuncio-destacado" className="mb-2 text-2xl font-bold text-fg md:text-3xl">
                 {primary.titulo}
               </h2>
 
               {primary.subtitulo && (
-                <p className="mb-3 font-medium text-jmv-gold-text">
+                <p className="mb-3 font-medium text-accent-gold">
                   {primary.subtitulo}
                 </p>
               )}
 
-              <p className="mb-6 leading-relaxed text-slate-200">
+              <p className="mb-6 leading-relaxed text-fg-soft">
                 {primary.mensaje}
               </p>
 

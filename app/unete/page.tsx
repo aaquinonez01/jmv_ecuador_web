@@ -53,10 +53,10 @@ const primerEncuentro = [
 function FinderSkeleton() {
   return (
     <div aria-hidden="true">
-      <div className="h-24 animate-pulse rounded-2xl bg-white/10 motion-reduce:animate-none" />
+      <div className="h-24 animate-pulse rounded-2xl bg-fg/10 motion-reduce:animate-none" />
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-56 animate-pulse rounded-2xl bg-white/10 motion-reduce:animate-none" />
+          <div key={i} className="h-56 animate-pulse rounded-2xl bg-fg/10 motion-reduce:animate-none" />
         ))}
       </div>
     </div>
@@ -89,7 +89,7 @@ export default function UnetePage() {
       <section
         id="encuentra"
         aria-labelledby="encuentra-titulo"
-        className="scroll-mt-24 bg-jmv-ink py-16 sm:py-20"
+        className="scroll-mt-24 bg-page py-16 sm:py-20"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
@@ -105,22 +105,22 @@ export default function UnetePage() {
       </section>
 
       {/* 2. Pasos */}
-      <section aria-labelledby="pasos-titulo" className="bg-gradient-to-b from-jmv-ink to-[#163a68] py-16 sm:py-20">
+      <section aria-labelledby="pasos-titulo" className="bg-section py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading id="pasos-titulo" eyebrow="Cómo unirte" title="Cuatro pasos sencillos" />
           <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {PASOS_UNETE.map((paso) => {
               const Icon = paso.icon;
               return (
-                <li key={paso.numero} className="rounded-2xl border border-white/15 bg-white/[0.07] p-6 text-white">
+                <li key={paso.numero} className="rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
                   <div className="flex items-center gap-3">
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-jmv-gold text-xl font-bold text-jmv-ink">
                       {paso.numero}
                     </span>
-                    <Icon className="h-6 w-6 text-jmv-gold-text" aria-hidden />
+                    <Icon className="h-6 w-6 text-accent-gold" aria-hidden />
                   </div>
                   <h3 className="mt-4 text-xl font-semibold">{paso.titulo}</h3>
-                  <p className="mt-2 text-slate-200">{paso.descripcion}</p>
+                  <p className="mt-2 text-fg-soft">{paso.descripcion}</p>
                 </li>
               );
             })}
@@ -201,10 +201,10 @@ export default function UnetePage() {
       <section
         id="quiero-unirme"
         aria-labelledby="formulario-unete-titulo"
-        className="scroll-mt-24 bg-jmv-ink py-16 sm:py-20"
+        className="scroll-mt-24 bg-page py-16 sm:py-20"
       >
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.3fr] lg:px-8">
-          <div className="text-white">
+          <div className="text-fg">
             <SectionHeading
               id="formulario-unete-titulo"
               align="left"
@@ -212,14 +212,14 @@ export default function UnetePage() {
               title="Déjanos tus datos"
               description="Si no sabes a qué comunidad escribir, completa el formulario y alguien del equipo nacional te contactará por WhatsApp."
             />
-            <p className="text-slate-200">También puedes escribirnos directamente:</p>
+            <p className="text-fg-soft">También puedes escribirnos directamente:</p>
             <ul className="mt-3 space-y-2">
               <li>
                 <a
                   href={WHATSAPP_UNETE}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center gap-2 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                  className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
                 >
                   <MessageCircle className="h-5 w-5" aria-hidden />
                   WhatsApp {SITE.phone}
@@ -229,7 +229,7 @@ export default function UnetePage() {
               <li>
                 <a
                   href={mailtoHref}
-                  className="inline-flex min-h-11 items-center gap-2 break-all font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                  className="inline-flex min-h-11 items-center gap-2 break-all font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
                 >
                   {SITE.email}
                 </a>
@@ -241,14 +241,14 @@ export default function UnetePage() {
       </section>
 
       {/* 5. CTA final */}
-      <section aria-labelledby="cta-unete-titulo" className="bg-gradient-jmv py-16 sm:py-20">
+      <section aria-labelledby="cta-unete-titulo" className="bg-[linear-gradient(135deg,var(--section-blue)_0%,var(--page-deep)_100%)] py-16 sm:py-20 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.94)_0%,rgba(29,78,138,0.88)_55%,rgba(122,31,30,0.82)_100%)]">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-jmv-ink/80 px-6 py-12 text-white sm:px-12">
-            <StarDivider className="mx-auto mb-6 text-jmv-gold-text" />
+          <div className="rounded-3xl bg-surface px-6 py-12 text-fg shadow-card-lg ring-1 ring-line sm:px-12 dark:bg-jmv-ink/80 dark:shadow-none dark:ring-0">
+            <StarDivider className="mx-auto mb-6 text-accent-gold" />
             <h2 id="cta-unete-titulo" className="text-3xl font-bold sm:text-4xl">
               Es hora de dar el paso
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-100">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-fg-muted dark:text-slate-100">
               El mundo necesita tu corazón generoso y tu compromiso con quienes más sufren. Tu
               comunidad te está esperando.
             </p>
@@ -261,18 +261,18 @@ export default function UnetePage() {
                 href={WHATSAPP_UNETE}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={buttonVariants({ variant: "outlineLight", size: "lg" })}
+                className={buttonVariants({ variant: "outlineAuto", size: "lg" })}
               >
                 <MessageCircle className="mr-2 h-5 w-5" aria-hidden />
                 Escríbenos por WhatsApp
                 <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </div>
-            <p className="mt-6 text-slate-200">
+            <p className="mt-6 text-fg-soft">
               ¿Quieres acompañar la misión de otra forma?{" "}
               <Link
                 href="/donar"
-                className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
               >
                 <HandHeart className="h-5 w-5" aria-hidden />
                 También puedes apoyar con una donación

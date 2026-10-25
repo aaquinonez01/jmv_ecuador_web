@@ -21,11 +21,11 @@ export default function CopyLinkButton({ value, label, className }: { value: str
       type="button"
       onClick={copy}
       className={cn(
-        "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10",
+        "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-fg transition-colors hover:bg-fg/10",
         className,
       )}
     >
-      {copied ? <Check className="h-4 w-4 text-jmv-gold-text" aria-hidden /> : <Link2 className="h-4 w-4 text-jmv-gold-text" aria-hidden />}
+      {copied ? <Check className="h-4 w-4 text-accent-gold" aria-hidden /> : <Link2 className="h-4 w-4 text-accent-gold" aria-hidden />}
       {copied ? "¡Enlace copiado!" : label}
       <span className="sr-only" aria-live="polite">
         {copied ? "Enlace copiado al portapapeles" : ""}

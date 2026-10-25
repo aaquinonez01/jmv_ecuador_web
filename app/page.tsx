@@ -26,7 +26,7 @@ export default function Home() {
       <Suspense
         fallback={
           <section
-            className="py-16 sm:py-20 bg-gradient-to-br from-jmv-blue-dark via-jmv-blue to-blue-900"
+            className="py-16 sm:py-20 bg-gradient-to-br from-page via-section-blue to-section-b dark:from-jmv-ink dark:via-[#0C2D69] dark:to-[#0C4EA6]"
             aria-hidden
           />
         }

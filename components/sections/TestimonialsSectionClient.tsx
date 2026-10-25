@@ -60,7 +60,7 @@ export default function TestimonialsSectionClient({
   return (
     <section
       aria-labelledby="testimonios-titulo"
-      className="relative overflow-hidden bg-gradient-to-b from-jmv-ink via-[#132f55] to-jmv-ink py-16 sm:py-20"
+      className="relative overflow-hidden bg-gradient-to-b from-page via-section-blue to-page py-16 sm:py-20"
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -88,7 +88,7 @@ export default function TestimonialsSectionClient({
                 <button
                   type="button"
                   onClick={() => setUserPaused((p) => !p)}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm font-medium text-white hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong px-4 text-sm font-medium text-fg hover:bg-surface-2 dark:hover:bg-white/10"
                 >
                   {userPaused ? (
                     <Play className="h-4 w-4" aria-hidden />
@@ -108,10 +108,10 @@ export default function TestimonialsSectionClient({
               role="group"
               aria-roledescription="testimonio"
               aria-label={`${currentIndex + 1} de ${total}`}
-              className="rounded-3xl border border-white/15 bg-white/5 p-6 text-center shadow-2xl sm:p-10 md:p-12"
+              className="rounded-3xl border border-line-card bg-surface-card p-6 text-center shadow-card-lg dark:shadow-2xl sm:p-10 md:p-12"
             >
-              <Quote className="mx-auto mb-6 h-10 w-10 text-jmv-gold-text" aria-hidden />
-              <blockquote className="font-display text-xl leading-relaxed text-white sm:text-2xl md:text-3xl">
+              <Quote className="mx-auto mb-6 h-10 w-10 text-accent-gold" aria-hidden />
+              <blockquote className="font-display text-xl leading-relaxed text-fg sm:text-2xl md:text-3xl">
                 <p>“{activeItem.quote}”</p>
               </blockquote>
 
@@ -133,9 +133,9 @@ export default function TestimonialsSectionClient({
                   )}
                 </div>
                 <div className="text-left">
-                  <p className="text-lg font-semibold text-white">{activeItem.name}</p>
-                  {activeItem.role && <p className="text-sm text-slate-300">{activeItem.role}</p>}
-                  <p className="text-sm text-slate-400">{activeItem.location || "JMV Ecuador"}</p>
+                  <p className="text-lg font-semibold text-fg">{activeItem.name}</p>
+                  {activeItem.role && <p className="text-sm text-fg-muted">{activeItem.role}</p>}
+                  <p className="text-sm text-fg-subtle">{activeItem.location || "JMV Ecuador"}</p>
                 </div>
               </figcaption>
             </figure>
@@ -147,7 +147,7 @@ export default function TestimonialsSectionClient({
                 type="button"
                 onClick={() => goTo(currentIndex - 1)}
                 aria-label="Testimonio anterior"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-fg shadow-card hover:bg-surface-2 dark:border-transparent dark:bg-white/10 dark:hover:bg-white/20"
               >
                 <ChevronLeft className="h-6 w-6" aria-hidden />
               </button>
@@ -168,7 +168,7 @@ export default function TestimonialsSectionClient({
                         aria-hidden
                         className={cn(
                           "block h-3 rounded-full transition-[width,background-color] duration-300",
-                          active ? "w-6 bg-jmv-gold-text" : "w-3 bg-white/40 group-hover:bg-white/70",
+                          active ? "w-6 bg-accent-gold" : "w-3 bg-fg/30 group-hover:bg-fg/60 dark:bg-white/40 dark:group-hover:bg-white/70",
                         )}
                       />
                     </button>
@@ -180,7 +180,7 @@ export default function TestimonialsSectionClient({
                 type="button"
                 onClick={() => goTo(currentIndex + 1)}
                 aria-label="Testimonio siguiente"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-fg shadow-card hover:bg-surface-2 dark:border-transparent dark:bg-white/10 dark:hover:bg-white/20"
               >
                 <ChevronRight className="h-6 w-6" aria-hidden />
               </button>
@@ -189,10 +189,10 @@ export default function TestimonialsSectionClient({
         </div>
 
         <div className="mt-14 text-center">
-          <h3 className="mb-3 text-2xl font-bold text-white">
+          <h3 className="mb-3 text-2xl font-bold text-fg">
             ¿Quieres ser parte de estas historias?
           </h3>
-          <p className="mx-auto mb-6 max-w-2xl text-slate-300">
+          <p className="mx-auto mb-6 max-w-2xl text-fg-muted">
             Escríbenos y te ayudamos a encontrar un grupo de JMV cerca de ti.
           </p>
           <Link href="/unete" className={buttonVariants({ variant: "gold" })}>

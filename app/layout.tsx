@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Fraunces } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PublicChrome from "@/components/layout/PublicChrome";
+import ThemeRouteSync from "@/components/theme/ThemeRouteSync";
 import { cn } from "@/lib/utils";
 import { SITE } from "@/lib/site";
+import { THEME_COLOR, THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -80,16 +82,28 @@ export const metadata: Metadata = {
   },
 };
 
+// Barra del navegador: azul JMV como el header, igual en los dos modos
+export const viewport: Viewport = {
+  themeColor: THEME_COLOR,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
+    // La clase "dark" y data-theme las pone el script de <head> antes de pintar
+    // (localStorage "jmv-tema" o el sistema); por eso suppressHydrationWarning.
     <html
       lang="es"
-      className={cn("scroll-smooth dark font-sans", poppins.variable, fraunces.variable)}
+      suppressHydrationWarning
+      className={cn("scroll-smooth font-sans", poppins.variable, fraunces.variable)}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      {/* Fondo y texto base: bg-background/text-foreground (= --page / --fg) en globals.css */}
       <body className="antialiased">
         <a
           href="#contenido"
@@ -105,6 +119,7 @@ export default function RootLayout({
         <PublicChrome>
           <Footer />
         </PublicChrome>
+        <ThemeRouteSync />
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ export default function Organigrama({ nodos }: { nodos: OrgEntidad[] }) {
     <section
       id="organigrama"
       aria-labelledby="organigrama-titulo"
-      className="scroll-mt-24 bg-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading

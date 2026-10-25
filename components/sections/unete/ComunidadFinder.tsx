@@ -18,9 +18,9 @@ const MapaInteractivo = dynamic(() => import("@/components/ui/MapaInteractivo"),
 
 function MapPlaceholder({ text }: { text: string }) {
   return (
-    <div className="flex h-[60svh] min-h-[360px] w-full items-center justify-center rounded-2xl border border-white/20 bg-white/5 md:h-[640px]">
-      <p className="flex items-center gap-2 text-slate-200">
-        <MapPin className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+    <div className="flex h-[60svh] min-h-[360px] w-full items-center justify-center rounded-2xl border border-line-strong bg-surface md:h-[640px]">
+      <p className="flex items-center gap-2 text-fg-soft">
+        <MapPin className="h-5 w-5 text-accent-gold" aria-hidden />
         {text}
       </p>
     </div>
@@ -47,19 +47,19 @@ const GENERAL_WHATSAPP = whatsappLink("Hola, vi la web de JMV y quiero encontrar
 function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; distance?: number }) {
   const whatsapp = comunidadWhatsappLink(comunidad);
   return (
-    <li className="flex flex-col rounded-2xl border border-white/15 bg-white/[0.07] p-5 text-white">
+    <li className="flex flex-col rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-5 text-fg">
       <h3 className="text-lg font-semibold">{comunidad.nombre}</h3>
-      <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-200">
-        <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+      <p className="mt-1 flex items-center gap-1.5 text-sm text-fg-soft">
+        <MapPin className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
         {comunidad.ciudad}
         {comunidad.zona?.nombre ? ` · ${comunidad.zona.nombre}` : ""}
       </p>
       {distance !== undefined && (
-        <p className="mt-1 text-sm font-semibold text-jmv-gold-text">
+        <p className="mt-1 text-sm font-semibold text-accent-gold">
           A unos {km.format(distance)} km de ti
         </p>
       )}
-      {comunidad.direccion && <p className="mt-2 text-sm text-slate-300">{comunidad.direccion}</p>}
+      {comunidad.direccion && <p className="mt-2 text-sm text-fg-muted">{comunidad.direccion}</p>}
 
       <div className="mt-auto flex flex-col gap-2 pt-5">
         <a
@@ -73,7 +73,7 @@ function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; dist
           <span className="sr-only"> a la comunidad {comunidad.nombre} (se abre en una pestaña nueva)</span>
         </a>
         {!whatsapp.isCommunityPhone && (
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-fg-muted">
             Te responde el equipo nacional y te pone en contacto con la comunidad.
           </p>
         )}
@@ -81,7 +81,7 @@ function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; dist
           {comunidad.telefono && (
             <a
               href={`tel:${comunidad.telefono.replace(/\s+/g, "")}`}
-              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-white underline underline-offset-4 hover:text-jmv-gold-text"
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-fg underline underline-offset-4 hover:text-accent-gold"
             >
               <Phone className="h-4 w-4" aria-hidden />
               Llamar
@@ -90,7 +90,7 @@ function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; dist
           {comunidad.correoElectronico && (
             <a
               href={`mailto:${comunidad.correoElectronico}`}
-              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-white underline underline-offset-4 hover:text-jmv-gold-text"
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-fg underline underline-offset-4 hover:text-accent-gold"
             >
               <Mail className="h-4 w-4" aria-hidden />
               Escribir un correo
@@ -185,9 +185,9 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
 
   return (
     <div>
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/15 bg-white/[0.07] p-5 sm:flex-row sm:items-end">
+      <div className="flex flex-col gap-4 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-5 sm:flex-row sm:items-end">
         <div className="flex-1">
-          <label htmlFor="buscar-ciudad" className="mb-2 block text-sm font-semibold text-white">
+          <label htmlFor="buscar-ciudad" className="mb-2 block text-sm font-semibold text-fg">
             ¿En qué ciudad vives?
           </label>
           <select
@@ -199,7 +199,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
               setGeo("idle");
             }}
             disabled={status !== "ready" || comunidades.length === 0}
-            className="block min-h-12 w-full rounded-xl border-2 border-white/30 bg-jmv-ink px-4 text-base text-white disabled:opacity-60"
+            className="block min-h-12 w-full rounded-xl border-2 border-slate-500 bg-surface px-4 text-base text-fg disabled:opacity-60 dark:border-white/30 dark:bg-jmv-ink"
           >
             <option value="">Todas las ciudades</option>
             {ciudadesPorZona.map((group) => (
@@ -218,7 +218,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
             type="button"
             onClick={locate}
             disabled={geo === "loading"}
-            className={buttonVariants({ variant: "outlineLight", size: "md" })}
+            className={buttonVariants({ variant: "outlineAuto", size: "md" })}
           >
             <LocateFixed className="mr-2 h-5 w-5" aria-hidden />
             {geo === "loading" ? "Buscando tu ubicación…" : "Usar mi ubicación"}
@@ -226,7 +226,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
         )}
       </div>
 
-      <div aria-live="polite" className="mt-4 min-h-6 text-sm text-slate-200">
+      <div aria-live="polite" className="mt-4 min-h-6 text-sm text-fg-soft">
         {geo === "denied" && <p>No pudimos acceder a tu ubicación. Elige tu ciudad en la lista.</p>}
         {geo === "unavailable" && <p>Tu ubicación no está disponible ahora. Elige tu ciudad en la lista.</p>}
         {geo === "ok" && (
@@ -236,15 +236,15 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       </div>
 
       {status === "loading" && (
-        <p className="mt-6 text-slate-200" role="status">
+        <p className="mt-6 text-fg-soft" role="status">
           Cargando comunidades…
         </p>
       )}
 
       {status === "error" && (
-        <div className="mt-6 rounded-2xl border border-white/15 bg-white/[0.07] p-6 text-white" role="alert">
+        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg" role="alert">
           <p className="font-semibold">No pudimos cargar la lista de comunidades.</p>
-          <p className="mt-1 text-slate-200">
+          <p className="mt-1 text-fg-soft">
             Escríbenos por WhatsApp y te ponemos en contacto con la más cercana.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
@@ -257,7 +257,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
               <MessageCircle className="mr-2 h-5 w-5" aria-hidden />
               Escribir por WhatsApp
             </a>
-            <button type="button" onClick={load} className={buttonVariants({ variant: "outlineLight", size: "md" })}>
+            <button type="button" onClick={load} className={buttonVariants({ variant: "outlineAuto", size: "md" })}>
               <RefreshCw className="mr-2 h-5 w-5" aria-hidden />
               Reintentar
             </button>
@@ -266,9 +266,9 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       )}
 
       {status === "ready" && comunidades.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-white/15 bg-white/[0.07] p-6 text-white">
+        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
           <p className="font-semibold">Pronto publicaremos aquí las comunidades JMV.</p>
-          <p className="mt-1 text-slate-200">Mientras tanto, escríbenos y te ponemos en contacto.</p>
+          <p className="mt-1 text-fg-soft">Mientras tanto, escríbenos y te ponemos en contacto.</p>
           <a
             href={GENERAL_WHATSAPP}
             target="_blank"
@@ -291,8 +291,8 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
 
       {status === "ready" && canLocate && (
         <div className="mt-12">
-          <h3 className="text-xl font-semibold text-white">También puedes verlas en el mapa</h3>
-          <p className="mt-1 mb-4 text-slate-300">
+          <h3 className="text-xl font-semibold text-fg">También puedes verlas en el mapa</h3>
+          <p className="mt-1 mb-4 text-fg-muted">
             Toca un marcador para ver los datos de contacto. En el celular, usa dos dedos para mover el mapa.
           </p>
           <LazyMap comunidades={comunidades} />

@@ -8,17 +8,17 @@ import { FEED_GOOGLE, FEED_HTTPS, FEED_WEBCAL } from "./shared";
 export default function SubscribeBlock() {
   return (
     <section aria-labelledby="suscribete" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="relative isolate overflow-hidden rounded-[2rem] border border-jmv-gold-text/30 bg-[linear-gradient(135deg,#132a4f_0%,#0d1a33_60%,#2a1a0a_100%)] p-8 sm:p-12">
+      <div className="relative isolate overflow-hidden rounded-[2rem] border border-accent-gold/30 bg-[linear-gradient(135deg,#e6eef9_0%,#f8f4ec_60%,#f6e6c4_100%)] p-8 shadow-card sm:p-12 dark:bg-[linear-gradient(135deg,#132a4f_0%,#0d1a33_60%,#2a1a0a_100%)]">
         <StarsRing
           withCircle
-          className="pointer-events-none absolute -right-20 -top-20 -z-10 h-80 w-80 text-jmv-gold-text/15 sm:h-[26rem] sm:w-[26rem]"
+          className="pointer-events-none absolute -right-20 -top-20 -z-10 h-80 w-80 text-accent-gold/15 sm:h-[26rem] sm:w-[26rem]"
         />
         <div className="max-w-2xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">Que no se te pase ninguna</p>
-          <h2 id="suscribete" className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">Que no se te pase ninguna</p>
+          <h2 id="suscribete" className="font-display text-3xl font-semibold leading-tight text-fg sm:text-4xl">
             Suscríbete al Año Vicenciano
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-200 sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-fg-soft sm:text-lg">
             Agrega todas las fechas a tu calendario con un toque. Cuando sumemos nuevas fiestas o actividades, se
             actualizan solas en tu celular.
           </p>
@@ -34,13 +34,13 @@ export default function SubscribeBlock() {
             Añadir a Google Calendar
             <span className="sr-only"> (se abre en una pestaña nueva)</span>
           </a>
-          <a href={FEED_WEBCAL} className={buttonVariants({ variant: "outlineLight", size: "md" })}>
+          <a href={FEED_WEBCAL} className={buttonVariants({ variant: "outlineAuto", size: "md" })}>
             <ExternalLink className="mr-2 h-5 w-5" aria-hidden />
             Apple / Outlook
           </a>
           <CopyLinkButton value={FEED_HTTPS} label="Copiar enlace del calendario" />
         </div>
-        <p className="mt-5 text-sm text-slate-300">
+        <p className="mt-5 text-sm text-fg-muted">
           En Android usa Google Calendar. En iPhone, Mac u Outlook toca «Apple / Outlook» y confirma la suscripción.
         </p>
       </div>

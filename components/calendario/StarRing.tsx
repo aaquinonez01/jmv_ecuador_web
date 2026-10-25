@@ -12,14 +12,16 @@ import {
 } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { CalendarEntry } from "@/types/calendar";
-import { CATEGORY_META, MONTHS, dayLabel } from "@/lib/calendario";
+import { MONTHS, dayLabel } from "@/lib/calendario";
 import { cn } from "@/lib/utils";
 import { starPoints } from "@/components/brand/svg-props";
-import { MONTHS_SHORT, MONTH_DAYS, categoryStyle, entryAccessibleName } from "./shared";
+import { CAT_VARS, MONTHS_SHORT, MONTH_DAYS, categoryStyle, entryAccessibleName } from "./shared";
 import { useMonthRadio } from "./useMonthRadio";
 
 // El anillo de las 12 estrellas del reverso de la Medalla: una estrella por mes.
 // Geometría en un lienzo de 1000×1000; 0° arriba y sentido horario.
+// Colores del trazo por variables (--ring-*): azul JMV y dorado oscuro en claro,
+// blanco y dorado en oscuro. Cambian con el tema solo con CSS.
 const C = 500;
 const STAR_R = 0.43; // radio de las estrellas (fracción del ancho)
 const LABEL_R = 487;
@@ -163,6 +165,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
     <motion.div
       className={cn(
         "relative mx-auto aspect-square w-full select-none",
+        "[--ring-gold-hi:#c08a12] [--ring-gold:#b07a0c] [--ring-ink:#1d4e8a] dark:[--ring-gold-hi:#FFD36E] dark:[--ring-gold:#F5B83D] dark:[--ring-ink:#fff]",
         compact ? "w-[90%] max-w-[440px] touch-pan-y" : "max-w-[600px]",
       )}
       onPanStart={compact ? onPanStart : undefined}
@@ -178,7 +181,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
       {/* Resplandor de fondo */}
       <div
         aria-hidden="true"
-        className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(29,78,138,0.55)_0%,rgba(15,23,42,0)_70%)]"
+        className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(29,78,138,0.16)_0%,rgba(29,78,138,0)_70%)] dark:bg-[radial-gradient(circle,rgba(29,78,138,0.55)_0%,rgba(15,23,42,0)_70%)]"
       />
 
       <motion.div className="absolute inset-0" style={{ rotate: rot }}>
@@ -194,8 +197,8 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
             </filter>
           </defs>
 
-          <circle cx={C} cy={C} r={STAR_R * 1000} fill="none" stroke="#F5B83D" strokeOpacity="0.14" strokeWidth="1.5" />
-          <circle cx={C} cy={C} r={TRACK_R - 70} fill="none" stroke="#fff" strokeOpacity="0.06" strokeWidth="1" />
+          <circle cx={C} cy={C} r={STAR_R * 1000} fill="none" className="stroke-(--ring-gold)" strokeOpacity="0.14" strokeWidth="1.5" />
+          <circle cx={C} cy={C} r={TRACK_R - 70} fill="none" className="stroke-(--ring-ink)" strokeOpacity="0.06" strokeWidth="1" />
 
           {TICKS.map((t, i) => (
             <line
@@ -204,7 +207,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
               y1={t.a.y}
               x2={t.b.x}
               y2={t.b.y}
-              stroke={t.m === month ? "#FFD36E" : "#fff"}
+              className={t.m === month ? "stroke-(--ring-gold-hi)" : "stroke-(--ring-ink)"}
               strokeOpacity={t.m === month ? (t.long ? 0.9 : 0.55) : t.long ? 0.22 : 0.1}
               strokeWidth={t.long ? 2 : 1.2}
             />
@@ -216,15 +219,14 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
             const d = arcPath(monthAngle(m) - 13.5, monthAngle(m) + 13.5, TRACK_R);
             return (
               <g key={m}>
-                {selected && <path d={d} stroke="#F5B83D" strokeWidth="18" strokeOpacity="0.35" fill="none" filter="url(#cal-glow)" />}
+                {selected && <path d={d} className="stroke-(--ring-gold)" strokeWidth="18" strokeOpacity="0.35" fill="none" filter="url(#cal-glow)" />}
                 <path
                   d={d}
                   fill="none"
                   strokeLinecap="round"
-                  stroke={selected ? "#F5B83D" : "#fff"}
                   strokeOpacity={selected ? 1 : 0.14}
                   strokeWidth={selected ? 5 : 3}
-                  className="transition-[stroke-opacity] duration-300"
+                  className={cn("transition-[stroke-opacity] duration-300", selected ? "stroke-(--ring-gold)" : "stroke-(--ring-ink)")}
                 />
               </g>
             );
@@ -232,14 +234,14 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
 
           {dots.map(({ entry, deg, r }) => {
             const p = polar(deg, r);
-            const color = CATEGORY_META[entry.category].color;
             const isActive = entry.key === active || entry.key === selectedKey;
             const dim = entry.month !== month;
             return (
               <g
                 key={entry.key}
-                className="cursor-pointer"
-                opacity={dim ? 0.55 : 1}
+                style={categoryStyle(entry.category)}
+                // Los meses no elegidos se atenúan (menos en claro, donde se verían lavados)
+                className={cn(CAT_VARS, "cursor-pointer", dim && "opacity-75 dark:opacity-55")}
                 onPointerEnter={() => setActive(entry.key)}
                 onPointerLeave={() => setActive((k) => (k === entry.key ? null : k))}
                 onClick={() => {
@@ -253,13 +255,12 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                   cx={p.x}
                   cy={p.y}
                   r={(isActive ? 28 : 19) * dotScale}
-                  fill={color}
                   opacity={isActive ? 0.4 : 0.2}
-                  className="transition-all duration-300"
+                  className="fill-(--cat) transition-all duration-300"
                 />
-                <circle cx={p.x} cy={p.y} r={(isActive ? 13 : 9.5) * dotScale} fill={color} className="transition-all duration-300" />
+                <circle cx={p.x} cy={p.y} r={(isActive ? 13 : 9.5) * dotScale} className="fill-(--cat) transition-all duration-300" />
                 {entry.key === selectedKey && (
-                  <circle cx={p.x} cy={p.y} r={17 * dotScale} fill="none" stroke="#fff" strokeWidth={2.5 * dotScale} />
+                  <circle cx={p.x} cy={p.y} r={17 * dotScale} fill="none" className="stroke-fg" strokeWidth={2.5 * dotScale} />
                 )}
               </g>
             );
@@ -287,10 +288,10 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                   className={cn(
                     "h-8 w-8 transition-[filter,color] duration-300",
                     selected
-                      ? "text-jmv-gold-text drop-shadow-[0_0_10px_rgba(245,184,61,0.9)]"
+                      ? "text-[#b07a0c] drop-shadow-[0_0_8px_rgba(245,184,61,0.85)] dark:text-jmv-gold-text dark:drop-shadow-[0_0_10px_rgba(245,184,61,0.9)]"
                       : n > 0
-                        ? "text-white/80 group-hover:text-white"
-                        : "text-white/30 group-hover:text-white/60",
+                        ? "text-jmv-blue/80 group-hover:text-jmv-blue dark:text-white/80 dark:group-hover:text-white"
+                        : "text-jmv-blue/30 group-hover:text-jmv-blue/60 dark:text-white/30 dark:group-hover:text-white/60",
                   )}
                   animate={{ scale: selected ? 1.55 : 1 }}
                   transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 18 }}
@@ -312,7 +313,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
               style={{ left: `${p.x / 10}%`, top: `${p.y / 10}%`, rotate: counter }}
               className={cn(
                 "pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors",
-                i + 1 === month ? "text-jmv-gold-text" : "text-slate-300",
+                i + 1 === month ? "text-accent-gold" : "text-fg-muted",
               )}
             >
               {label}
@@ -322,7 +323,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
       </motion.div>
 
       {/* Centro: el mes y sus fechas (no gira) */}
-      <div className="absolute left-1/2 top-1/2 flex h-[54%] w-[54%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-white/10 bg-[radial-gradient(circle_at_50%_30%,#183865_0%,#0d1a33_75%)] px-[7%] text-center shadow-[inset_0_0_60px_rgba(0,0,0,0.45)]">
+      <div className="absolute left-1/2 top-1/2 flex h-[54%] w-[54%] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-accent-gold/25 bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f5efe3_75%)] px-[7%] text-center shadow-[inset_0_0_40px_rgba(138,90,0,0.10),0_14px_34px_-14px_rgba(15,23,42,0.28)] dark:border-white/10 dark:bg-[radial-gradient(circle_at_50%_30%,#183865_0%,#0d1a33_75%)] dark:shadow-[inset_0_0_60px_rgba(0,0,0,0.45)]">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={month}
@@ -334,13 +335,13 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
           >
             <h3
               className={cn(
-                "font-display font-semibold text-white",
+                "font-display font-semibold text-fg",
                 compact ? "text-[clamp(1.5rem,7.5vw,2.25rem)] leading-tight" : "text-3xl lg:text-4xl",
               )}
             >
               {MONTHS[month - 1]}
             </h3>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent-gold">
               {monthEntries.length === 0
                 ? "Sin fechas"
                 : monthEntries.length === 1
@@ -357,8 +358,9 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                         key={e.key}
                         style={categoryStyle(e.category)}
                         className={cn(
+                          CAT_VARS,
                           "flex h-7 w-7 items-center justify-center rounded-full bg-(--cat-soft) font-display text-xs font-semibold text-(--cat) ring-1 ring-(--cat)/40 transition-transform",
-                          e.key === selectedKey && "scale-110 ring-2 ring-white",
+                          e.key === selectedKey && "scale-110 ring-2 ring-fg",
                         )}
                       >
                         {e.day}
@@ -366,7 +368,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                     ))}
                   </div>
                 )}
-                <p className="mt-2.5 text-[11px] leading-snug text-slate-300">Desliza para girar</p>
+                <p className="mt-2.5 text-[11px] leading-snug text-fg-muted">Desliza para girar</p>
               </>
             ) : monthEntries.length > 0 ? (
               <ul
@@ -380,7 +382,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                 {monthEntries.map((e) => {
                   const selected = e.key === selectedKey;
                   return (
-                    <li key={e.key} style={categoryStyle(e.category)}>
+                    <li key={e.key} style={categoryStyle(e.category)} className={CAT_VARS}>
                       <button
                         type="button"
                         aria-pressed={selected}
@@ -392,7 +394,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                         onPointerLeave={() => setActive((k) => (k === e.key ? null : k))}
                         className={cn(
                           "flex min-h-11 w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left text-sm transition-colors",
-                          selected ? "bg-white/12 text-white" : "text-slate-200 hover:bg-white/5",
+                          selected ? "bg-jmv-blue/10 text-fg dark:bg-white/12" : "text-fg-soft hover:bg-fg/5",
                         )}
                       >
                         <span
@@ -408,7 +410,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                 })}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-slate-300">Aún no hay fechas este mes. Gira el anillo para explorar otro.</p>
+              <p className="mt-3 text-sm text-fg-muted">Aún no hay fechas este mes. Gira el anillo para explorar otro.</p>
             )}
           </motion.div>
         </AnimatePresence>
@@ -425,10 +427,13 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             style={{ left: `${tooltipPos.x / 10}%`, top: `${tooltipPos.y / 10}%`, ...categoryStyle(activeDot.entry.category) }}
-            className="pointer-events-none absolute z-20 w-max max-w-56 -translate-x-1/2 -translate-y-[calc(100%+18px)] rounded-xl border border-(--cat)/40 bg-[#0b1530]/95 px-3 py-2 text-center text-xs shadow-xl"
+            className={cn(
+              CAT_VARS,
+              "pointer-events-none absolute z-20 w-max max-w-56 -translate-x-1/2 -translate-y-[calc(100%+18px)] rounded-xl border border-(--cat)/40 bg-white/95 px-3 py-2 text-center text-xs shadow-xl dark:bg-[#0b1530]/95",
+            )}
           >
             <span className="block font-semibold text-(--cat)">{dayLabel(activeDot.entry.month, activeDot.entry.day)}</span>
-            <span className="block text-white">{activeDot.entry.title}</span>
+            <span className="block text-fg">{activeDot.entry.title}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -437,7 +442,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
         type="button"
         onClick={() => go(month - 1)}
         aria-label={`Mes anterior: ${MONTHS[(month + 10) % 12]}`}
-        className="absolute bottom-1 left-1 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+        className="absolute bottom-1 left-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface-card text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:hover:bg-white/15"
       >
         <ChevronLeft className="h-5 w-5" aria-hidden />
       </button>
@@ -445,7 +450,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
         type="button"
         onClick={() => go(month + 1)}
         aria-label={`Mes siguiente: ${MONTHS[month % 12]}`}
-        className="absolute bottom-1 right-1 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-colors hover:bg-white/15"
+        className="absolute bottom-1 right-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface-card text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:hover:bg-white/15"
       >
         <ChevronRight className="h-5 w-5" aria-hidden />
       </button>

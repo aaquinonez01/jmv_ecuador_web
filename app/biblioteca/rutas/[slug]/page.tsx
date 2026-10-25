@@ -63,15 +63,15 @@ export default async function LibraryRoutePage({ params }: Props) {
   };
 
   return (
-    <div className="bg-jmv-ink pb-24">
+    <div className="bg-page pb-24">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <section aria-labelledby="ruta-title" className="relative isolate overflow-hidden bg-[#070d1d] pb-16 pt-28 sm:pt-32">
+      <section aria-labelledby="ruta-title" className="relative isolate overflow-hidden bg-page-deep pb-16 pt-28 sm:pt-32">
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-20 bg-[radial-gradient(55%_60%_at_85%_40%,rgba(217,143,6,0.2),transparent_70%),radial-gradient(90%_70%_at_30%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
+          className="absolute inset-0 -z-20 bg-[radial-gradient(55%_60%_at_85%_40%,rgba(217,143,6,0.18),transparent_70%),radial-gradient(90%_70%_at_30%_0%,#bcd4f1_0%,#e2ebf7_48%,#f3eee4_100%)] dark:bg-[radial-gradient(55%_60%_at_85%_40%,rgba(217,143,6,0.2),transparent_70%),radial-gradient(90%_70%_at_30%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
         />
         <StarField seed={route.title.length * 13 + 5} count={60} className="-z-10" />
-        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-jmv-ink" />
+        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-page" />
 
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:px-8">
           <div>
@@ -80,24 +80,24 @@ export default async function LibraryRoutePage({ params }: Props) {
               jsonLd
               className="mb-8"
             />
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-jmv-gold-text">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-accent-gold">
               <Route className="h-4 w-4" aria-hidden />
               Ruta de formación
             </p>
             <h1
               id="ruta-title"
-              className="mt-4 font-display text-4xl font-semibold leading-[1.06] text-white text-balance sm:text-5xl lg:text-6xl"
+              className="mt-4 font-display text-4xl font-semibold leading-[1.06] text-fg text-balance sm:text-5xl lg:text-6xl"
             >
               {route.title}
             </h1>
             {route.description && (
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-200 sm:text-xl">{route.description}</p>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-soft sm:text-xl">{route.description}</p>
             )}
-            <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-300">
-              <span className="font-semibold text-white">{readingsLabel(docs.length)}</span>
+            <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg-muted">
+              <span className="font-semibold text-fg">{readingsLabel(docs.length)}</span>
               {time && (
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+                  <Clock className="h-4 w-4 text-accent-gold" aria-hidden />
                   {time} en total
                 </span>
               )}
@@ -108,7 +108,7 @@ export default async function LibraryRoutePage({ params }: Props) {
           </div>
 
           <div aria-hidden="true" className="relative mx-auto hidden h-72 w-full max-w-sm sm:block">
-            <StarsRing withCircle className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 text-jmv-gold-text opacity-[0.14]" />
+            <StarsRing withCircle className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 text-accent-gold opacity-[0.14]" />
             {fan.map((doc, i) => {
               const offset = i - (fan.length - 1) / 2;
               return (
@@ -133,7 +133,7 @@ export default async function LibraryRoutePage({ params }: Props) {
         {docs.length > 0 ? (
           <RoutePath docs={docs} />
         ) : (
-          <p className="py-12 text-center text-lg text-slate-300">Muy pronto añadiremos las lecturas de esta ruta.</p>
+          <p className="py-12 text-center text-lg text-fg-muted">Muy pronto añadiremos las lecturas de esta ruta.</p>
         )}
       </div>
     </div>

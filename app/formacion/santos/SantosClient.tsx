@@ -219,11 +219,11 @@ function FraseParaCompartir({ santo }: { santo: Santo }) {
   };
 
   return (
-    <figure className="rounded-2xl border border-jmv-gold-text/40 bg-gradient-to-br from-jmv-blue to-jmv-ink p-6 sm:p-8">
-      <figcaption className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+    <figure data-tone="dark" className="rounded-2xl border border-accent-gold/40 bg-gradient-to-br from-jmv-blue to-jmv-ink p-6 sm:p-8">
+      <figcaption className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-accent-gold">
         Frase para compartir
       </figcaption>
-      <Quote className="mb-3 h-8 w-8 text-jmv-gold-text" aria-hidden />
+      <Quote className="mb-3 h-8 w-8 text-accent-gold" aria-hidden />
       <blockquote className="font-display text-2xl italic leading-snug text-white sm:text-3xl">
         <p>{santo.cita}</p>
       </blockquote>
@@ -277,7 +277,7 @@ export default function SantosClient() {
     <section
       id="santos"
       aria-labelledby="santos-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink to-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 id="santos-titulo" className="sr-only">
@@ -299,7 +299,7 @@ export default function SantosClient() {
                 className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
                   selected
                     ? "border-jmv-gold bg-jmv-gold text-jmv-ink"
-                    : "border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    : "border-line-strong bg-surface text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15"
                 }`}
               >
                 <Icono className="h-4 w-4" aria-hidden />
@@ -315,17 +315,17 @@ export default function SantosClient() {
             <article
               key={santo.id}
               {...getPanelProps(index)}
-              className="rounded-2xl border border-white/15 bg-white/5 p-6 text-white sm:p-8 lg:p-12"
+              className="rounded-2xl border border-fg/15 bg-surface p-6 text-fg shadow-card sm:p-8 lg:p-12"
             >
               <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:gap-6">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/10">
-                  <Icono className="h-8 w-8 text-jmv-gold-text" aria-hidden />
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-2">
+                  <Icono className="h-8 w-8 text-accent-gold" aria-hidden />
                 </span>
                 <div className="flex-1">
                   <h3 className="mb-1 text-2xl font-bold sm:text-3xl lg:text-4xl">{santo.nombre}</h3>
-                  <p className="mb-1 text-base font-semibold text-jmv-gold-text sm:text-lg">{santo.titulo}</p>
-                  <p className="mb-3 text-sm text-slate-300">{santo.fechas}</p>
-                  <p className="text-base leading-relaxed text-slate-200 sm:text-lg">{santo.descripcion}</p>
+                  <p className="mb-1 text-base font-semibold text-accent-gold sm:text-lg">{santo.titulo}</p>
+                  <p className="mb-3 text-sm text-fg-muted">{santo.fechas}</p>
+                  <p className="text-base leading-relaxed text-fg-soft sm:text-lg">{santo.descripcion}</p>
                 </div>
               </div>
 
@@ -335,21 +335,21 @@ export default function SantosClient() {
 
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 <div>
-                  <h4 className="mb-4 text-xl font-bold text-jmv-gold-text sm:text-2xl">Legado</h4>
+                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Legado</h4>
                   <ul className="space-y-3">
                     {santo.legado.map((item) => (
                       <li key={item} className="flex items-start gap-3">
-                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-jmv-gold-text" />
-                        <span className="leading-relaxed text-slate-200">{item}</span>
+                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
+                        <span className="leading-relaxed text-fg-soft">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="mb-4 text-xl font-bold text-jmv-gold-text sm:text-2xl">Virtudes que nos inspiran</h4>
+                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Virtudes que nos inspiran</h4>
                   <ul className="space-y-3">
                     {santo.virtudes.map((virtud) => (
-                      <li key={virtud} className="rounded-xl border border-white/10 bg-white/5 p-4 leading-relaxed text-slate-200">
+                      <li key={virtud} className="rounded-xl border border-line bg-surface-2 p-4 leading-relaxed dark:bg-white/5 text-fg-soft">
                         {virtud}
                       </li>
                     ))}
@@ -364,19 +364,19 @@ export default function SantosClient() {
           <button
             type="button"
             onClick={() => select(active - 1)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 text-white hover:bg-white/15 sm:px-6"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15 sm:px-6"
           >
             <ArrowLeft className="h-5 w-5" aria-hidden />
             Anterior
             <span className="sr-only">: {anterior.nombre}</span>
           </button>
-          <p className="text-sm text-slate-300" aria-live="polite">
+          <p className="text-sm text-fg-muted" aria-live="polite">
             {active + 1} de {total}
           </p>
           <button
             type="button"
             onClick={() => select(active + 1)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 text-white hover:bg-white/15 sm:px-6"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15 sm:px-6"
           >
             Siguiente
             <span className="sr-only">: {siguiente.nombre}</span>

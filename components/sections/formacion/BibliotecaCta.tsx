@@ -21,7 +21,10 @@ export default function BibliotecaCta({ className = "" }: { className?: string }
   return (
     <section aria-labelledby="biblioteca-cta-titulo" className={className}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-jmv-gold-text/40 bg-gradient-to-br from-jmv-blue to-jmv-ink p-6 text-white shadow-2xl sm:p-10">
+        <div
+          data-tone="dark"
+          className="relative overflow-hidden rounded-3xl border border-jmv-gold-text/40 bg-gradient-to-br from-jmv-blue to-jmv-ink p-6 text-white shadow-2xl sm:p-10 theme-light:shadow-[0_18px_40px_-12px_rgb(15_23_42/0.28)]"
+        >
           <StarsRing
             aria-hidden
             className="pointer-events-none absolute -right-16 -top-16 hidden h-72 w-72 text-jmv-gold-text/15 sm:block"
