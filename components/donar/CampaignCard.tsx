@@ -11,10 +11,10 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
   return (
     <article
       aria-labelledby={titleId}
-      className="flex h-full flex-col overflow-hidden rounded-3xl border border-white/15 bg-white/[0.07] text-white"
+      className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-fg shadow-card dark:border-white/15 dark:bg-white/[0.07]"
     >
       {campaign.imageUrl ? (
-        <div className="relative aspect-[16/9] bg-white/5">
+        <div className="relative aspect-[16/9] bg-surface-sunken dark:bg-white/5">
           {isOptimizableImage(campaign.imageUrl) ? (
             <Image
               src={campaign.imageUrl}
@@ -35,17 +35,17 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
           {campaign.title}
         </h3>
         {dates ? (
-          <p className="mt-2 flex items-center gap-2 text-sm text-slate-300">
-            <CalendarDays className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+          <p className="mt-2 flex items-center gap-2 text-sm text-fg-muted">
+            <CalendarDays className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
             {dates}
           </p>
         ) : null}
-        <p className="mt-4 whitespace-pre-line leading-relaxed text-slate-200">{campaign.description}</p>
+        <p className="mt-4 whitespace-pre-line leading-relaxed text-fg-muted">{campaign.description}</p>
 
         {progress ? (
           <div className="mt-auto pt-6">
             <p id={`${titleId}-avance`} className="flex items-center gap-2 text-base font-semibold">
-              <Target className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+              <Target className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
               {progress.label}
             </p>
             <div
@@ -56,7 +56,7 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
               aria-valuemax={100}
               aria-valuenow={progress.bar}
               aria-valuetext={progress.label}
-              className="mt-3 h-3 w-full overflow-hidden rounded-full bg-white/15"
+              className="mt-3 h-3 w-full overflow-hidden rounded-full bg-fg/15"
             >
               <div
                 className="h-full rounded-full bg-jmv-gold transition-[width] duration-700 motion-reduce:transition-none"
@@ -64,7 +64,7 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
               />
             </div>
             {progress.reached ? (
-              <p className="mt-3 text-sm font-semibold text-jmv-gold-text">¡Llegamos a la meta! Gracias por tu generosidad.</p>
+              <p className="mt-3 text-sm font-semibold text-accent-gold">¡Llegamos a la meta! Gracias por tu generosidad.</p>
             ) : null}
           </div>
         ) : null}

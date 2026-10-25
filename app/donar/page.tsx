@@ -77,8 +77,8 @@ export default async function DonarPage() {
           { label: "¿Dudas? Escríbenos", href: contact.whatsappHref, icon: MessageCircle, external: true },
         ]}
       >
-        <p className="mt-6 flex items-center gap-2 text-sm text-slate-200">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+        <p className="mt-6 flex items-center gap-2 text-sm text-fg-muted">
+          <ShieldCheck className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
           Tu donación es anónima: no te pedimos datos ni registro.
         </p>
       </PageHero>
@@ -102,7 +102,7 @@ export default async function DonarPage() {
       ) : null}
 
       {campaigns.length > 0 ? (
-        <section aria-labelledby="campanas-titulo" className="bg-jmv-ink py-16 sm:py-20">
+        <section aria-labelledby="campanas-titulo" className="bg-page py-16 sm:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               id="campanas-titulo"
@@ -237,32 +237,32 @@ export default async function DonarPage() {
         </div>
       </section>
 
-      <section aria-labelledby="dudas-titulo" className="bg-gradient-to-b from-jmv-ink to-[#163a68] py-16 sm:py-20">
+      <section aria-labelledby="dudas-titulo" className="bg-section py-16 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div className="rounded-3xl border border-white/15 bg-white/[0.07] p-6 text-white sm:p-8">
-            <MessageCircle className="h-8 w-8 text-jmv-gold-text" aria-hidden />
+          <div className="rounded-3xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-6 text-fg sm:p-8">
+            <MessageCircle className="h-8 w-8 text-accent-gold" aria-hidden />
             <h2 id="dudas-titulo" className="mt-4 text-3xl font-bold">
               ¿Tienes dudas?
             </h2>
-            <p className="mt-3 text-lg leading-relaxed text-slate-200">
+            <p className="mt-3 text-lg leading-relaxed text-fg-muted">
               {settings?.contactNote?.trim() || DEFAULT_CONTACT_NOTE}
             </p>
             <ContactButtons contact={contact} dark className="mt-6" />
           </div>
 
-          <div className="rounded-3xl border border-white/15 bg-white/[0.07] p-6 text-white sm:p-8">
-            <ShieldCheck className="h-8 w-8 text-jmv-gold-text" aria-hidden />
+          <div className="rounded-3xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-6 text-fg sm:p-8">
+            <ShieldCheck className="h-8 w-8 text-accent-gold" aria-hidden />
             <h2 className="mt-4 text-3xl font-bold">Transparencia</h2>
             {settings?.transparencyNote?.trim() ? (
-              <p className="mt-3 whitespace-pre-line text-lg leading-relaxed text-slate-200">
+              <p className="mt-3 whitespace-pre-line text-lg leading-relaxed text-fg-muted">
                 {settings.transparencyNote.trim()}
               </p>
             ) : null}
-            <p className="mt-3 leading-relaxed text-slate-200">
+            <p className="mt-3 leading-relaxed text-fg-muted">
               Somos una asociación sin fines de lucro (
               <Link
                 href="/quienes-somos/estatutos#articulo-2"
-                className="font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                className="font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
               >
                 Art. 2.2 de nuestros Estatutos Nacionales
               </Link>
@@ -271,11 +271,11 @@ export default async function DonarPage() {
           </div>
 
           <figure className="rounded-3xl px-2 py-6 text-center lg:col-span-2">
-            <StarDivider className="mx-auto mb-6 text-jmv-gold-text" />
-            <blockquote className="mx-auto max-w-3xl font-display text-2xl italic leading-snug text-white md:text-3xl">
+            <StarDivider className="mx-auto mb-6 text-accent-gold" />
+            <blockquote className="mx-auto max-w-3xl font-display text-2xl italic leading-snug text-fg md:text-3xl">
               “El amor es inventivo hasta el infinito”
             </blockquote>
-            <figcaption className="mt-4 text-lg font-semibold text-slate-200">— San Vicente de Paúl</figcaption>
+            <figcaption className="mt-4 text-lg font-semibold text-fg-muted">— San Vicente de Paúl</figcaption>
           </figure>
         </div>
       </section>
@@ -306,7 +306,7 @@ function ContactButtons({
       </a>
       <a
         href={contact.mailHref}
-        className={buttonVariants({ variant: dark ? "outlineLight" : "outline", size: "md", className: "min-w-0" })}
+        className={buttonVariants({ variant: dark ? "outlineAuto" : "outline", size: "md", className: "min-w-0" })}
       >
         <Mail className="mr-2 h-5 w-5 shrink-0" aria-hidden />
         <span className="break-all">{contact.email}</span>
