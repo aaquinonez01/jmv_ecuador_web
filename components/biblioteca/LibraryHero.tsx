@@ -9,8 +9,8 @@ import LibrarySearch from "./LibrarySearch";
 import { readingsLabel, type LibraryCardDoc } from "./shared";
 import { filtersHref } from "./filters";
 
-// Cabecera de /biblioteca: cielo nocturno con la luz cálida de una lámpara de
-// lectura, el buscador al centro y un abanico de portadas (escritorio).
+// Cabecera de /biblioteca: cielo (nocturno en oscuro, de amanecer en claro) con la
+// luz cálida de una lámpara de lectura, el buscador al centro y un abanico de portadas.
 export default function LibraryHero({
   covers,
   total,
@@ -24,25 +24,25 @@ export default function LibraryHero({
 }) {
   const fan = covers.slice(0, 5);
   return (
-    <section aria-labelledby="biblioteca-title" className="relative isolate overflow-hidden bg-[#070d1d] pb-20 pt-28 sm:pb-24 sm:pt-32">
+    <section aria-labelledby="biblioteca-title" className="relative isolate overflow-hidden bg-page-deep pb-20 pt-28 sm:pb-24 sm:pt-32">
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-20 bg-[radial-gradient(60%_55%_at_78%_38%,rgba(217,143,6,0.26)_0%,transparent_70%),radial-gradient(90%_70%_at_30%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(60%_55%_at_78%_38%,rgba(217,143,6,0.22)_0%,transparent_70%),radial-gradient(90%_70%_at_30%_0%,#bcd4f1_0%,#e2ebf7_48%,#f3eee4_100%)] dark:bg-[radial-gradient(60%_55%_at_78%_38%,rgba(217,143,6,0.26)_0%,transparent_70%),radial-gradient(90%_70%_at_30%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
       />
       <StarField seed={11} count={70} className="-z-10" />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-jmv-ink" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-b from-transparent to-page" />
 
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:px-8">
         <div className="min-w-0">
           <Breadcrumbs items={[{ label: "Biblioteca" }]} jsonLd className="mb-8" />
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-jmv-gold-text">Para leer, orar y compartir</p>
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent-gold">Para leer, orar y compartir</p>
           <h1
             id="biblioteca-title"
-            className="font-display text-5xl font-semibold leading-[1.02] text-white text-balance sm:text-6xl lg:text-7xl"
+            className="font-display text-5xl font-semibold leading-[1.02] text-fg text-balance sm:text-6xl lg:text-7xl"
           >
-            Biblioteca <span className="italic text-jmv-gold-text">JMV</span>
+            Biblioteca <span className="italic text-accent-gold">JMV</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-200 sm:text-xl">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-muted sm:text-xl">
             Lecturas para crecer en la fe, formarte y servir. Ábrelas desde tu celular y sigue donde te quedaste.
           </p>
 
@@ -59,7 +59,7 @@ export default function LibraryHero({
                   <li key={t}>
                     <Link
                       href={filtersHref({ tipo: t })}
-                      className="inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border border-white/20 bg-white/[0.06] px-4 text-sm font-medium text-white backdrop-blur transition-colors hover:border-jmv-gold-text/60 hover:bg-white/10"
+                      className="inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border border-line-strong bg-surface px-4 text-sm font-medium text-fg shadow-card transition-colors hover:border-accent-gold/60 hover:bg-surface-2 dark:backdrop-blur"
                     >
                       {TYPE_LABELS[t]}
                     </Link>
@@ -70,12 +70,12 @@ export default function LibraryHero({
           )}
 
           {total > 0 && (
-            <p className="mt-6 text-sm text-slate-300">
-              <strong className="font-semibold text-white">{readingsLabel(total)}</strong>
+            <p className="mt-6 text-sm text-fg-muted">
+              <strong className="font-semibold text-fg">{readingsLabel(total)}</strong>
               {routes > 0 && (
                 <>
                   {" "}
-                  · <strong className="font-semibold text-white">{routes}</strong>{" "}
+                  · <strong className="font-semibold text-fg">{routes}</strong>{" "}
                   {routes === 1 ? "ruta de formación" : "rutas de formación"}
                 </>
               )}{" "}
@@ -85,7 +85,7 @@ export default function LibraryHero({
         </div>
 
         <div aria-hidden="true" className="relative hidden h-[26rem] lg:block">
-          <StarsRing withCircle className="absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 text-jmv-gold-text opacity-[0.14]" />
+          <StarsRing withCircle className="absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 text-accent-gold opacity-[0.14]" />
           {fan.length > 0 ? (
             fan.map((doc, i) => {
               const mid = (fan.length - 1) / 2;
@@ -105,7 +105,7 @@ export default function LibraryHero({
             })
           ) : (
             <div className="absolute inset-0 grid place-items-center">
-              <div className="h-56 w-40 rounded-[3px_10px_10px_3px] border border-white/15 bg-white/[0.04]" />
+              <div className="h-56 w-40 rounded-[3px_10px_10px_3px] border border-line bg-surface shadow-card dark:bg-white/[0.04] dark:border-white/15" />
             </div>
           )}
         </div>

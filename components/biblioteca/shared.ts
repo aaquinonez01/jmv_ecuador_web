@@ -53,8 +53,10 @@ export const STAGE_ORDER: LibraryStage[] = ["aspirante", "promesa", "consagrado"
 export type CoverMotif = "monogram" | "hearts" | "stars" | "cross" | "seed";
 
 interface CoverTheme {
-  /** Color del lomo y del acento */
+  /** Color del lomo y del acento (sobre la portada y en modo oscuro) */
   accent: string;
+  /** El mismo acento oscurecido para texto sobre fondo claro (4.5:1 sobre blanco y marfil) */
+  ink: string;
   from: string;
   to: string;
   motif: CoverMotif;
@@ -62,18 +64,18 @@ interface CoverTheme {
 
 // Cada eje tiene su color; sin eje, manda el tipo
 const AXIS_THEME: Record<LibraryAxis, CoverTheme> = {
-  humano: { accent: "#F2A65A", from: "#7a3412", to: "#2a1208", motif: "seed" },
-  cristocentrico: { accent: "#F08A7E", from: "#8f1f24", to: "#2b0a0d", motif: "cross" },
-  mariano: { accent: "#8EC5FF", from: "#1D4E8A", to: "#0a1a33", motif: "monogram" },
-  vicenciano: { accent: "#F5B83D", from: "#7c5004", to: "#241703", motif: "hearts" },
-  eclesial: { accent: "#7FD8C4", from: "#0f5e55", to: "#062420", motif: "stars" },
+  humano: { accent: "#F2A65A", ink: "#9a4a0c", from: "#7a3412", to: "#2a1208", motif: "seed" },
+  cristocentrico: { accent: "#F08A7E", ink: "#a3262b", from: "#8f1f24", to: "#2b0a0d", motif: "cross" },
+  mariano: { accent: "#8EC5FF", ink: "#1d5fb4", from: "#1D4E8A", to: "#0a1a33", motif: "monogram" },
+  vicenciano: { accent: "#F5B83D", ink: "#8a5a00", from: "#7c5004", to: "#241703", motif: "hearts" },
+  eclesial: { accent: "#7FD8C4", ink: "#0b6b5e", from: "#0f5e55", to: "#062420", motif: "stars" },
 };
 
 const TYPE_THEME: Record<LibraryType, CoverTheme> = {
   libro: AXIS_THEME.mariano,
-  documento: { accent: "#CBD5E1", from: "#334155", to: "#0f172a", motif: "stars" },
+  documento: { accent: "#CBD5E1", ink: "#334155", from: "#334155", to: "#0f172a", motif: "stars" },
   guia: AXIS_THEME.eclesial,
-  oracion: { accent: "#C4B5FD", from: "#4c2a85", to: "#160c2b", motif: "monogram" },
+  oracion: { accent: "#C4B5FD", ink: "#5b3aa8", from: "#4c2a85", to: "#160c2b", motif: "monogram" },
   otro: AXIS_THEME.humano,
 };
 
@@ -81,11 +83,17 @@ export function coverTheme(doc: Pick<LibraryDocument, "type" | "axis">): CoverTh
   return doc.axis ? AXIS_THEME[doc.axis] : TYPE_THEME[doc.type];
 }
 
-/** Variables CSS del documento: --acc (acento), --from y --to (degradado de la portada) */
+/**
+ * Variables CSS del documento: --acc (acento de la portada), --from y --to (degradado)
+ * y --acc-l (acento para texto en modo claro). Fuera de la portada se usa --acc-ink,
+ * que elige el de cada tema con la clase ACC_INK (solo CSS, sin re-render).
+ */
 export function docStyle(doc: Pick<LibraryDocument, "type" | "axis">): CSSProperties {
   const t = coverTheme(doc);
-  return { "--acc": t.accent, "--from": t.from, "--to": t.to } as CSSProperties;
+  return { "--acc": t.accent, "--acc-l": t.ink, "--from": t.from, "--to": t.to } as CSSProperties;
 }
+
+export const ACC_INK = "[--acc-ink:var(--acc-l)] dark:[--acc-ink:var(--acc)]";
 
 /** Minúsculas y sin tildes, para buscar "oracion" y encontrar "Oración" */
 export function normalizeText(text: string) {

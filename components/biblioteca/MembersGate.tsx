@@ -10,7 +10,7 @@ export default function MembersGate({ slug, className }: { slug: string; classNa
   return (
     <div
       className={cn(
-        "rounded-3xl border border-jmv-gold-text/30 bg-[linear-gradient(135deg,rgba(217,143,6,0.16),rgba(255,255,255,0.03))] p-5 sm:p-6",
+        "rounded-3xl border border-accent-gold/30 bg-[linear-gradient(135deg,rgba(217,143,6,0.14),#ffffff)] p-5 shadow-card sm:p-6 dark:bg-[linear-gradient(135deg,rgba(217,143,6,0.16),rgba(255,255,255,0.03))]",
         className,
       )}
     >
@@ -19,8 +19,8 @@ export default function MembersGate({ slug, className }: { slug: string; classNa
           <LockKeyhole className="h-6 w-6" aria-hidden />
         </span>
         <div>
-          <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Inicia sesión para verlo</h2>
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-200 sm:text-base">
+          <h2 className="font-display text-xl font-semibold text-fg sm:text-2xl">Inicia sesión para verlo</h2>
+          <p className="mt-1.5 text-sm leading-relaxed text-fg-muted sm:text-base">
             Este material está reservado para quienes tienen cuenta en la web de JMV Ecuador. Entra con la tuya y te traemos de vuelta aquí mismo.
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function MembersGate({ slug, className }: { slug: string; classNa
         </Link>
         <Link
           href="/unete"
-          className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-semibold text-white underline decoration-jmv-gold-text/60 underline-offset-4 hover:decoration-jmv-gold-text"
+          className="inline-flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-semibold text-fg underline decoration-accent-gold/60 underline-offset-4 hover:decoration-accent-gold"
         >
           ¿Aún no eres parte? Únete
         </Link>

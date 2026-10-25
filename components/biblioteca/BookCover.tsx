@@ -85,7 +85,8 @@ export default function BookCover({
       style={docStyle(doc)}
       className={cn(
         "@container relative isolate aspect-[2/3] overflow-hidden rounded-[3px_10px_10px_3px] bg-(--to)",
-        "shadow-[0_22px_32px_-14px_rgba(0,0,0,0.7),0_8px_12px_-8px_rgba(0,0,0,0.55)]",
+        // Sombra de libro: más suave sobre el marfil del modo claro
+        "shadow-[0_18px_28px_-14px_rgba(15,23,42,0.5),0_6px_10px_-6px_rgba(15,23,42,0.35)] dark:shadow-[0_22px_32px_-14px_rgba(0,0,0,0.7),0_8px_12px_-8px_rgba(0,0,0,0.55)]",
         className,
       )}
     >

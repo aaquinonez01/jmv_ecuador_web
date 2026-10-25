@@ -42,7 +42,7 @@ export default function CollectionCard({ collection, index = 0 }: { collection: 
     >
       <Link
         href={collectionHref(collection.slug)}
-        className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(160deg,#16325a_0%,#0d1830_70%)] p-5 transition-colors hover:border-jmv-gold-text/50 sm:p-6"
+        className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-[linear-gradient(160deg,#e3ecf8_0%,#ffffff_70%)] p-5 shadow-card transition-colors hover:border-accent-gold/50 sm:p-6 dark:bg-[linear-gradient(160deg,#16325a_0%,#0d1830_70%)]"
       >
         <div aria-hidden="true" className="relative h-40 sm:h-44">
           {collection.coverUrl ? (
@@ -73,29 +73,29 @@ export default function CollectionCard({ collection, index = 0 }: { collection: 
           )}
         </div>
 
-        <p className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text">
+        <p className="mt-6 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-accent-gold">
           <Route className="h-4 w-4" aria-hidden />
           Ruta de formación
         </p>
-        <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-white group-hover:text-jmv-gold-text">
+        <h3 className="mt-2 font-display text-2xl font-semibold leading-tight text-fg group-hover:text-accent-gold">
           {collection.title}
         </h3>
         {collection.description && (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-300">{collection.description}</p>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-fg-muted">{collection.description}</p>
         )}
 
         <div className="mt-auto flex items-center gap-3 pt-5">
-          <ProgressRing percent={percent} size={44} stroke={4} className="text-jmv-gold-text">
-            <span aria-hidden="true" className="text-[11px] font-bold text-white">
+          <ProgressRing percent={percent} size={44} stroke={4} className="text-accent-gold">
+            <span aria-hidden="true" className="text-[11px] font-bold text-fg">
               {done}/{total}
             </span>
           </ProgressRing>
-          <p className="text-sm text-slate-200">
-            <span className="block font-semibold text-white">{readingsLabel(total)}</span>
+          <p className="text-sm text-fg-muted">
+            <span className="block font-semibold text-fg">{readingsLabel(total)}</span>
             {done > 0 ? `${done} de ${total} leídas` : "Aún no empiezas"}
           </p>
           <ArrowRight
-            className="ml-auto h-5 w-5 text-jmv-gold-text transition-transform motion-safe:group-hover:translate-x-1"
+            className="ml-auto h-5 w-5 text-accent-gold transition-transform motion-safe:group-hover:translate-x-1"
             aria-hidden
           />
         </div>
