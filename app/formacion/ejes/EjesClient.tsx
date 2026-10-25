@@ -122,7 +122,7 @@ export default function EjesClient() {
     <section
       id="ejes"
       aria-labelledby="ejes-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink to-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 id="ejes-titulo" className="sr-only">
@@ -144,7 +144,7 @@ export default function EjesClient() {
                 className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
                   selected
                     ? "border-jmv-gold bg-jmv-gold text-jmv-ink"
-                    : "border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    : "border-line-strong bg-surface text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15"
                 }`}
               >
                 <Icono className="h-4 w-4" aria-hidden />
@@ -160,43 +160,43 @@ export default function EjesClient() {
             <article
               key={eje.id}
               {...getPanelProps(index)}
-              className="rounded-2xl border border-white/15 bg-white/5 p-6 text-white sm:p-8 lg:p-12"
+              className="rounded-2xl border border-fg/15 bg-surface p-6 text-fg shadow-card sm:p-8 lg:p-12"
             >
               <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white/10">
-                  <Icono className="h-8 w-8 text-jmv-gold-text" aria-hidden />
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-2">
+                  <Icono className="h-8 w-8 text-accent-gold" aria-hidden />
                 </span>
                 <div>
                   <h3 className="mb-2 text-2xl font-bold sm:text-3xl lg:text-4xl">{eje.titulo}</h3>
-                  <p className="text-base leading-relaxed text-slate-200 sm:text-lg">{eje.descripcion}</p>
+                  <p className="text-base leading-relaxed text-fg-muted sm:text-lg">{eje.descripcion}</p>
                 </div>
               </div>
 
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 <div>
-                  <h4 className="mb-4 text-xl font-bold text-jmv-gold-text sm:text-2xl">Aspectos fundamentales</h4>
+                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Aspectos fundamentales</h4>
                   <ul className="space-y-3">
                     {eje.detalles.map((detalle) => (
                       <li key={detalle} className="flex items-start gap-3">
-                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-jmv-gold-text" />
-                        <span className="leading-relaxed text-slate-200">{detalle}</span>
+                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
+                        <span className="leading-relaxed text-fg-muted">{detalle}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 <div>
-                  <h4 className="mb-4 text-xl font-bold text-jmv-gold-text sm:text-2xl">Objetivos principales</h4>
+                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Objetivos principales</h4>
                   <ol className="space-y-3">
                     {eje.objetivos.map((objetivo, n) => (
-                      <li key={objetivo} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
+                      <li key={objetivo} className="flex items-start gap-3 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
                         <span
                           aria-hidden
-                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-jmv-gold-text"
+                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
                         >
                           {n + 1}
                         </span>
-                        <span className="leading-relaxed text-slate-200">{objetivo}</span>
+                        <span className="leading-relaxed text-fg-muted">{objetivo}</span>
                       </li>
                     ))}
                   </ol>
@@ -205,17 +205,17 @@ export default function EjesClient() {
 
               <Link
                 href={`/biblioteca?eje=${eje.id}`}
-                className="group mt-8 flex items-center gap-4 rounded-xl border border-jmv-gold-text/40 bg-jmv-gold-text/10 p-4 transition-colors hover:bg-jmv-gold-text/15 sm:p-5"
+                className="group mt-8 flex items-center gap-4 rounded-xl border border-accent-gold/40 bg-jmv-gold/10 p-4 transition-colors hover:bg-jmv-gold/15 dark:bg-accent-gold/10 dark:hover:bg-accent-gold/15 sm:p-5"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                   <Library className="h-5 w-5" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-semibold text-white">Lecturas del {eje.titulo.toLowerCase()}</span>
-                  <span className="block text-sm text-slate-300">Libros y guías de la Biblioteca JMV para profundizar.</span>
+                  <span className="block font-semibold text-fg">Lecturas del {eje.titulo.toLowerCase()}</span>
+                  <span className="block text-sm text-fg-muted">Libros y guías de la Biblioteca JMV para profundizar.</span>
                 </span>
                 <ArrowRight
-                  className="h-5 w-5 shrink-0 text-jmv-gold-text transition-transform motion-safe:group-hover:translate-x-1"
+                  className="h-5 w-5 shrink-0 text-accent-gold transition-transform motion-safe:group-hover:translate-x-1"
                   aria-hidden
                 />
               </Link>
@@ -227,19 +227,19 @@ export default function EjesClient() {
           <button
             type="button"
             onClick={() => select(active - 1)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 text-white hover:bg-white/15 sm:px-6"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15 sm:px-6"
           >
             <ArrowLeft className="h-5 w-5" aria-hidden />
             Anterior
             <span className="sr-only">: {anterior.titulo}</span>
           </button>
-          <p className="text-sm text-slate-300" aria-live="polite">
+          <p className="text-sm text-fg-muted" aria-live="polite">
             {active + 1} de {total}
           </p>
           <button
             type="button"
             onClick={() => select(active + 1)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 text-white hover:bg-white/15 sm:px-6"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-surface px-4 text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15 sm:px-6"
           >
             Siguiente
             <span className="sr-only">: {siguiente.titulo}</span>
