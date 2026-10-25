@@ -110,7 +110,7 @@ export default async function DonarPage() {
               title={campaigns.length === 1 ? "Campaña en curso" : "Campañas en curso"}
               description="Metas concretas que estamos reuniendo entre todos. El Tesorero/a Nacional actualiza el avance."
             />
-            <ul className={`grid gap-6 ${campaigns.length > 1 ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
+            <ul className={`grid grid-cols-1 gap-6 ${campaigns.length > 1 ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
               {campaigns.map((campaign) => (
                 <li key={campaign.id}>
                   <CampaignCard campaign={campaign} />
@@ -153,14 +153,14 @@ export default async function DonarPage() {
             <div className="space-y-10">
               {hasOnlineMethod ? (
                 <div
-                  className={`grid gap-6 ${
+                  className={`grid grid-cols-1 gap-6 ${
                     accounts.length > 0 && (qrImageUrl || paypalUrl) ? "lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]" : ""
                   }`}
                 >
                   {accounts.length > 0 ? (
                     <div>
                       <h3 className="mb-4 text-2xl font-bold text-slate-900">Transferencia o depósito</h3>
-                      <ul className={`grid gap-6 ${accounts.length > 1 && !(qrImageUrl || paypalUrl) ? "lg:grid-cols-2" : ""}`}>
+                      <ul className={`grid grid-cols-1 gap-6 ${accounts.length > 1 && !(qrImageUrl || paypalUrl) ? "lg:grid-cols-2" : ""}`}>
                         {accounts.map((account) => (
                           <li key={account.id}>
                             <AccountCard account={account} headingLevel="h4" />
@@ -224,7 +224,7 @@ export default async function DonarPage() {
                     href={contact.inKindHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={buttonVariants({ variant: "gold", size: "lg", className: "w-full md:w-auto" })}
+                    className={buttonVariants({ variant: "gold", size: "lg", className: "w-full px-5 sm:px-8 md:w-auto" })}
                   >
                     <MessageCircle className="mr-2 h-5 w-5" aria-hidden />
                     Coordinar por WhatsApp

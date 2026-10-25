@@ -56,8 +56,8 @@ export default function AccountCard({ account, headingLevel = "h3" }: { account:
               <dd
                 className={
                   row.big
-                    ? "mt-0.5 select-all break-words font-mono text-2xl font-bold tracking-wide text-slate-900 sm:text-[1.7rem]"
-                    : `mt-0.5 select-all break-words text-base font-semibold text-slate-900 ${row.mono ? "font-mono tracking-wide" : ""}`
+                    ? "mt-0.5 select-all wrap-anywhere font-mono text-2xl font-bold tracking-wide text-slate-900 sm:text-[1.7rem]"
+                    : `mt-0.5 select-all wrap-anywhere text-base font-semibold text-slate-900 ${row.mono ? "font-mono tracking-wide" : ""}`
                 }
               >
                 {row.value}

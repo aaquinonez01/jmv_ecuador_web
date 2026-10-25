@@ -62,7 +62,10 @@ export default function CopyButton({
         )}
       >
         <Icon className="h-4 w-4 shrink-0" aria-hidden />
-        <span aria-hidden>{copied ? "Copiado" : children}</span>
+        {/* En móviles angostos el compacto queda solo con el icono para que el dato no se parta */}
+        <span aria-hidden className={variant === "compact" ? "hidden min-[420px]:inline" : undefined}>
+          {copied ? "Copiado" : children}
+        </span>
       </button>
       <span role="status" className="sr-only">
         {copied ? copiedMessage : ""}
