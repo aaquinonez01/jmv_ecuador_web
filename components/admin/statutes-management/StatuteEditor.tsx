@@ -488,7 +488,7 @@ export default function StatuteEditor({ id, sourceId }: { id?: string; sourceId?
           </Field>
           <Field label="PDF del original firmado" error={errors.pdfUrl} hint="Ruta /documentos/… o URL https. Opcional." className="sm:col-span-2">
             {({ id: fid, describedBy, invalid }) => (
-              <input id={fid} value={form.pdfUrl} onChange={(e) => update({ pdfUrl: e.target.value })} placeholder="/documentos/estatutos-jmv-ecuador-2010.pdf" aria-invalid={invalid} aria-describedby={describedBy} className={inputClass} />
+              <input id={fid} value={form.pdfUrl} onChange={(e) => update({ pdfUrl: e.target.value })} placeholder="/documentos/estatutos-nacionales-jmv-ecuador-2010.pdf" aria-invalid={invalid} aria-describedby={describedBy} className={inputClass} />
             )}
           </Field>
           <Field
