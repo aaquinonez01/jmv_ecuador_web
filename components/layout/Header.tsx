@@ -18,6 +18,7 @@ const navigation: NavItem[] = [
     name: "Formación",
     children: [
       { name: "Formación", href: "/formacion" },
+      { name: "Biblioteca", href: "/biblioteca" },
       { name: "Ejes formativos", href: "/formacion/ejes" },
       { name: "Santos vicencianos", href: "/formacion/santos" },
       { name: "Año Vicenciano", href: "/calendario" },

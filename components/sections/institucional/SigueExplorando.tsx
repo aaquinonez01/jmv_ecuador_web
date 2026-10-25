@@ -5,6 +5,7 @@ import {
   Globe2,
   Heart,
   History,
+  Library,
   Network,
   Sparkles,
   Star,
@@ -39,6 +40,12 @@ const DESTINOS = {
     label: "Formación",
     description: "Cómo crecemos como personas, cristianos y vicencianos.",
     icon: BookOpen,
+  },
+  biblioteca: {
+    href: "/biblioteca",
+    label: "Biblioteca JMV",
+    description: "Libros y guías de formación para leer desde el celular.",
+    icon: Library,
   },
   ejes: {
     href: "/formacion/ejes",
