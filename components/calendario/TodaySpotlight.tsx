@@ -71,10 +71,12 @@ export default function TodaySpotlight({ upcoming, now }: { upcoming: CalendarEn
               ) : (
                 <p className="flex items-end gap-3 leading-none">
                   <span className="sr-only">Faltan {days} días</span>
-                  <AnimatedNumber
-                    value={days}
-                    className="font-display text-7xl font-semibold tabular-nums text-white sm:text-8xl"
-                  />
+                  <span aria-hidden="true">
+                    <AnimatedNumber
+                      value={days}
+                      className="font-display text-7xl font-semibold tabular-nums text-white sm:text-8xl"
+                    />
+                  </span>
                   <span aria-hidden="true" className="pb-2 text-lg font-semibold text-(--cat) sm:text-xl">
                     {days === 1 ? "día" : "días"}
                     <span className="block text-sm font-medium text-slate-300">para el {dayLabel(main.month, main.day)}</span>
