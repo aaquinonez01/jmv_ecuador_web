@@ -24,6 +24,8 @@ import { Field, FormSection, ToggleCard, inputClass } from "./formParts";
 export const SUMMARY_MIN = 10;
 export const SUMMARY_MAX = 180;
 export const MAX_TAGS = 12;
+/** Desde aquí se sugiere comprimir: los PDF salen del VPS y pesan en datos móviles */
+export const HEAVY_PDF_BYTES = 15 * 1024 * 1024;
 
 export type SourceMode = "pdf" | "link";
 
@@ -291,6 +293,13 @@ export default function LibraryDocumentForm({
             {errors.file ? (
               <p className="mt-1 text-xs font-medium text-red-700" role="alert">
                 {errors.file}
+              </p>
+            ) : null}
+            {!errors.file && form.file && form.file.size > HEAVY_PDF_BYTES ? (
+              <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900" role="status">
+                Este PDF pesa {fileSizeLabel(form.file.size)}. Se puede subir, pero tardará en abrirse con datos
+                móviles. Si puedes, comprímelo antes (por ejemplo en ilovepdf.com, «Comprimir PDF»): suele quedar en menos
+                de 10 MB sin perder calidad.
               </p>
             ) : null}
             <p id="library-pdf-hint" className="mt-1 text-xs text-slate-500">
