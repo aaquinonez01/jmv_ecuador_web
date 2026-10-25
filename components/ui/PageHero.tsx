@@ -41,6 +41,9 @@ export interface PageHeroProps {
 
 // Hero de página interior: no ocupa la pantalla completa, el texto se ve sin JS
 // y la foto se conserva con un velo degradado (no opacity-10).
+// Tema: CON foto es una isla oscura (data-tone="dark": velo oscuro y texto blanco en
+// ambos modos). SIN foto sigue el tema (bg-hero-plain: marfil→azul claro en claro,
+// tinta→azul JMV en oscuro) y "outlineLight" se cambia por "outlineAuto".
 export default function PageHero({
   title,
   eyebrow,
@@ -56,12 +59,14 @@ export default function PageHero({
   id = "page-hero-title",
 }: PageHeroProps) {
   const centered = align === "center";
+  const onPhoto = Boolean(image);
 
   return (
     <section
       aria-labelledby={id}
+      data-tone={onPhoto ? "dark" : undefined}
       className={cn(
-        "relative isolate flex min-h-[55svh] items-end overflow-hidden bg-jmv-ink pt-24 pb-12 sm:pt-28 lg:min-h-[60vh] lg:pb-16",
+        "relative isolate flex min-h-[55svh] items-end overflow-hidden bg-page pt-24 pb-12 sm:pt-28 lg:min-h-[60vh] lg:pb-16",
         className,
       )}
     >
@@ -79,19 +84,19 @@ export default function PageHero({
           {/* Velo: oscuro abajo (donde va el texto), deja ver la foto arriba */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-gradient-to-t from-jmv-ink via-jmv-ink/70 to-jmv-ink/10"
+            className="absolute inset-0 -z-10 bg-gradient-to-t from-hero-veil via-hero-veil/70 to-hero-veil/10"
           />
           {!centered && (
             <div
               aria-hidden="true"
-              className="absolute inset-0 -z-10 bg-gradient-to-r from-jmv-ink/70 via-jmv-ink/20 to-transparent"
+              className="absolute inset-0 -z-10 bg-gradient-to-r from-hero-veil/70 via-hero-veil/20 to-transparent"
             />
           )}
         </>
       ) : (
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-20 bg-gradient-to-br from-jmv-ink via-[#163a68] to-jmv-blue"
+          className="absolute inset-0 -z-20 bg-hero-plain"
         />
       )}
 
@@ -99,10 +104,10 @@ export default function PageHero({
         <div
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute -z-10 text-jmv-gold-text",
+            "pointer-events-none absolute -z-10 text-accent-gold",
             centered
-              ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-15"
-              : "-right-16 top-16 opacity-25 sm:right-4 lg:right-12",
+              ? "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 dark:opacity-15"
+              : "-right-16 top-16 opacity-20 dark:opacity-25 sm:right-4 lg:right-12",
           )}
         >
           {motif === "stars" && <StarsRing withCircle className="h-72 w-72 sm:h-96 sm:w-96" />}
@@ -129,30 +134,30 @@ export default function PageHero({
       >
         <div className={cn("max-w-3xl", centered && "mx-auto")}>
           {breadcrumbs && breadcrumbs.length > 0 && (
-            <Breadcrumbs items={breadcrumbs} className={cn("mb-6", centered && "flex justify-center")} />
+            <Breadcrumbs items={breadcrumbs} tone="auto" className={cn("mb-6", centered && "flex justify-center")} />
           )}
 
           {eyebrow && (
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
               {eyebrow}
             </p>
           )}
 
           <h1
             id={id}
-            className="text-4xl font-bold leading-[1.1] text-white text-balance sm:text-5xl lg:text-6xl"
+            className="text-4xl font-bold leading-[1.1] text-fg text-balance sm:text-5xl lg:text-6xl"
           >
             {title}
           </h1>
 
           {motto && (
-            <p className="mt-4 font-display text-xl italic leading-snug text-jmv-gold-text sm:text-2xl">
+            <p className="mt-4 font-display text-xl italic leading-snug text-accent-gold sm:text-2xl">
               {motto}
             </p>
           )}
 
           {description && (
-            <p className={cn("mt-5 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg", centered && "mx-auto")}>
+            <p className={cn("mt-5 max-w-2xl text-base leading-relaxed text-fg-muted dark:text-slate-200 sm:text-lg", centered && "mx-auto")}>
               {description}
             </p>
           )}
@@ -166,8 +171,9 @@ export default function PageHero({
             >
               {actions.map((action, i) => {
                 const Icon = action.icon;
+                const requested = action.variant ?? (i === 0 ? "gold" : "outlineLight");
                 const className = buttonVariants({
-                  variant: action.variant ?? (i === 0 ? "gold" : "outlineLight"),
+                  variant: !onPhoto && requested === "outlineLight" ? "outlineAuto" : requested,
                   size: "lg",
                 });
                 const content = (

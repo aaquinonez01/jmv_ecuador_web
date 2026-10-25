@@ -9,8 +9,11 @@ interface SectionHeadingProps {
   /** id del h2, para aria-labelledby de la sección */
   id?: string;
   align?: "center" | "left";
-  /** "dark" para fondos oscuros, "light" para fondos claros */
-  tone?: "dark" | "light";
+  /**
+   * "auto" (por defecto): sigue el tema con tokens (text-fg, text-fg-muted, text-accent-gold).
+   * "light": colores fijos de fondo claro. "dark": colores fijos de fondo oscuro.
+   */
+  tone?: "auto" | "dark" | "light";
   /** Nivel del encabezado (h2 por defecto) */
   as?: "h2" | "h3";
   className?: string;
@@ -23,11 +26,15 @@ export default function SectionHeading({
   description,
   id,
   align = "center",
-  tone = "dark",
+  tone = "auto",
   as: Heading = "h2",
   className,
 }: SectionHeadingProps) {
-  const dark = tone === "dark";
+  const colors = {
+    auto: { eyebrow: "text-accent-gold", title: "text-fg", description: "text-fg-muted" },
+    dark: { eyebrow: "text-jmv-gold-text", title: "text-white", description: "text-slate-300" },
+    light: { eyebrow: "text-jmv-gold-ink", title: "text-slate-900", description: "text-slate-600" },
+  }[tone];
   return (
     <div
       className={cn(
@@ -40,7 +47,7 @@ export default function SectionHeading({
         <p
           className={cn(
             "mb-3 text-sm font-semibold uppercase tracking-[0.14em]",
-            dark ? "text-jmv-gold-text" : "text-jmv-gold-ink",
+            colors.eyebrow,
           )}
         >
           {eyebrow}
@@ -50,13 +57,13 @@ export default function SectionHeading({
         id={id}
         className={cn(
           "text-3xl font-bold leading-tight text-balance sm:text-4xl md:text-5xl",
-          dark ? "text-white" : "text-slate-900",
+          colors.title,
         )}
       >
         {title}
       </Heading>
       {description && (
-        <p className={cn("mt-4 text-lg leading-relaxed", dark ? "text-slate-300" : "text-slate-600")}>
+        <p className={cn("mt-4 text-lg leading-relaxed", colors.description)}>
           {description}
         </p>
       )}

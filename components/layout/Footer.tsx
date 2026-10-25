@@ -54,7 +54,9 @@ export default function Footer() {
     "inline-flex min-h-11 items-center gap-3 rounded-md text-blue-100 hover:text-white";
 
   return (
-    <footer className="relative overflow-hidden bg-jmv-blue text-white">
+    // Azul de marca en ambos modos (texto blue-100 7:1, dorado 4.7:1); data-tone="dark"
+    // mantiene el foco dorado y los tokens oscuros dentro aunque el sitio esté en claro.
+    <footer data-tone="dark" className="relative overflow-hidden bg-jmv-blue text-white">
       <StarsRing
         className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 text-jmv-gold-text/10"
       />
@@ -155,7 +157,7 @@ export default function Footer() {
                         alt=""
                         width={20}
                         height={20}
-                        className="h-5 w-5 object-contain opacity-90 invert"
+                        className="h-5 w-5 object-contain opacity-90"
                       />
                     )}
                   </a>

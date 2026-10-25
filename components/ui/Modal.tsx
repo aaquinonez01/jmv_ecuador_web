@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 // Modal accesible sobre Radix Dialog: role="dialog", aria-modal, título asociado,
 // foco atrapado y devuelto al cerrar, Escape y clic fuera.
+// Tema: panel blanco en ambos modos (isla data-tone="light": los tokens dentro son claros).
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -49,13 +50,14 @@ export default function Modal({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
         <Dialog.Content
+          data-tone="light"
           data-surface="light"
           {...(!description && { "aria-describedby": undefined })}
           onPointerDownOutside={(e) => {
             if (!closeOnOverlayClick) e.preventDefault();
           }}
           className={cn(
-            "fixed left-1/2 top-1/2 z-50 flex max-h-[92svh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-white text-slate-900 shadow-jmv-lg",
+            "fixed left-1/2 top-1/2 z-50 flex max-h-[92svh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl bg-surface text-fg shadow-jmv-lg",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
             sizes[size],
             className,
