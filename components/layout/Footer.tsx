@@ -25,6 +25,7 @@ const footerLinks: { title: string; links: { name: string; href: string }[] }[] 
       { name: "Formación", href: "/formacion" },
       { name: "Ejes formativos", href: "/formacion/ejes" },
       { name: "Santos vicencianos", href: "/formacion/santos" },
+      { name: "Año Vicenciano", href: "/calendario" },
     ],
   },
   {
