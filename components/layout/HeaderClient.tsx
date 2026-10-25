@@ -207,12 +207,13 @@ export default function HeaderClient({ navigation, logo }: Props) {
           </nav>
 
           <div className="flex items-center gap-2">
-            {/* Donar: secundario junto a "Únete" (contorno, no compite con el CTA dorado) */}
+            {/* Donar: secundario junto a "Únete" (contorno, no compite con el CTA dorado).
+                Entre lg y xl la barra no tiene espacio libre: ahí queda en footer y home. */}
             <Link
               href="/donar"
               aria-current={isCurrent(pathname, "/donar") ? "page" : undefined}
               className={cn(
-                "hidden min-h-11 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-white ring-1 ring-white/40 hover:bg-white/10 lg:inline-flex",
+                "hidden min-h-11 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-white ring-1 ring-white/40 hover:bg-white/10 xl:inline-flex",
                 isCurrent(pathname, "/donar") && "bg-white/10 ring-jmv-gold-text",
               )}
             >

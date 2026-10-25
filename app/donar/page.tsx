@@ -132,7 +132,7 @@ export default async function DonarPage() {
             id="como-donar-titulo"
             tone="light"
             eyebrow="Cómo donar"
-            title="Elige la forma que te quede más fácil"
+            title={hasAnyMethod ? "Elige la forma que te quede más fácil" : "Formas de donar"}
             description={
               hasAnyMethod
                 ? "No necesitas registrarte ni dejarnos tus datos. Copia la información, haz tu aporte desde tu banco y listo."
