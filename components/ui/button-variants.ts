@@ -2,6 +2,13 @@ import { cn } from "@/lib/utils";
 
 // Estilos de botón reutilizables también en <Link> o <a>, para no anidar <a><button>.
 // Módulo sin "use client": se puede llamar desde Server Components.
+//
+// Tema (docs/MODO-CLARO.md):
+// - gold, primary, secondary, destructive, light: válidos en ambos modos.
+// - outline / ghost: azul JMV, sólo sobre fondo CLARO fijo (tarjeta blanca, data-surface="light").
+// - outlineLight: contorno blanco, sólo sobre foto o fondo oscuro fijo (data-tone="dark").
+// - outlineAuto / ghostAuto: siguen el tema (claro = outline/ghost azul; oscuro = outlineLight).
+//   Úsalos en secciones que cambian con el tema.
 
 export const BUTTON_VARIANTS = {
   primary:
@@ -19,6 +26,11 @@ export const BUTTON_VARIANTS = {
   /** Contorno blanco sobre fondos oscuros o fotografía */
   outlineLight:
     "border-2 border-white/80 text-white hover:bg-white hover:text-jmv-blue",
+  /** Contorno que sigue el tema: azul JMV en claro, blanco en oscuro */
+  outlineAuto:
+    "border-2 border-jmv-blue text-jmv-blue hover:bg-jmv-blue hover:text-white dark:border-white/80 dark:text-white dark:hover:bg-white dark:hover:text-jmv-blue",
+  /** Botón de texto que sigue el tema */
+  ghostAuto: "text-accent-blue hover:bg-accent-blue/10 active:bg-accent-blue/20",
 } as const;
 
 export const BUTTON_SIZES = {

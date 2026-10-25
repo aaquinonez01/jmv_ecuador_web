@@ -15,6 +15,7 @@ import { Accordion, Dialog } from "radix-ui";
 import { ChevronDown, HandHeart, Heart, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isChromelessPath } from "@/lib/site";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 export type NavItem = {
   name: string;
@@ -30,6 +31,8 @@ type Props = {
 // Header azul de marca con texto blanco (8.4:1) y acentos dorados
 // (jmv-gold-text sobre jmv-blue = 4.7:1). El dorado #D98F06 con texto blanco
 // daba 2.7:1 y además ocultaba la franja dorada del logo.
+// El header es azul en ambos modos: data-tone="dark" fija los tokens oscuros dentro
+// (foco dorado, dark:, text-fg = blanco) aunque el sitio esté en modo claro.
 
 function normalize(path: string) {
   return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
@@ -90,12 +93,13 @@ export default function HeaderClient({ navigation, logo }: Props) {
 
   return (
     <header
+      data-tone="dark"
       className={cn(
         "fixed top-0 z-50 w-full bg-jmv-blue text-white transition-shadow duration-300",
         scrolled ? "shadow-xl shadow-black/20" : "shadow-none",
       )}
     >
-      <div className="mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="mx-auto w-full px-3 sm:px-4 md:px-6 xl:px-8">
         <div className="flex h-16 items-center justify-between gap-2 sm:h-20 sm:gap-4">
           {logo}
 
@@ -112,9 +116,9 @@ export default function HeaderClient({ navigation, logo }: Props) {
                         href={item.href!}
                         aria-current={current ? "page" : undefined}
                         className={cn(
-                          "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white xl:px-4",
+                          "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white lg:px-2.5 xl:px-4",
                           active &&
-                            "text-white after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
+                            "text-white after:absolute after:inset-x-3 lg:after:inset-x-2.5 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
                         )}
                       >
                         {item.name}
@@ -152,10 +156,10 @@ export default function HeaderClient({ navigation, logo }: Props) {
                       aria-controls={panelId}
                       onClick={() => setOpenSubmenu(isOpen ? null : item.name)}
                       className={cn(
-                        "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white xl:px-4",
+                        "relative flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-white/90 hover:bg-white/10 hover:text-white lg:px-2.5 xl:px-4",
                         (active || isOpen) && "text-white",
                         active &&
-                          "after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
+                          "after:absolute after:inset-x-3 lg:after:inset-x-2.5 after:bottom-1 after:h-0.5 after:rounded-full after:bg-jmv-gold-text xl:after:inset-x-4",
                       )}
                     >
                       {item.name}
@@ -171,6 +175,7 @@ export default function HeaderClient({ navigation, logo }: Props) {
                     {/* pt-2 mantiene el hover al bajar el puntero hacia el panel */}
                     <div id={panelId} hidden={!isOpen} className="absolute left-0 top-full w-60 pt-2">
                       <ul
+                        data-tone="light"
                         data-surface="light"
                         className="rounded-xl border border-slate-200 bg-white py-2 shadow-2xl"
                       >
@@ -206,7 +211,8 @@ export default function HeaderClient({ navigation, logo }: Props) {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 xl:gap-2">
+            <ThemeToggle className="hidden lg:block" />
             {/* Donar: secundario junto a "Únete" (contorno, no compite con el CTA dorado).
                 Entre lg y xl la barra no tiene espacio libre: ahí queda en footer y home. */}
             <Link
@@ -238,6 +244,7 @@ export default function HeaderClient({ navigation, logo }: Props) {
               </Dialog.Trigger>
               <Dialog.Portal>
                 <Dialog.Content
+                  data-tone="dark"
                   aria-describedby={undefined}
                   className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-jmv-blue text-white lg:hidden data-[state=open]:animate-in data-[state=open]:fade-in-0"
                 >
@@ -344,6 +351,7 @@ export default function HeaderClient({ navigation, logo }: Props) {
                       <HandHeart className="mr-2 h-5 w-5 text-jmv-gold-text" aria-hidden />
                       Donar
                     </Link>
+                    <ThemeToggle variant="segmented" className="mt-8" />
                   </nav>
                 </Dialog.Content>
               </Dialog.Portal>

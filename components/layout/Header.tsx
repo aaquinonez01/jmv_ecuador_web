@@ -37,7 +37,7 @@ export default function Header() {
       logo={
         <Link
           href="/"
-          className="flex max-w-48 shrink-0 items-center justify-center rounded-md sm:max-w-60 xl:max-w-72"
+          className="flex max-w-48 shrink-0 items-center justify-center rounded-md sm:max-w-60 lg:max-w-48 xl:max-w-64 2xl:max-w-72"
           aria-label="JMV Ecuador, ir al inicio"
         >
           <Image
