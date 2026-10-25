@@ -1173,44 +1173,46 @@ function CalendarDateRow({
           {item.verified ? <Check className="h-3.5 w-3.5 sm:hidden" strokeWidth={3} aria-hidden /> : null}
           Verificada
         </button>
-        {item.published ? (
-          <a
-            href={calendarHref(item.slug)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${iconButton} text-slate-600 hover:bg-slate-100 hover:text-jmv-blue`}
-            title="Ver en el sitio"
+        <div className="ml-auto flex items-center gap-1">
+          {item.published ? (
+            <a
+              href={calendarHref(item.slug)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${iconButton} text-slate-600 hover:bg-slate-100 hover:text-jmv-blue`}
+              title="Ver en el sitio"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+              <span className="sr-only">Ver «{item.title}» en el sitio (se abre en una pestaña nueva)</span>
+            </a>
+          ) : (
+            <span
+              className={`${iconButton} cursor-not-allowed text-slate-300`}
+              title="Publícala para verla en el sitio"
+              aria-hidden
+            >
+              <ExternalLink className="h-4 w-4" />
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={onEdit}
+            className={`${iconButton} text-slate-600 hover:bg-jmv-blue/10 hover:text-jmv-blue`}
+            aria-label={`Editar ${item.title}`}
+            title="Editar"
           >
-            <ExternalLink className="h-4 w-4" aria-hidden />
-            <span className="sr-only">Ver «{item.title}» en el sitio (se abre en una pestaña nueva)</span>
-          </a>
-        ) : (
-          <span
-            className={`${iconButton} cursor-not-allowed text-slate-300`}
-            title="Publícala para verla en el sitio"
-            aria-hidden
+            <Pencil className="h-4 w-4" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className={`${iconButton} text-slate-600 hover:bg-red-50 hover:text-red-700`}
+            aria-label={`Eliminar ${item.title}`}
+            title="Eliminar"
           >
-            <ExternalLink className="h-4 w-4" />
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={onEdit}
-          className={`${iconButton} text-slate-600 hover:bg-jmv-blue/10 hover:text-jmv-blue`}
-          aria-label={`Editar ${item.title}`}
-          title="Editar"
-        >
-          <Pencil className="h-4 w-4" aria-hidden />
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className={`${iconButton} text-slate-600 hover:bg-red-50 hover:text-red-700`}
-          aria-label={`Eliminar ${item.title}`}
-          title="Eliminar"
-        >
-          <Trash2 className="h-4 w-4" aria-hidden />
-        </button>
+            <Trash2 className="h-4 w-4" aria-hidden />
+          </button>
+        </div>
       </div>
     </li>
   );
