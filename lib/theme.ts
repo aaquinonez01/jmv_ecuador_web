@@ -23,11 +23,24 @@ export const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 /** Colores de la barra del navegador (meta theme-color): el header es azul en ambos modos */
 export const THEME_COLOR = { light: "#1D4E8A", dark: "#0f172a" } as const;
 
+/**
+ * El panel /admin es siempre claro (no se adaptó al tema): ahí el script fuerza "light"
+ * aunque la preferencia sea oscura. ThemeRouteSync reaplica el tema al entrar o salir
+ * del panel con navegación del cliente.
+ */
+export const LIGHT_ONLY_PREFIX = "/admin";
+
+export function isLightOnlyPath(pathname: string | null | undefined) {
+  return !!pathname && (pathname === LIGHT_ONLY_PREFIX || pathname.startsWith(`${LIGHT_ONLY_PREFIX}/`));
+}
+
 // Script inline mínimo (se ejecuta antes del primer pintado). Expone window.__jmvTheme
 // para que lib/theme.ts reutilice exactamente la misma lógica.
 export const THEME_INIT_SCRIPT = `(function(){try{var d=document.documentElement,k=${JSON.stringify(
   THEME_STORAGE_KEY,
-)},q=matchMedia("(prefers-color-scheme: dark)");function g(){var t;try{t=localStorage.getItem(k)}catch(e){}return t==="light"||t==="dark"?t:"system"}function a(p,s){var r=p==="system"?(q.matches?"dark":"light"):p;if(s){d.classList.add("theme-switching")}d.classList.toggle("dark",r==="dark");d.setAttribute("data-theme",r);d.setAttribute("data-theme-pref",p);if(s){requestAnimationFrame(function(){requestAnimationFrame(function(){d.classList.remove("theme-switching")})});dispatchEvent(new Event(${JSON.stringify(
+)},q=matchMedia("(prefers-color-scheme: dark)");function g(){var t;try{t=localStorage.getItem(k)}catch(e){}return t==="light"||t==="dark"?t:"system"}function a(p,s){var r=(location.pathname+"/").indexOf(${JSON.stringify(
+  `${LIGHT_ONLY_PREFIX}/`,
+)})===0?"light":p==="system"?(q.matches?"dark":"light"):p;if(s){d.classList.add("theme-switching")}d.classList.toggle("dark",r==="dark");d.setAttribute("data-theme",r);d.setAttribute("data-theme-pref",p);if(s){requestAnimationFrame(function(){requestAnimationFrame(function(){d.classList.remove("theme-switching")})});dispatchEvent(new Event(${JSON.stringify(
   THEME_CHANGE_EVENT,
 )}))}}a(g(),0);window.__jmvTheme={get:g,apply:a};q.addEventListener("change",function(){if(g()==="system")a("system",1)});addEventListener("storage",function(e){if(e.key===k)a(g(),1)})}catch(e){}})()`;
 
@@ -75,6 +88,12 @@ export function setThemePreference(pref: ThemePreference) {
   root.setAttribute("data-theme", dark ? "dark" : "light");
   root.setAttribute("data-theme-pref", pref);
   window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
+}
+
+/** Vuelve a aplicar la preferencia guardada (p. ej. al entrar o salir de /admin) */
+export function reapplyTheme() {
+  const rt = runtime();
+  if (rt) rt.apply(rt.get(), 1);
 }
 
 /** Suscripción a cambios de tema (para useSyncExternalStore) */

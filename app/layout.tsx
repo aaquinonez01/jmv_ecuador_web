@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PublicChrome from "@/components/layout/PublicChrome";
+import ThemeRouteSync from "@/components/theme/ThemeRouteSync";
 import { cn } from "@/lib/utils";
 import { SITE } from "@/lib/site";
 import { THEME_COLOR, THEME_INIT_SCRIPT } from "@/lib/theme";
@@ -121,6 +122,7 @@ export default function RootLayout({
         <PublicChrome>
           <Footer />
         </PublicChrome>
+        <ThemeRouteSync />
       </body>
     </html>
   );
