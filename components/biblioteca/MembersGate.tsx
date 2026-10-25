@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { libraryHref } from "@/lib/biblioteca";
 import { cn } from "@/lib/utils";
 
-/** Aviso amable para material de solo miembros cuando no hay sesión */
+/** Aviso amable para material de solo miembros (con cuenta) cuando no hay sesión */
 export default function MembersGate({ slug, className }: { slug: string; className?: string }) {
   const redirect = encodeURIComponent(libraryHref(slug));
   return (
@@ -19,9 +19,9 @@ export default function MembersGate({ slug, className }: { slug: string; classNa
           <LockKeyhole className="h-6 w-6" aria-hidden />
         </span>
         <div>
-          <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Este material es para miembros de JMV</h2>
+          <h2 className="font-display text-xl font-semibold text-white sm:text-2xl">Inicia sesión para verlo</h2>
           <p className="mt-1.5 text-sm leading-relaxed text-slate-200 sm:text-base">
-            Inicia sesión con tu cuenta de JMV para leerlo y descargarlo. Te traemos de vuelta aquí mismo.
+            Este material está reservado para quienes tienen cuenta en la web de JMV Ecuador. Entra con la tuya y te traemos de vuelta aquí mismo.
           </p>
         </div>
       </div>
