@@ -7,6 +7,7 @@ import {
   History,
   Library,
   Network,
+  ScrollText,
   Sparkles,
   Star,
   Users,
@@ -28,6 +29,12 @@ const DESTINOS = {
     label: "Nuestra historia",
     description: "De la rue du Bac, en París, hasta Quito.",
     icon: History,
+  },
+  estatutos: {
+    href: "/quienes-somos/estatutos",
+    label: "Nuestros estatutos",
+    description: "Quiénes somos y cómo nos organizamos, artículo por artículo.",
+    icon: ScrollText,
   },
   pilares: {
     href: "/pilares",
