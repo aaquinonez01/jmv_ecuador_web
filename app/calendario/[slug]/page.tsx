@@ -12,6 +12,7 @@ import DateNav from "@/components/calendario/DateNav";
 import DateVisual from "@/components/calendario/DateVisual";
 import DetailActions from "@/components/calendario/DetailActions";
 import DetailCountdown from "@/components/calendario/DetailCountdown";
+import SourceList from "@/components/calendario/SourceList";
 import StarField from "@/components/calendario/StarField";
 import { categoryStyle, entryToEvent, slugifyFile, storyFilename } from "@/components/calendario/shared";
 
@@ -47,6 +48,9 @@ export default async function CalendarDatePage({ params }: Props) {
   const now = new Date();
   const [entry] = datesToEntries([item], now);
   const years = anniversary(item, now);
+  // Cambia el enlace de la imagen de historia cuando se edita la fecha en el admin
+  const updated = item.updatedAt ? Date.parse(item.updatedAt) : NaN;
+  const storyVersion = Number.isNaN(updated) ? "" : `?v=${updated}`;
   const paragraphs = (item.story ?? "")
     .split(/\n\s*\n/)
     .map((p) => p.trim())
@@ -166,11 +170,7 @@ export default async function CalendarDatePage({ params }: Props) {
 
           {(item.source || !item.verified) && (
             <div className="mt-12 space-y-2 border-t border-white/10 pt-5 text-sm text-slate-300">
-              {item.source && (
-                <p>
-                  <span className="font-semibold text-slate-200">Fuente:</span> {item.source}
-                </p>
-              )}
+              {item.source && <SourceList source={item.source} />}
               {!item.verified && <p>Estamos confirmando algunos datos de esta fecha con nuestros asesores.</p>}
             </div>
           )}
@@ -186,7 +186,7 @@ export default async function CalendarDatePage({ params }: Props) {
               filename={`${slugifyFile(item.title)}.ics`}
               shareText={shareText}
               shareUrl={url}
-              storyHref={`${calendarHref(item.slug)}/historia`}
+              storyHref={`${calendarHref(item.slug)}/historia${storyVersion}`}
               storyFilename={storyFilename(item.slug)}
             />
           </div>
