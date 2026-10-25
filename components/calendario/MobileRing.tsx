@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import AddToCalendarMenu from "./AddToCalendarMenu";
 import DateCard from "./DateCard";
 import StarRing from "./StarRing";
-import { categoryStyle, entryToEvent, slugifyFile } from "./shared";
+import { CAT_VARS, categoryStyle, entryToEvent, slugifyFile } from "./shared";
 
 // Móvil: el mismo anillo de las 12 estrellas (se gira con el dedo) y debajo las
 // fechas del mes en un carrusel que se desliza a los lados, sincronizado con el
@@ -92,17 +92,17 @@ export default function MobileRing({
           className="mt-6"
         >
           {monthEntries.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/15 px-6 py-8 text-center">
-              <p className="font-display text-2xl text-white">{MONTHS[month - 1]} está en calma</p>
-              <p className="mt-1 text-sm text-slate-300">Gira el anillo para ver otro mes.</p>
+            <div className="rounded-3xl border border-dashed border-fg/15 px-6 py-8 text-center">
+              <p className="font-display text-2xl text-fg">{MONTHS[month - 1]} está en calma</p>
+              <p className="mt-1 text-sm text-fg-muted">Gira el anillo para ver otro mes.</p>
               {nextMonth && (
                 <button
                   type="button"
                   onClick={() => onMonthChange(nextMonth)}
-                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-5 text-sm font-semibold text-white"
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-jmv-blue/10 px-5 text-sm font-semibold text-fg dark:bg-white/10"
                 >
                   Ir a {MONTHS[nextMonth - 1].toLowerCase()}
-                  <ArrowRight className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+                  <ArrowRight className="h-4 w-4 text-accent-gold" aria-hidden />
                 </button>
               )}
             </div>
@@ -122,6 +122,7 @@ export default function MobileRing({
                     data-key={entry.key}
                     style={categoryStyle(entry.category)}
                     className={cn(
+                      CAT_VARS,
                       "shrink-0 snap-center transition-[opacity,transform] duration-300",
                       monthEntries.length === 1 ? "w-full" : "w-[86%]",
                       selected && entry.key !== selected.key && "opacity-60 motion-safe:scale-[0.97]",
@@ -144,12 +145,12 @@ export default function MobileRing({
                         aria-label={`${dayLabel(entry.month, entry.day)}: ${entry.title}`}
                         aria-current={active ? "true" : undefined}
                         style={categoryStyle(entry.category)}
-                        className="flex h-8 min-w-8 items-center justify-center"
+                        className={cn(CAT_VARS, "flex h-8 min-w-8 items-center justify-center")}
                       >
                         <span
                           className={cn(
                             "block h-2 rounded-full transition-all duration-300",
-                            active ? "w-6 bg-(--cat)" : "w-2 bg-white/30",
+                            active ? "w-6 bg-(--cat)" : "w-2 bg-fg/30",
                           )}
                         />
                       </button>

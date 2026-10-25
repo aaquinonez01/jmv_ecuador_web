@@ -27,7 +27,7 @@ export default function VideoEmbed({
   }, [playing]);
 
   return (
-    <div className={cn("relative aspect-video overflow-hidden rounded-3xl bg-black shadow-2xl shadow-black/50 ring-1 ring-white/10", className)}>
+    <div className={cn("relative aspect-video overflow-hidden rounded-3xl bg-black shadow-card-lg ring-1 ring-line dark:shadow-2xl dark:shadow-black/50", className)}>
       {playing ? (
         <iframe
           ref={frameRef}

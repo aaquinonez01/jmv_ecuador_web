@@ -48,10 +48,14 @@ export default function StarField({
       <style href="cal-starfield" precedence="default">
         {CSS}
       </style>
+      {/* Claro: estrellas en azul JMV y algunas en dorado oscuro sobre el amanecer; oscuro: blancas */}
       <svg
         aria-hidden="true"
         focusable="false"
-        className={cn("pointer-events-none absolute inset-0 h-full w-full", className)}
+        className={cn(
+          "pointer-events-none absolute inset-0 h-full w-full text-jmv-blue opacity-75 dark:text-white dark:opacity-100",
+          className,
+        )}
         preserveAspectRatio="none"
       >
         {stars.map((s, i) => (
@@ -60,9 +64,9 @@ export default function StarField({
             cx={`${s.x}%`}
             cy={`${s.y}%`}
             r={s.r}
-            fill="#fff"
+            fill="currentColor"
             opacity={s.o}
-            className={s.twinkle ? "cal-twinkle" : undefined}
+            className={cn(i % 3 === 1 && "fill-[#a8740a] dark:fill-current", s.twinkle && "cal-twinkle")}
             style={s.twinkle ? ({ "--o": s.o, animationDelay: `${s.delay}s` } as CSSProperties) : undefined}
           />
         ))}

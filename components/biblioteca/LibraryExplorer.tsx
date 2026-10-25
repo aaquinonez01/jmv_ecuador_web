@@ -118,15 +118,15 @@ function ExplorerView({
         )}
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
-        <p aria-live="polite" aria-atomic="true" className="text-sm font-medium text-slate-200">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+        <p aria-live="polite" aria-atomic="true" className="text-sm font-medium text-fg-muted">
           {resultsLabel(results.length, filters)}
         </p>
         {active && results.length > 0 && (
           <button
             type="button"
             onClick={clear}
-            className="min-h-11 rounded-full px-4 text-sm font-semibold text-jmv-gold-text underline-offset-4 hover:bg-white/10 hover:underline"
+            className="min-h-11 rounded-full px-4 text-sm font-semibold text-accent-gold underline-offset-4 hover:bg-fg/10 hover:underline"
           >
             Limpiar filtros
           </button>
@@ -135,11 +135,11 @@ function ExplorerView({
 
       {results.length === 0 ? (
         <div className="mx-auto max-w-lg py-14 text-center">
-          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-white/[0.06] text-jmv-gold-text">
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-fg/[0.06] text-accent-gold">
             <SearchX className="h-8 w-8" aria-hidden />
           </span>
-          <h3 className="mt-5 font-display text-2xl font-semibold text-white">No encontramos esa lectura</h3>
-          <p className="mt-2 text-slate-300">
+          <h3 className="mt-5 font-display text-2xl font-semibold text-fg">No encontramos esa lectura</h3>
+          <p className="mt-2 text-fg-muted">
             Prueba con otra palabra o quita algún filtro. Si buscas algo que no está, cuéntale a tu animador o animadora:
             ¡nos ayuda a crecer la biblioteca!
           </p>
@@ -170,7 +170,7 @@ function ExplorerView({
               <button
                 type="button"
                 onClick={() => setLimit((l) => l + PAGE)}
-                className="inline-flex min-h-12 items-center rounded-full border border-white/25 bg-white/[0.06] px-6 font-semibold text-white hover:bg-white/15"
+                className="inline-flex min-h-12 items-center rounded-full border border-fg/25 bg-surface px-6 font-semibold text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15"
               >
                 Ver más lecturas ({results.length - limit})
               </button>
@@ -192,8 +192,8 @@ export default function LibraryExplorer({ docs, newIds }: { docs: LibraryCardDoc
   return (
     <section aria-labelledby="explorar-title" id="explorar" className="relative mx-auto max-w-7xl scroll-mt-24 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center gap-3">
-        <StarsRing className="h-9 w-9 text-jmv-gold-text/70" />
-        <h2 id="explorar-title" className="font-display text-3xl font-semibold text-white sm:text-4xl">
+        <StarsRing className="h-9 w-9 text-accent-gold/70" />
+        <h2 id="explorar-title" className="font-display text-3xl font-semibold text-fg sm:text-4xl">
           Explora la biblioteca
         </h2>
       </div>

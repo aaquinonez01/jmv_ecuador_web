@@ -47,8 +47,9 @@ function Field({ label, placeholder, size = "lg", className, value, onChange }: 
         autoComplete="off"
         enterKeyHint="search"
         className={cn(
-          "w-full rounded-full border-0 bg-white text-jmv-ink shadow-[0_18px_40px_-18px_rgba(0,0,0,0.7)] ring-1 ring-white/30 placeholder:text-slate-500",
-          "focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-jmv-gold-text",
+          // Campo blanco en los dos temas; en claro se separa del marfil con borde y sombra suave
+          "w-full rounded-full border-0 bg-white text-jmv-ink shadow-card-lg ring-1 ring-jmv-ink/15 placeholder:text-slate-500 dark:shadow-[0_18px_40px_-18px_rgba(0,0,0,0.7)] dark:ring-white/30",
+          "focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-focus",
           "[&::-webkit-search-cancel-button]:appearance-none",
           lg ? "min-h-16 pl-14 pr-14 text-lg" : "min-h-12 pl-12 pr-12 text-base",
         )}

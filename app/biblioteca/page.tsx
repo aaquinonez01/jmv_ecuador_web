@@ -32,7 +32,7 @@ export default async function BibliotecaPage() {
 
   if (docs.length === 0) {
     return (
-      <div className="bg-jmv-ink pb-16">
+      <div className="bg-page pb-16">
         <LibraryHero covers={[]} total={0} routes={0} types={[]} />
         <EmptyLibrary />
       </div>
@@ -58,7 +58,7 @@ export default async function BibliotecaPage() {
     .slice(0, 5);
 
   return (
-    <div className="bg-jmv-ink pb-24">
+    <div className="bg-page pb-24">
       <LibraryHero covers={heroCovers} total={docs.length} routes={routes.length} types={types} />
 
       <div className="relative -mt-6 space-y-16 sm:space-y-20">
@@ -73,7 +73,7 @@ export default async function BibliotecaPage() {
                 id="estante-nuevos"
                 eyebrow="Recién llegados"
                 title="Nuevos"
-                icon={<Sparkles className="h-6 w-6 text-jmv-gold-text" aria-hidden />}
+                icon={<Sparkles className="h-6 w-6 text-accent-gold" aria-hidden />}
                 docs={fresh}
                 newIds={newIds}
               />

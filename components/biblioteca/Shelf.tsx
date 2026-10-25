@@ -8,7 +8,7 @@ import BookCard from "./BookCard";
 import type { LibraryCardDoc } from "./shared";
 
 const arrow =
-  "grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white transition-colors hover:bg-white/15 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-white/[0.06]";
+  "grid h-11 w-11 place-items-center rounded-full border border-fg/15 bg-surface text-fg shadow-card transition-colors hover:bg-surface-2 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-surface dark:hover:bg-white/15";
 
 /**
  * Estante horizontal con scroll-snap. En el móvil se desliza con el dedo; en
@@ -66,12 +66,12 @@ export default function Shelf({
       <div className="mx-auto flex max-w-7xl items-end justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <div className="min-w-0">
           {eyebrow && (
-            <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text">{eyebrow}</p>
+            <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-accent-gold">{eyebrow}</p>
           )}
-          <h2 id={headingId} className="flex items-center gap-2.5 font-display text-2xl font-semibold text-white sm:text-3xl">
+          <h2 id={headingId} className="flex items-center gap-2.5 font-display text-2xl font-semibold text-fg sm:text-3xl">
             {icon}
             {title}
-            <span className="ml-1 font-sans text-sm font-medium text-slate-400">
+            <span className="ml-1 font-sans text-sm font-medium text-fg-subtle">
               <span className="sr-only">, </span>
               {docs.length}
             </span>
@@ -81,7 +81,7 @@ export default function Shelf({
           {seeAllHref && (
             <Link
               href={seeAllHref}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-jmv-gold-text hover:bg-white/10"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-accent-gold hover:bg-fg/10"
             >
               {seeAllLabel}
               <span className="sr-only">: {title}</span>

@@ -33,18 +33,18 @@ export default function ChallengeCard({ slug, challenge }: { slug: string; chall
       aria-labelledby="reto-title"
       className={cn(
         "relative overflow-hidden rounded-3xl border p-6 transition-colors duration-500 sm:p-8",
-        done ? "border-jmv-gold-text/60 bg-jmv-gold-text/10" : "border-white/15 bg-white/[0.04]",
+        done ? "border-accent-gold/60 bg-accent-gold/10" : "border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.04]",
       )}
     >
       <div className="flex items-center gap-3">
-        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-jmv-gold-text/15 text-jmv-gold-text">
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-gold/15 text-accent-gold">
           <HeartHandshake className="h-6 w-6" aria-hidden />
         </span>
-        <h2 id="reto-title" className="font-display text-2xl font-semibold text-white">
+        <h2 id="reto-title" className="font-display text-2xl font-semibold text-fg">
           Tu reto de hoy
         </h2>
       </div>
-      <p className="mt-4 text-lg leading-relaxed text-slate-100">{challenge}</p>
+      <p className="mt-4 text-lg leading-relaxed text-fg-muted dark:text-slate-100">{challenge}</p>
       <div className="mt-6 flex flex-wrap items-center gap-4">
         <button
           type="button"
@@ -54,7 +54,7 @@ export default function ChallengeCard({ slug, challenge }: { slug: string; chall
             "inline-flex min-h-12 items-center gap-3 rounded-full border-2 px-5 text-base font-semibold transition-colors motion-safe:active:scale-95",
             done
               ? "border-jmv-gold bg-jmv-gold text-jmv-ink"
-              : "border-white/40 text-white hover:border-jmv-gold-text hover:text-jmv-gold-text",
+              : "border-fg/40 text-fg hover:border-accent-gold hover:text-accent-gold",
           )}
         >
           <span
@@ -79,7 +79,7 @@ export default function ChallengeCard({ slug, challenge }: { slug: string; chall
           </span>
           Lo haré
         </button>
-        <p aria-live="polite" className="text-sm text-slate-200">
+        <p aria-live="polite" className="text-sm text-fg-muted">
           {done ? "¡Bien! Cuéntale a tu comunidad cómo te fue." : ""}
         </p>
       </div>

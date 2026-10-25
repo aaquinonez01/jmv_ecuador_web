@@ -88,14 +88,14 @@ export default function BookCard({
         </div>
 
         <div className="mt-3 flex flex-1 flex-col px-0.5">
-          <Heading className="line-clamp-2 text-[15px] font-semibold leading-snug text-white transition-colors group-hover:text-jmv-gold-text sm:text-base">
+          <Heading className="line-clamp-2 text-[15px] font-semibold leading-snug text-fg transition-colors group-hover:text-accent-gold sm:text-base">
             {doc.title}
           </Heading>
-          {doc.author && <p className="mt-1 truncate text-sm text-slate-300">{doc.author}</p>}
-          <p className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium text-slate-300">
+          {doc.author && <p className="mt-1 truncate text-sm text-fg-muted">{doc.author}</p>}
+          <p className="mt-auto flex items-center gap-1.5 pt-2 text-xs font-medium text-fg-muted">
             {time && (
               <>
-                <Clock className="h-3.5 w-3.5 text-jmv-gold-text" aria-hidden />
+                <Clock className="h-3.5 w-3.5 text-accent-gold" aria-hidden />
                 <span>
                   <span className="sr-only">Tiempo de lectura: </span>
                   {time}
