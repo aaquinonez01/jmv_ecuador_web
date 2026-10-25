@@ -14,9 +14,8 @@ export async function renderPdfCover(source: File | ArrayBuffer, targetHeight = 
   return { cover: blob, pageCount };
 }
 
-/** Comprueba la firma %PDF- (los primeros bytes), no solo la extensión */
+/** Comprueba la firma %PDF- al inicio del archivo (la misma regla que el servidor) */
 export async function looksLikePdf(file: File) {
-  const head = new Uint8Array(await file.slice(0, 1024).arrayBuffer());
-  const text = String.fromCharCode(...head);
-  return text.includes("%PDF-");
+  const head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+  return String.fromCharCode(...head) === "%PDF-";
 }

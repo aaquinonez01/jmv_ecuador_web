@@ -281,13 +281,18 @@ export default function LibraryDocumentsManager() {
       }));
       return;
     }
+    // Algunos selectores de Android y Windows lo entregan sin tipo o como octet-stream
+    const pdf =
+      file.type === "application/pdf"
+        ? file
+        : new File([file], file.name, { type: "application/pdf", lastModified: file.lastModified });
     const titleFromName = file.name
       .replace(/\.pdf$/i, "")
       .replace(/[_-]+/g, " ")
       .trim();
     setForm((current) => ({
       ...current,
-      file,
+      file: pdf,
       title: current.title.trim() ? current.title : titleFromName.charAt(0).toUpperCase() + titleFromName.slice(1),
     }));
     setErrors((current) => {
@@ -296,7 +301,7 @@ export default function LibraryDocumentsManager() {
       delete next.title;
       return next;
     });
-    await generateCover(file, job);
+    await generateCover(pdf, job);
   };
 
   const pickCover = (file: File | null) => {
