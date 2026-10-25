@@ -80,15 +80,17 @@ export default async function LibraryDocumentPage({ params }: Props) {
     .map(toCardDoc);
   const newIds = related.filter((d) => isNew(d, now)).map((d) => d.id);
 
-  // Al cliente solo viaja lo que usan las acciones
+  // Al cliente solo viaja lo que usan las acciones; el enlace de miembros se
+  // pide con token desde el navegador, nunca va en el HTML
+  const locked = doc.visibility === "miembros";
   const actionDoc = {
     id: doc.id,
     slug: doc.slug,
     title: doc.title,
     kind: doc.kind,
     visibility: doc.visibility,
-    externalUrl: doc.externalUrl ?? null,
-    fileUrl: doc.fileUrl ?? null,
+    externalUrl: locked ? null : (doc.externalUrl ?? null),
+    fileUrl: locked ? null : (doc.fileUrl ?? null),
     pageCount: doc.pageCount ?? null,
   };
   const url = new URL(libraryHref(doc.slug), SITE.url).toString();
@@ -113,7 +115,7 @@ export default async function LibraryDocumentPage({ params }: Props) {
     ...(doc.author ? { author: { "@type": "Person", name: doc.author } } : {}),
     ...(doc.coverUrl ? { image: doc.coverUrl } : {}),
     ...(doc.pageCount ? { numberOfPages: doc.pageCount } : {}),
-    isAccessibleForFree: true,
+    isAccessibleForFree: !locked,
     publisher: { "@type": "Organization", name: SITE.fullName },
   };
 
