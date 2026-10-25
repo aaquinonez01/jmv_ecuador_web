@@ -52,7 +52,7 @@ export default function UneteForm() {
         tabIndex={-1}
         role="status"
         data-surface="light"
-        className="rounded-2xl bg-white p-6 text-slate-900 shadow-jmv sm:p-8"
+        className="rounded-2xl bg-white p-6 text-slate-900 shadow-jmv ring-1 ring-line sm:p-8"
       >
         <CheckCircle2 className="h-12 w-12 text-emerald-600" aria-hidden />
         <h3 className="mt-4 text-2xl font-bold text-jmv-blue">
@@ -81,7 +81,7 @@ export default function UneteForm() {
       noValidate
       aria-labelledby="quiero-unirme-titulo"
       data-surface="light"
-      className="relative rounded-2xl bg-white p-6 text-slate-900 shadow-jmv sm:p-8"
+      className="relative rounded-2xl bg-white p-6 text-slate-900 shadow-jmv ring-1 ring-line sm:p-8"
     >
       <h3 id="quiero-unirme-titulo" className="text-2xl font-bold text-jmv-blue">
         Quiero unirme
