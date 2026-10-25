@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, CalendarDays, Heart, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, HandHeart, Heart, Users } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { StarDivider } from "@/components/brand";
 import { SITE, yearsSinceFoundation } from "@/lib/site";
@@ -58,6 +58,17 @@ export default function CTASection() {
               Escríbenos
             </Link>
           </div>
+
+          <p className="mt-6 text-base text-slate-200">
+            ¿Quieres apoyar la misión de otra forma?{" "}
+            <Link
+              href="/donar"
+              className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+            >
+              <HandHeart className="h-5 w-5" aria-hidden />
+              Haz una donación
+            </Link>
+          </p>
         </div>
 
         <ul className="mb-16 grid gap-6 md:grid-cols-3">

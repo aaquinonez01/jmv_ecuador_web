@@ -268,6 +268,16 @@ export default function UnetePage() {
                 <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </div>
+            <p className="mt-6 text-slate-200">
+              ¿Quieres acompañar la misión de otra forma?{" "}
+              <Link
+                href="/donar"
+                className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+              >
+                <HandHeart className="h-5 w-5" aria-hidden />
+                También puedes apoyar con una donación
+              </Link>
+            </p>
           </div>
         </div>
       </section>
