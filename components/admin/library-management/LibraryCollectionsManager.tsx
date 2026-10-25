@@ -26,7 +26,6 @@ import {
   Check,
   ExternalLink,
   EyeOff,
-  FileText,
   GripVertical,
   ImagePlus,
   Lock,
@@ -61,6 +60,7 @@ import {
   SLUG_PATTERN,
   ToggleCard,
   iconButton,
+  KindIcon,
   inputClass,
   normalizeText,
   selectClass,
@@ -151,7 +151,7 @@ function SortableDocument({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex items-center gap-2 rounded-xl border bg-white p-2 ${
+      className={`flex items-center gap-1.5 rounded-xl border bg-white p-1.5 sm:gap-2 sm:p-2 ${
         isDragging ? "z-10 border-jmv-blue shadow-lg ring-2 ring-jmv-blue/20" : "border-slate-200"
       }`}
     >
@@ -171,12 +171,12 @@ function SortableDocument({
       >
         {index + 1}
       </span>
-      <span className="flex h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 ring-1 ring-slate-200">
+      <span className="hidden h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 ring-1 ring-slate-200 sm:flex">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={cover} alt="" className="h-full w-full object-cover" />
         ) : (
-          <FileText className="h-4 w-4 text-slate-400" aria-hidden />
+          <KindIcon kind={doc.kind} className="h-4 w-4 text-slate-400" />
         )}
       </span>
       <span className="min-w-0 flex-1">

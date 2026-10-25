@@ -8,16 +8,13 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
-  FileText,
   Globe,
-  Link2,
   Lock,
   Pencil,
   Plus,
   Search,
   Star,
   Trash2,
-  Video,
 } from "lucide-react";
 import {
   LIBRARY_MAX_FILE_BYTES,
@@ -46,7 +43,7 @@ import LibraryDocumentForm, {
   type DocumentFormErrors,
   type DocumentFormState,
 } from "./LibraryDocumentForm";
-import { LibraryTabs, SLUG_PATTERN, iconButton, normalizeText, selectClass, toggleButton, UploadBar } from "./formParts";
+import { KindIcon, LibraryTabs, SLUG_PATTERN, iconButton, normalizeText, selectClass, toggleButton, UploadBar } from "./formParts";
 import { looksLikePdf, renderPdfCover } from "./pdfCover";
 
 type PublishedFilter = "todos" | "publicados" | "borradores";
@@ -135,12 +132,6 @@ function validate(form: DocumentFormState, editing: LibraryDocument | null): Doc
     }
   }
   return errors;
-}
-
-function KindIcon({ doc, className }: { doc: LibraryDocument; className?: string }) {
-  if (doc.kind === "video") return <Video className={className} aria-hidden />;
-  if (doc.kind === "enlace") return <Link2 className={className} aria-hidden />;
-  return <FileText className={className} aria-hidden />;
 }
 
 // --- Gestor --------------------------------------------------------------------
@@ -732,15 +723,14 @@ function LibraryDocumentRow({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={cover} alt="" loading="lazy" className="h-full w-full object-cover" />
           ) : (
-            <KindIcon doc={doc} className="h-5 w-5 text-slate-400" />
+            <KindIcon kind={doc.kind} className="h-5 w-5 text-slate-400" />
           )}
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-[14.5px] font-bold leading-tight text-slate-900">{doc.title}</h3>
           <p className="mt-0.5 line-clamp-1 text-xs text-slate-600">{meta.join(" · ")}</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-jmv-blue">
-              <KindIcon doc={doc} className="h-3 w-3" />
+            <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-jmv-blue">
               {TYPE_SINGULAR[doc.type]}
             </span>
             {doc.axis ? (
@@ -783,7 +773,7 @@ function LibraryDocumentRow({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1 border-t border-slate-100 pt-2 sm:border-0 sm:pt-0">
+      <div className="flex items-center gap-1 border-t border-slate-100 pt-2 sm:border-0 sm:pt-0">
         <button
           type="button"
           onClick={() => onToggle("published")}
@@ -806,7 +796,7 @@ function LibraryDocumentRow({
           className={`${toggleButton} ${doc.featured ? "border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100" : "border-slate-200 text-slate-600 hover:bg-slate-100"}`}
         >
           <Star className={`h-3.5 w-3.5 ${doc.featured ? "fill-current" : ""}`} aria-hidden />
-          Destacado
+          <span className="max-[419px]:sr-only">Destacado</span>
         </button>
         <div className="ml-auto flex items-center gap-1">
           {doc.published ? (

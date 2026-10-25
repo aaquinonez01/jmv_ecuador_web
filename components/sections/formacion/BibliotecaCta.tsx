@@ -24,7 +24,7 @@ export default function BibliotecaCta({ className = "" }: { className?: string }
         <div className="relative overflow-hidden rounded-3xl border border-jmv-gold-text/40 bg-gradient-to-br from-jmv-blue to-jmv-ink p-6 text-white shadow-2xl sm:p-10">
           <StarsRing
             aria-hidden
-            className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 text-jmv-gold-text/15"
+            className="pointer-events-none absolute -right-16 -top-16 hidden h-72 w-72 text-jmv-gold-text/15 sm:block"
           />
           <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
             <div>

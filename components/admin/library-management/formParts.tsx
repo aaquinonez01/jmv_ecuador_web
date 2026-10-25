@@ -3,7 +3,8 @@
 import { useId, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, FileText, Link2, Video } from "lucide-react";
+import type { LibraryKind } from "@/types/library";
 
 // Piezas de formulario compartidas por documentos y rutas (mismo estilo que el Año Vicenciano)
 
@@ -24,6 +25,12 @@ export function normalizeText(value: string) {
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase();
+}
+
+export function KindIcon({ kind, className }: { kind: LibraryKind; className?: string }) {
+  if (kind === "video") return <Video className={className} aria-hidden />;
+  if (kind === "enlace") return <Link2 className={className} aria-hidden />;
+  return <FileText className={className} aria-hidden />;
 }
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
