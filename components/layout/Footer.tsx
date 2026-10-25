@@ -33,6 +33,7 @@ const footerLinks: { title: string; links: { name: string; href: string }[] }[] 
     title: "Participa",
     links: [
       { name: "Únete a JMV", href: "/unete" },
+      { name: "Donar", href: "/donar" },
       { name: "Actividades", href: "/actividades" },
       { name: "Comunidad", href: "/blog" },
       { name: "Contacto", href: "/contacto" },

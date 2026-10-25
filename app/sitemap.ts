@@ -16,6 +16,7 @@ const routes = [
   "/blog",
   "/calendario",
   "/contacto",
+  "/donar",
   "/estructura",
   "/formacion",
   "/formacion/ejes",
