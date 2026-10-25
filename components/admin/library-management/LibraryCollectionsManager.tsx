@@ -819,7 +819,7 @@ function CollectionCard({
   onToggle: () => void;
 }) {
   const docs = collection.documents ?? [];
-  const covers = docs.filter((d) => d.coverUrl).slice(0, 3);
+  const covers = docs.slice(0, 3);
   const minutes = totalMinutes(docs);
 
   return (
@@ -834,14 +834,9 @@ function CollectionCard({
           />
         ) : covers.length ? (
           covers.map((doc, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={doc.id}
-              src={getOptimizedUrl(doc.coverUrl!, { w: 120 })}
-              alt=""
-              className="h-20 w-[60px] rounded-sm object-cover shadow-lg ring-1 ring-white/30"
-              style={{ transform: `rotate(${(i - 1) * 4}deg)` }}
-            />
+            <div key={doc.id} className="w-[54px] shrink-0" style={{ transform: `rotate(${(i - 1) * 4}deg)` }}>
+              <BookCover doc={doc} sizes="54px" />
+            </div>
           ))
         ) : (
           <BookOpen className="h-10 w-10 text-white/70" aria-hidden />
