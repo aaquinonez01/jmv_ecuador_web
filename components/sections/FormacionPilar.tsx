@@ -56,7 +56,7 @@ export default function FormacionPilar() {
     <>
       <section
         aria-labelledby="formacion-recorridos"
-        className="bg-gradient-to-b from-jmv-ink to-[#132f55] py-16 sm:py-20"
+        className="bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
@@ -73,26 +73,26 @@ export default function FormacionPilar() {
                 <li key={r.href}>
                   <Link
                     href={r.href}
-                    className="group flex h-full flex-col rounded-2xl border border-white/15 bg-white/5 p-6 transition-colors hover:border-jmv-gold-text/60 hover:bg-white/10"
+                    className="group flex h-full flex-col rounded-2xl border border-fg/15 bg-surface p-6 shadow-card transition-colors hover:border-accent-gold/60 hover:bg-surface-2"
                   >
                     <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                       <Icon className="h-6 w-6" aria-hidden />
                     </span>
-                    <h3 className="text-xl font-bold text-white">{r.titulo}</h3>
-                    <p className="mt-2 leading-relaxed text-slate-300">{r.texto}</p>
+                    <h3 className="text-xl font-bold text-fg">{r.titulo}</h3>
+                    <p className="mt-2 leading-relaxed text-fg-muted">{r.texto}</p>
                     {r.chips && (
                       <span className="mt-4 flex flex-wrap gap-1.5">
                         {r.chips.map((c) => (
                           <span
                             key={c}
-                            className="rounded-full border border-white/20 px-2.5 py-0.5 text-xs font-medium text-slate-200"
+                            className="rounded-full border border-line-strong px-2.5 py-0.5 text-xs font-medium text-fg-muted dark:text-slate-200"
                           >
                             {c}
                           </span>
                         ))}
                       </span>
                     )}
-                    <span className="mt-auto inline-flex items-center gap-2 pt-5 font-semibold text-jmv-gold-text">
+                    <span className="mt-auto inline-flex items-center gap-2 pt-5 font-semibold text-accent-gold">
                       {r.cta}
                       <ArrowRight
                         className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1"
@@ -107,19 +107,19 @@ export default function FormacionPilar() {
         </div>
       </section>
 
-      <section aria-labelledby="formacion-espacios" className="bg-[#132f55] pb-16 sm:pb-20">
+      <section aria-labelledby="formacion-espacios" className="bg-section-blue pb-16 sm:pb-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <h2 id="formacion-espacios" className="mb-6 text-2xl font-bold text-white sm:text-3xl">
+          <h2 id="formacion-espacios" className="mb-6 text-2xl font-bold text-fg sm:text-3xl">
             ¿Dónde y cómo nos formamos?
           </h2>
           <ul className="grid gap-5 md:grid-cols-3">
             {espacios.map((e) => {
               const Icon = e.icon;
               return (
-                <li key={e.titulo} className="rounded-2xl border border-white/15 bg-jmv-ink/50 p-6">
-                  <Icon className="mb-3 h-6 w-6 text-jmv-gold-text" aria-hidden />
-                  <h3 className="text-lg font-bold text-white">{e.titulo}</h3>
-                  <p className="mt-2 leading-relaxed text-slate-300">{e.texto}</p>
+                <li key={e.titulo} className="rounded-2xl border border-fg/15 bg-surface p-6 shadow-card dark:bg-jmv-ink/50">
+                  <Icon className="mb-3 h-6 w-6 text-accent-gold" aria-hidden />
+                  <h3 className="text-lg font-bold text-fg">{e.titulo}</h3>
+                  <p className="mt-2 leading-relaxed text-fg-muted">{e.texto}</p>
                 </li>
               );
             })}

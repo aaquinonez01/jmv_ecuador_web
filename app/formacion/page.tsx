@@ -30,7 +30,7 @@ export default function FormacionPage() {
         ]}
       />
       <FormacionPilar />
-      <BibliotecaCta className="bg-[#132f55] pb-16 sm:pb-20" />
+      <BibliotecaCta className="bg-section-blue pb-16 sm:pb-20" />
       <SigueExplorando items={["ejes", "santos", "unete"]} />
     </>
   );
