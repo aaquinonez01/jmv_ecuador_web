@@ -28,6 +28,15 @@ export default async function CalendarioPage() {
     fetchPublicUpcomingActivities().catch(() => []),
   ]);
   const activityEntries = activitiesToEntries(onlyPublicUpcoming(activities));
+  // Al cliente solo viaja lo que muestra el explorador (la historia completa vive en cada página)
+  const lightItems = items.map((item) => ({
+    ...item,
+    story: null,
+    quote: null,
+    quoteAuthor: null,
+    challenge: null,
+    source: null,
+  }));
   const empty = items.length === 0 && activityEntries.length === 0;
 
   return (
@@ -36,7 +45,7 @@ export default async function CalendarioPage() {
       {empty ? (
         <EmptyState />
       ) : (
-        <CalendarioExplorer items={items} activities={activityEntries} renderedAt={new Date().toISOString()} />
+        <CalendarioExplorer items={lightItems}activities={activityEntries} renderedAt={new Date().toISOString()} />
       )}
       <SubscribeBlock />
     </div>

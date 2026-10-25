@@ -29,6 +29,14 @@ function pickInMonth(entries: CalendarEntry[], month: number, now: Date) {
   return inMonth.find((e) => e.month !== t.month || e.day >= t.day) ?? inMonth[0] ?? null;
 }
 
+/** Mes con el que abre el anillo: el actual si tiene fechas; si no, el de la próxima */
+function initialMonth(entries: CalendarEntry[], now: Date) {
+  const current = todayInEcuador(now).month;
+  if (entries.some((e) => e.month === current)) return current;
+  const [next] = sortByUpcoming(entries.filter((e) => daysUntil(e.date, now) >= 0));
+  return next?.month ?? current;
+}
+
 /**
  * Parte interactiva de /calendario: "Hoy / Se acerca", filtros, anillo (md+),
  * carrusel y línea de tiempo (móvil) y la lista de todo el año.
@@ -45,14 +53,19 @@ export default function CalendarioExplorer({
 }) {
   const reduce = useReducedMotion();
   const [now, setNow] = useState(() => new Date(renderedAt));
-  const [month, setMonth] = useState(() => todayInEcuador(new Date(renderedAt)).month);
+  const [month, setMonth] = useState(() => {
+    const at = new Date(renderedAt);
+    return initialMonth([...datesToEntries(items, at), ...activities], at);
+  });
   const [category, setCategory] = useState<EntryCategory | null>(null);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
     const real = new Date();
     setNow(real);
-    setMonth(todayInEcuador(real).month);
+    setMonth(initialMonth([...datesToEntries(items, real), ...activities], real));
+    // Solo al montar: después el mes lo elige la persona
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const entries = useMemo(() => [...datesToEntries(items, now), ...activities], [items, activities, now]);
@@ -102,16 +115,16 @@ export default function CalendarioExplorer({
 
       <section aria-labelledby="explora-title" className="relative mx-auto max-w-7xl px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8">
         <div className="max-w-2xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
-              El anillo de las 12 estrellas
-            </p>
-            <h2 id="explora-title" className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl">
-              Explora el año
-            </h2>
-            <p className="mt-3 text-base leading-relaxed text-slate-300 sm:text-lg">
-              Como en el reverso de la Medalla Milagrosa, cada estrella es un mes. Elige uno y descubre a quién
-              celebramos.
-            </p>
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+            El anillo de las 12 estrellas
+          </p>
+          <h2 id="explora-title" className="font-display text-3xl font-semibold leading-tight text-white sm:text-4xl md:text-5xl">
+            Explora el año
+          </h2>
+          <p className="mt-3 text-base leading-relaxed text-slate-300 sm:text-lg">
+            Como en el reverso de la Medalla Milagrosa, cada estrella es un mes. Elige uno y descubre a quién
+            celebramos.
+          </p>
         </div>
         <div className="mt-6">
           <CategoryFilter categories={categories} value={category} onChange={setCategory} counts={counts} />

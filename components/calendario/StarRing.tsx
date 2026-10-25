@@ -287,7 +287,14 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                   : `${monthEntries.length} fechas`}
             </p>
             {monthEntries.length > 0 ? (
-              <ul className="mt-3 max-h-[9.5rem] w-full space-y-1 overflow-y-auto lg:max-h-[11rem]">
+              <ul
+                className={cn(
+                  "mt-3 max-h-[9rem] w-full space-y-1 overflow-y-auto overscroll-contain lg:max-h-[10.25rem]",
+                  // Con más de 3 fechas la lista se desliza: el borde inferior se desvanece para que se note
+                  monthEntries.length > 3 &&
+                    "pb-6 [mask-image:linear-gradient(to_bottom,black_72%,transparent)] [scrollbar-width:thin]",
+                )}
+              >
                 {monthEntries.map((e) => {
                   const selected = e.key === selectedKey;
                   return (
