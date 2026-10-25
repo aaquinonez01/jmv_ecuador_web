@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { CATEGORY_META } from "@/lib/calendario";
 import { cn } from "@/lib/utils";
-import { categoryStyle, type EntryCategory } from "./shared";
+import { CAT_VARS, categoryStyle, type EntryCategory } from "./shared";
 
 // Chips de categoría (uno a la vez). null = todas.
 export default function CategoryFilter({
@@ -27,7 +27,9 @@ export default function CategoryFilter({
         onClick={() => onChange(null)}
         className={cn(
           base,
-          value === null ? "border-white bg-white text-jmv-ink" : "border-white/20 bg-white/5 text-white hover:bg-white/10",
+          value === null
+            ? "border-jmv-ink bg-jmv-ink text-white dark:border-white dark:bg-white dark:text-jmv-ink"
+            : "border-fg/20 bg-surface text-fg shadow-card hover:bg-surface-2",
         )}
       >
         {value === null && <Check className="h-4 w-4" aria-hidden />}
@@ -44,9 +46,10 @@ export default function CategoryFilter({
             style={categoryStyle(c)}
             className={cn(
               base,
+              CAT_VARS,
               pressed
-                ? "border-(--cat) bg-(--cat) text-jmv-ink"
-                : "border-(--cat)/40 bg-(--cat-soft) text-white hover:border-(--cat)",
+                ? "border-(--cat) bg-(--cat) text-white dark:text-jmv-ink"
+                : "border-(--cat)/40 bg-(--cat-soft) text-fg hover:border-(--cat)",
             )}
           >
             {pressed ? (
@@ -55,7 +58,7 @@ export default function CategoryFilter({
               <span aria-hidden="true" className="h-2 w-2 rounded-full bg-(--cat)" />
             )}
             {CATEGORY_META[c].label}
-            <span aria-hidden="true" className={cn("text-xs", pressed ? "text-jmv-ink/75" : "text-slate-300")}>
+            <span aria-hidden="true" className={cn("text-xs", pressed ? "text-white/85 dark:text-jmv-ink/75" : "text-fg-muted")}>
               {counts[c] ?? 0}
             </span>
           </button>

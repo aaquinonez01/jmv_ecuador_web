@@ -29,7 +29,7 @@ export default function SourceList({ source }: { source: string }) {
 
   return (
     <p className="[overflow-wrap:anywhere]">
-      <span className="font-semibold text-slate-200">{parts.length > 1 ? "Fuentes:" : "Fuente:"}</span>{" "}
+      <span className="font-semibold text-fg-muted">{parts.length > 1 ? "Fuentes:" : "Fuente:"}</span>{" "}
       {parts.map((part, i) => (
         <span key={i}>
           {i > 0 && " · "}
@@ -38,7 +38,7 @@ export default function SourceList({ source }: { source: string }) {
               href={part}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block py-3 underline decoration-white/40 underline-offset-4 hover:text-white hover:decoration-white"
+              className="inline-block py-3 underline decoration-fg/40 underline-offset-4 hover:text-fg hover:decoration-fg"
             >
               {labels[i]}
               <span className="sr-only"> (se abre en una pestaña nueva)</span>

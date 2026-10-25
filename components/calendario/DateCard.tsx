@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import CategoryChip, { UnverifiedTag } from "./CategoryChip";
 import DateVisual from "./DateVisual";
-import { categoryStyle, entryAccessibleName, yearsAgo } from "./shared";
+import { CAT_VARS, categoryStyle, entryAccessibleName, yearsAgo } from "./shared";
 
 export interface DateCardProps {
   entry: CalendarEntry;
@@ -34,7 +34,7 @@ export function DayBadge({
     <span
       aria-hidden="true"
       className={cn(
-        "flex shrink-0 flex-col items-center justify-center rounded-2xl border border-(--cat)/40 bg-jmv-ink/70 text-center leading-none",
+        "flex shrink-0 flex-col items-center justify-center rounded-2xl border border-(--cat)/40 bg-white/90 text-center leading-none dark:bg-jmv-ink/70",
         size === "sm" && "h-12 w-12",
         size === "md" && "h-16 w-16",
         size === "lg" && "h-24 w-24",
@@ -43,7 +43,7 @@ export function DayBadge({
     >
       <span
         className={cn(
-          "font-display font-semibold text-white tabular-nums",
+          "font-display font-semibold text-fg tabular-nums",
           size === "sm" && "text-xl",
           size === "md" && "text-3xl",
           size === "lg" && "text-5xl",
@@ -84,9 +84,10 @@ export default function DateCard({
     <article
       style={categoryStyle(entry.category)}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-lg shadow-black/20",
+        CAT_VARS,
+        "group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-card dark:bg-white/[0.04] dark:shadow-lg dark:shadow-black/20",
         "transition-[transform,box-shadow,border-color] duration-300 ease-out",
-        "hover:border-(--cat)/50 hover:shadow-2xl hover:shadow-black/40 motion-safe:hover:-translate-y-1",
+        "hover:border-(--cat)/50 hover:shadow-card-lg dark:hover:shadow-2xl dark:hover:shadow-black/40 motion-safe:hover:-translate-y-1",
         "focus-within:border-(--cat)/60 motion-safe:focus-within:-translate-y-1",
         className,
       )}
@@ -111,7 +112,7 @@ export default function DateCard({
             <CategoryChip category={entry.category} />
             {!entry.verified && <UnverifiedTag />}
           </div>
-          <Heading className="text-lg font-semibold leading-snug text-white text-balance">
+          <Heading className="text-lg font-semibold leading-snug text-fg text-balance">
             <Link
               href={entry.href}
               className="rounded-sm after:absolute after:inset-0 after:rounded-3xl after:content-[''] focus-visible:outline-none focus-visible:after:outline-3 focus-visible:after:outline-offset-[-3px] focus-visible:after:outline-(--focus-ring) focus-visible:after:outline-solid"
@@ -120,14 +121,14 @@ export default function DateCard({
               <span aria-hidden="true">{entry.title}</span>
             </Link>
           </Heading>
-          {entry.subtitle && <p className="mt-1 text-sm text-slate-300">{entry.subtitle}</p>}
+          {entry.subtitle && <p className="mt-1 text-sm text-fg-muted">{entry.subtitle}</p>}
           {entry.summary && (
-            <p className={cn("mt-3 text-sm leading-relaxed text-slate-200", variant === "compact" && "line-clamp-3")}>
+            <p className={cn("mt-3 text-sm leading-relaxed text-fg-muted", variant === "compact" && "line-clamp-3")}>
               {entry.summary}
             </p>
           )}
           <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-4 text-sm">
-            <span className="font-medium text-slate-300">
+            <span className="font-medium text-fg-muted">
               {years ? `Hace ${years} años · ${entry.item?.year}` : range}
             </span>
             <span aria-hidden="true" className="inline-flex items-center gap-1 font-semibold text-(--cat)">

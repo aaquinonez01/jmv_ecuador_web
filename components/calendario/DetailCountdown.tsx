@@ -20,13 +20,13 @@ export default function DetailCountdown({ month, day, renderedAt }: { month: num
     );
   }
   return (
-    <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-base font-semibold text-white backdrop-blur">
-      <Hourglass className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+    <p className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface px-4 py-2 text-base font-semibold text-fg shadow-card dark:bg-white/10 dark:backdrop-blur">
+      <Hourglass className="h-5 w-5 text-accent-gold" aria-hidden />
       {days === 1 ? (
         "Es mañana"
       ) : (
         <span>
-          Faltan <AnimatedNumber value={days} className="tabular-nums text-jmv-gold-text" /> días
+          Faltan <AnimatedNumber value={days} className="tabular-nums text-accent-gold" /> días
         </span>
       )}
     </p>

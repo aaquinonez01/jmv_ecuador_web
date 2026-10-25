@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, CalendarDays } from "lucide-react";
 import type { CalendarDateItem } from "@/types/calendar";
 import { calendarHref, dayLabel } from "@/lib/calendario";
 import { cn } from "@/lib/utils";
-import { categoryStyle } from "./shared";
+import { CAT_VARS, categoryStyle } from "./shared";
 
 function NavLink({ item, dir }: { item: CalendarDateItem; dir: "prev" | "next" }) {
   const prev = dir === "prev";
@@ -14,7 +14,8 @@ function NavLink({ item, dir }: { item: CalendarDateItem; dir: "prev" | "next" }
       rel={dir}
       style={categoryStyle(item.category)}
       className={cn(
-        "group flex min-h-20 flex-1 items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition-colors hover:border-(--cat)/50 hover:bg-white/[0.07]",
+        CAT_VARS,
+        "group flex min-h-20 flex-1 items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-card transition-colors hover:border-(--cat)/50 hover:bg-surface-2 dark:bg-white/[0.04] dark:hover:bg-white/[0.07]",
         !prev && "flex-row-reverse text-right",
       )}
     >
@@ -26,10 +27,10 @@ function NavLink({ item, dir }: { item: CalendarDateItem; dir: "prev" | "next" }
         aria-hidden
       />
       <span className="min-w-0">
-        <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+        <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">
           {prev ? "Fecha anterior" : "Fecha siguiente"} · {dayLabel(item.month, item.day)}
         </span>
-        <span className="mt-1 block truncate font-semibold text-white">{item.title}</span>
+        <span className="mt-1 block truncate font-semibold text-fg">{item.title}</span>
       </span>
     </Link>
   );
@@ -48,7 +49,7 @@ export default function DateNav({ prev, next }: { prev: CalendarDateItem | null;
       <div className="mt-6 text-center">
         <Link
           href="/calendario"
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-jmv-gold-text underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-sm font-semibold text-accent-gold underline-offset-4 hover:underline"
         >
           <CalendarDays className="h-4 w-4" aria-hidden />
           Ver todo el Año Vicenciano
