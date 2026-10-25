@@ -12,7 +12,7 @@ export default function GallerySkeleton() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className={`overflow-hidden rounded-[1.75rem] border border-line bg-surface ${
+              className={`overflow-hidden rounded-[1.75rem] border border-line bg-surface shadow-card ${
                 i === 2 ? "hidden xl:block" : i === 1 ? "hidden md:block" : ""
               }`}
             >

@@ -45,13 +45,13 @@ const channels: {
 // Canales directos siempre visibles junto al formulario de contacto
 export default function ContactSection() {
   return (
-    <section aria-labelledby="contacto-canales" className="relative bg-jmv-ink py-16 sm:py-20">
+    <section aria-labelledby="contacto-canales" className="relative bg-page py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr] lg:px-8">
-        <div className="text-white">
+        <div className="text-fg">
           <h2 id="contacto-canales" className="text-2xl font-bold sm:text-3xl">
             Escríbenos directamente
           </h2>
-          <p className="mt-3 text-slate-300">
+          <p className="mt-3 text-fg-muted">
             Elige el canal que te quede más cómodo. Te responde una persona del equipo de JMV
             Ecuador.
           </p>
@@ -62,15 +62,15 @@ export default function ContactSection() {
                 <a
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="group flex min-h-11 items-start gap-4 rounded-2xl border border-white/15 bg-white/5 p-5 transition-colors hover:border-white/30 hover:bg-white/10"
+                  className="group flex min-h-11 items-start gap-4 rounded-2xl border border-line bg-surface p-5 shadow-card transition-colors hover:border-line-strong hover:bg-surface-2 dark:border-white/15 dark:bg-white/5 dark:hover:border-white/30 dark:hover:bg-white/10"
                 >
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                     <Icon className="h-6 w-6" aria-hidden />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-lg font-semibold">{title}</span>
-                    <span className="block text-sm text-slate-300">{description}</span>
-                    <span className="mt-1 block break-all font-semibold text-jmv-gold-text underline-offset-4 group-hover:underline">
+                    <span className="block text-sm text-fg-muted">{description}</span>
+                    <span className="mt-1 block break-all font-semibold text-accent-gold underline-offset-4 group-hover:underline">
                       {value}
                     </span>
                     {external && <span className="sr-only"> (se abre en una pestaña nueva)</span>}
@@ -80,15 +80,15 @@ export default function ContactSection() {
             ))}
           </ul>
 
-          <div className="mt-8 rounded-2xl border border-white/15 bg-white/5 p-5">
+          <div className="mt-8 rounded-2xl border border-line bg-surface p-5 shadow-card dark:border-white/15 dark:bg-white/5">
             <p className="flex items-center gap-2 font-semibold">
-              <MapPin className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+              <MapPin className="h-5 w-5 text-accent-gold" aria-hidden />
               Sede nacional
             </p>
-            <p className="mt-1 text-slate-300">Quito – La Recoleta</p>
+            <p className="mt-1 text-fg-muted">Quito – La Recoleta</p>
             <Link
               href="/unete#encuentra"
-              className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
             >
               <Users className="h-5 w-5" aria-hidden />
               Encuentra la comunidad más cercana a ti
@@ -96,7 +96,7 @@ export default function ContactSection() {
           </div>
 
           <div className="mt-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-fg-muted">
               Síguenos
             </p>
             <ul className="mt-3 flex flex-wrap gap-3">
@@ -108,7 +108,7 @@ export default function ContactSection() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-jmv-blue"
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong px-4 py-2 text-sm font-semibold text-fg transition-colors hover:border-jmv-blue hover:bg-jmv-blue hover:text-white dark:hover:border-line-strong dark:hover:bg-white dark:hover:text-jmv-blue"
                     >
                       {Icon && <Icon className="h-4 w-4" aria-hidden />}
                       {social.name}

@@ -41,16 +41,16 @@ export default function ActividadesPage() {
 
       <nav
         aria-label="Secciones de actividades"
-        className="sticky top-16 z-30 border-b border-white/10 bg-jmv-ink/95 backdrop-blur sm:top-20"
+        className="sticky top-16 z-30 border-b border-line bg-page/95 backdrop-blur sm:top-20"
       >
         <ul className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-2 sm:px-6 lg:px-8">
           {sectionNav.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <a
                 href={href}
-                className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold text-fg transition-colors hover:bg-surface-2"
               >
-                <Icon className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+                <Icon className="h-4 w-4 text-accent-gold" aria-hidden />
                 {label}
               </a>
             </li>
@@ -60,7 +60,7 @@ export default function ActividadesPage() {
 
       <Suspense
         fallback={
-          <section id="proximas" aria-busy="true" className="min-h-[50vh] bg-jmv-ink py-16 sm:py-20">
+          <section id="proximas" aria-busy="true" className="min-h-[50vh] bg-page py-16 sm:py-20">
             <p className="sr-only">Cargando próximas actividades…</p>
           </section>
         }

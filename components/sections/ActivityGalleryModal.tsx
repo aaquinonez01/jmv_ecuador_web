@@ -115,6 +115,9 @@ export default function ActivityGalleryModal({
           }}
           // Contenedor a pantalla completa sin transform: el lightbox (position: fixed) se monta
           // aquí dentro y ocupa toda la ventana.
+          // Tema: visor de fotos oscuro en ambos modos (isla data-tone="dark"), como el lightbox:
+          // un fondo negro deja ver mejor las fotos y el foco queda dorado sobre él.
+          data-tone="dark"
           className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget && !lightboxOpen) onClose();
