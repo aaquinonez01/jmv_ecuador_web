@@ -47,11 +47,15 @@ const SPANISH_LOCALE: Record<string, string> = {
 
 type Theme = "light" | "dark";
 
-// Check document class for theme (works with next-themes, etc.)
+// Tema del sitio: lo fija THEME_INIT_SCRIPT (lib/theme.ts) en <html> con la clase
+// "dark" y data-theme="light|dark" antes de pintar. Sólo se re-renderiza el mapa
+// (map.setStyle); los marcadores son nodos DOM y se conservan.
 function getDocumentTheme(): Theme | null {
   if (typeof document === "undefined") return null;
-  if (document.documentElement.classList.contains("dark")) return "dark";
-  if (document.documentElement.classList.contains("light")) return "light";
+  const root = document.documentElement;
+  if (root.classList.contains("dark")) return "dark";
+  const attr = root.getAttribute("data-theme");
+  if (attr === "light" || root.classList.contains("light")) return "light";
   return null;
 }
 
@@ -80,7 +84,7 @@ function useResolvedTheme(themeProp?: "light" | "dark"): Theme {
     });
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["class", "data-theme"],
     });
 
     // Also watch for system preference changes
