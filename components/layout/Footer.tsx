@@ -14,6 +14,7 @@ const footerLinks: { title: string; links: { name: string; href: string }[] }[] 
     links: [
       { name: "Quiénes somos", href: "/quienes-somos" },
       { name: "Historia", href: "/quienes-somos/historia" },
+      { name: "Estatutos", href: "/quienes-somos/estatutos" },
       { name: "Estructura", href: "/estructura" },
       { name: "Pilares", href: "/pilares" },
       { name: "JMV en el mundo", href: "/jmv-en-el-mundo" },
