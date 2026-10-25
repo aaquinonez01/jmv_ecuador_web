@@ -11,7 +11,7 @@ import {
 export const DEFAULT_HEADLINE = "Tu ayuda se vuelve servicio";
 export const DEFAULT_INTRO =
   "Con tu aporte, jóvenes de todo Ecuador pueden formarse, encontrarse y servir a los más pobres. Cada dólar se convierte en un encuentro, una misión o un gesto de caridad.";
-export const DEFAULT_CONTACT_NOTE = "¿Tienes dudas o necesitas un comprobante? Escríbenos.";
+export const DEFAULT_CONTACT_NOTE = "¿Tienes dudas sobre tu donación? Escríbenos y te ayudamos.";
 export const DONATION_WHATSAPP_TEXT = "Hola, tengo una consulta sobre las donaciones a JMV Ecuador";
 export const IN_KIND_WHATSAPP_TEXT = "Hola, me gustaría donar víveres/ropa/útiles para JMV";
 
@@ -90,13 +90,15 @@ export function campaignProgress(campaign: DonationCampaign) {
   const goal = toNumber(campaign.goalAmount);
   if (!goal || goal <= 0) return null;
   const raised = Math.max(0, toNumber(campaign.raisedAmount) ?? 0);
-  const percent = Math.round((raised / goal) * 100);
+  // Hacia abajo, para no mostrar 100 % antes de llegar a la meta
+  const percent = Math.floor((raised / goal) * 100);
   return {
     goal,
     raised,
     percent,
     /** La barra no pasa del 100 % aunque se supere la meta */
     bar: Math.min(100, percent),
+    reached: raised >= goal,
     label: `${money(raised)} de ${money(goal)} · ${percent} %`,
   };
 }
@@ -111,5 +113,10 @@ export function campaignDates(campaign: DonationCampaign) {
 
 /** next/image solo optimiza rutas locales y Cloudinary (ver next.config) */
 export function isOptimizableImage(url: string) {
-  return url.startsWith("/") || url.includes("res.cloudinary.com");
+  if (url.startsWith("/")) return !url.startsWith("//");
+  try {
+    return new URL(url).hostname === "res.cloudinary.com";
+  } catch {
+    return false;
+  }
 }

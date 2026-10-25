@@ -63,7 +63,7 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
                 style={{ width: `${progress.bar}%` }}
               />
             </div>
-            {progress.percent >= 100 ? (
+            {progress.reached ? (
               <p className="mt-3 text-sm font-semibold text-jmv-gold-text">¡Llegamos a la meta! Gracias por tu generosidad.</p>
             ) : null}
           </div>

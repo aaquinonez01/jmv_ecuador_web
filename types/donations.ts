@@ -22,7 +22,7 @@ export type DonationPurposeIcon = (typeof DONATION_PURPOSE_ICONS)[number];
 export interface DonationSettings {
   headline: string;
   intro: string;
-  /** Ej. "¿Tienes dudas o necesitas un comprobante? Escríbenos" */
+  /** Ej. "¿Tienes dudas sobre tu donación? Escríbenos y te ayudamos." */
   contactNote: string;
   /** Número E.164 sin "+" (ej. 593991234567) */
   whatsapp?: string | null;
