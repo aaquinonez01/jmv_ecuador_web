@@ -11,15 +11,17 @@ export type EntryCategory = CalendarCategory | "actividad";
 /**
  * Color de cada categoría en modo claro: tonos oscuros del mismo matiz que llegan a
  * 4.5:1 como texto sobre blanco, marfil y su propio fondo suave (y el blanco sobre
- * ellos, para el chip activo). El modo oscuro usa CATEGORY_META tal cual.
+ * ellos, para el chip activo), y también sobre el cielo de amanecer de la cabecera
+ * del detalle (#e5dcce): por eso santos y ecuador son algo más oscuros. El modo oscuro
+ * usa CATEGORY_META tal cual.
  */
 const CATEGORY_LIGHT: Record<EntryCategory, string> = {
   maria: "#1d5fb4",
   fundadores: "#b42318",
-  santos: "#8a5a00",
+  santos: "#7a4f00",
   familia: "#0b6b45",
   jmv: "#6d3fc0",
-  ecuador: "#a14d00",
+  ecuador: "#8f4400",
   actividad: "#334155",
 };
 

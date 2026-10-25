@@ -96,7 +96,8 @@ export default async function CalendarDatePage({ params }: Props) {
               </span>
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-2">
-              <CategoryChip category={item.category} />
+              {/* Sobre el cielo de la cabecera, en claro el chip va opaco para llegar a AA */}
+              <CategoryChip category={item.category} className="bg-white/85 dark:bg-(--cat-soft)" />
               {!item.verified && <UnverifiedTag />}
             </div>
             <h1
@@ -106,11 +107,11 @@ export default async function CalendarDatePage({ params }: Props) {
               <span className="sr-only">{dayLabel(item.month, item.day)}: </span>
               {item.title}
             </h1>
-            {item.subtitle && <p className="mt-3 text-xl text-fg-muted">{item.subtitle}</p>}
+            {item.subtitle && <p className="mt-3 text-xl text-fg-soft">{item.subtitle}</p>}
             <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
               <DetailCountdown month={item.month} day={item.day} renderedAt={now.toISOString()} />
               {years && item.year && (
-                <p className="text-base text-fg-muted">
+                <p className="text-base text-fg-soft">
                   Este {dayLabel(item.month, item.day)} se cumplen{" "}
                   <strong className="font-semibold text-fg">{years} años</strong> ({item.year})
                 </p>
@@ -128,7 +129,7 @@ export default async function CalendarDatePage({ params }: Props) {
               category={item.category}
               priority
               sizes="(min-width: 1024px) 448px, 80vw"
-              className="absolute inset-[17%] rounded-full border border-line shadow-card-lg dark:border-white/15 dark:shadow-2xl dark:shadow-black/50"
+              className="absolute inset-[17%] rounded-full border border-line-card shadow-card-lg dark:shadow-2xl dark:shadow-black/50"
             />
           </div>
         </div>
@@ -139,7 +140,7 @@ export default async function CalendarDatePage({ params }: Props) {
           <p className="font-display text-2xl leading-snug text-fg sm:text-3xl">{item.summary}</p>
 
           {paragraphs.length > 0 && (
-            <div className="mt-8 space-y-5 text-lg leading-relaxed text-fg-muted">
+            <div className="mt-8 space-y-5 text-lg leading-relaxed text-fg-soft">
               {paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}

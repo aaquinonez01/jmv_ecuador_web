@@ -66,7 +66,7 @@ export default function JmvMundoRegiones() {
                 JMV Latinoamericana · Región Andina
               </p>
               <h3 className="mb-4 text-2xl font-bold text-fg md:text-3xl">El lugar de JMV Ecuador</h3>
-              <p className="mb-4 leading-relaxed text-fg-muted">
+              <p className="mb-4 leading-relaxed text-fg-soft">
                 Dentro del continente americano, la JMV se articula también por
                 zonas. JMV Ecuador forma parte de la <strong>Región Andina</strong>,
                 que reúne a las JMV de los países que comparten la cordillera de los
@@ -90,8 +90,8 @@ export default function JmvMundoRegiones() {
                     key={pais}
                     className={`rounded-lg border px-4 py-3 text-center font-medium ${
                       pais === "Ecuador"
-                        ? "border-accent-gold/60 bg-jmv-gold/15 text-accent-gold dark:bg-accent-gold/10"
-                        : "border-line bg-surface text-fg-muted dark:bg-white/5 dark:text-slate-200"
+                        ? "border-accent-gold/60 bg-jmv-gold/15 text-[#7a4f00] dark:bg-accent-gold/10 dark:text-accent-gold"
+                        : "border-line bg-surface-card text-fg-soft"
                     }`}
                   >
                     {pais}
