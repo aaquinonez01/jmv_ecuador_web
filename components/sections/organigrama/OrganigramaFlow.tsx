@@ -16,11 +16,13 @@ import { computeLayout } from "./layout";
 import OrgNode, { type OrgNodeData } from "./OrgNode";
 
 const nodeTypes: NodeTypes = { org: OrgNode };
-const EDGE_STYLE = { stroke: "rgba(245,184,61,0.7)", strokeWidth: 2 };
+// Los colores salen de variables CSS del contenedor (OrganigramaInteractivo): cambian con el tema sin re-render
+const EDGE_STYLE = { stroke: "var(--org-edge)", strokeWidth: 2 };
 const PRO_OPTIONS = { hideAttribution: true };
 const FIT_VIEW_OPTIONS = { padding: 0.12 };
 const CONTROLS_CLASS =
-  "!border-white/20 !bg-jmv-ink [&_button]:!h-9 [&_button]:!w-9 [&_button]:!border-white/10 [&_button]:!bg-jmv-ink [&_button]:!fill-white [&_button]:!text-white [&_button:hover]:!bg-white/20";
+  "!border-line-strong !bg-surface-raised !shadow-card [&_button]:!h-9 [&_button]:!w-9 [&_button]:!border-line [&_button]:!bg-surface-raised [&_button]:!fill-fg [&_button]:!text-fg [&_button:hover]:!bg-surface-2 " +
+  "dark:!border-white/20 dark:!bg-jmv-ink dark:[&_button]:!border-white/10 dark:[&_button]:!bg-jmv-ink dark:[&_button]:!fill-white dark:[&_button]:!text-white dark:[&_button:hover]:!bg-white/20";
 
 interface OrganigramaFlowProps {
   nodos: OrgEntidad[];
@@ -60,7 +62,7 @@ export default function OrganigramaFlow({ nodos, onSelect }: OrganigramaFlowProp
       zoomOnDoubleClick={false}
       proOptions={PRO_OPTIONS}
     >
-      <Background color="rgba(255,255,255,0.12)" gap={28} />
+      <Background color="var(--org-dots)" gap={28} />
       <Controls showInteractive={false} className={CONTROLS_CLASS} />
     </ReactFlow>
   );

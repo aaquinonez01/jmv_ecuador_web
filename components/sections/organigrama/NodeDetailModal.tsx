@@ -43,7 +43,7 @@ export default function NodeDetailModal({ entidad, onClose }: NodeDetailModalPro
   return (
     <Dialog.Root open={Boolean(entidad)} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-black/70 motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0" />
         <Dialog.Content
           {...(!entidad?.descripcion && { "aria-describedby": undefined })}
           onCloseAutoFocus={(e) => {
@@ -54,7 +54,7 @@ export default function NodeDetailModal({ entidad, onClose }: NodeDetailModalPro
             destino?.scrollIntoView({ block: "start" });
             destino?.focus({ preventScroll: true });
           }}
-          className="fixed left-1/2 top-1/2 z-50 flex max-h-[90svh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/15 bg-jmv-ink text-white shadow-2xl motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=open]:zoom-in-95"
+          className="fixed left-1/2 top-1/2 z-50 flex max-h-[90svh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-surface-raised text-fg shadow-card-lg dark:border-white/15 dark:bg-jmv-ink dark:shadow-2xl motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=open]:zoom-in-95"
         >
           {entidad && (
             <Contenido
@@ -81,18 +81,18 @@ function Contenido({
   const Icon = NIVEL_ICON[entidad.nivel];
   return (
     <>
-      <div className="flex items-start gap-4 border-b border-white/10 px-6 py-5">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-jmv-gold-text">
+      <div className="flex items-start gap-4 border-b border-line px-6 py-5">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
           <Icon className="h-6 w-6" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-jmv-gold-text">{NIVEL_LABEL[entidad.nivel]}</p>
-          <Dialog.Title className="text-2xl font-bold text-white">{entidad.nombre}</Dialog.Title>
-          {entidad.subtitulo && <p className="text-sm text-slate-300">{entidad.subtitulo}</p>}
+          <p className="text-sm font-medium text-accent-gold">{NIVEL_LABEL[entidad.nivel]}</p>
+          <Dialog.Title className="text-2xl font-bold text-fg">{entidad.nombre}</Dialog.Title>
+          {entidad.subtitulo && <p className="text-sm text-fg-muted">{entidad.subtitulo}</p>}
         </div>
         <Dialog.Close
           aria-label="Cerrar"
-          className="-m-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
+          className="-m-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-surface-2 text-fg hover:bg-fg/10 dark:hover:bg-white/20"
         >
           <X className="h-5 w-5" aria-hidden />
         </Dialog.Close>
@@ -100,16 +100,16 @@ function Contenido({
 
       <div className="space-y-6 overflow-y-auto px-6 py-6">
         {entidad.descripcion && (
-          <Dialog.Description className="leading-relaxed text-slate-200">
+          <Dialog.Description className="leading-relaxed text-fg-muted dark:text-slate-200">
             {entidad.descripcion}
           </Dialog.Description>
         )}
 
         {entidad.coordinador && (
           <p className="flex items-start gap-3">
-            <Crown className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+            <Crown className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
             <span>
-              <span className="block text-sm text-slate-300">Coordinación</span>
+              <span className="block text-sm text-fg-muted">Coordinación</span>
               <span className="font-medium">{entidad.coordinador}</span>
             </span>
           </p>
@@ -118,12 +118,12 @@ function Contenido({
         {entidad.provincias && entidad.provincias.length > 0 && (
           <div>
             <h3 className="mb-3 flex items-center gap-2 font-semibold">
-              <MapPin className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+              <MapPin className="h-5 w-5 text-accent-gold" aria-hidden />
               {entidad.nivel === "zona" ? "Ciudades" : "Provincias"}
             </h3>
             <ul className="flex flex-wrap gap-2">
               {entidad.provincias.map((p) => (
-                <li key={p} className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-sm text-slate-200">
+                <li key={p} className="rounded-lg border border-line bg-surface-2 px-3 py-1 text-sm text-fg-muted dark:bg-white/5 dark:text-slate-200">
                   {p}
                 </li>
               ))}
@@ -132,7 +132,7 @@ function Contenido({
         )}
 
         {entidad.contacto && (
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div className="rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
             <h3 className="mb-1 text-sm font-semibold">Contacto</h3>
             <ContactoLinks
               telefono={entidad.contacto.telefono}
@@ -150,7 +150,7 @@ function Contenido({
               e.preventDefault();
               onIrAlConsejo();
             }}
-            className="inline-flex min-h-11 items-center gap-2 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+            className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
           >
             Ver miembros y asesores del Consejo Nacional
             <ArrowDown className="h-4 w-4" aria-hidden />
