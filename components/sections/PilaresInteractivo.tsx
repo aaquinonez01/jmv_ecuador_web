@@ -161,7 +161,7 @@ function Silla({ activo, visitados }: { activo: number; visitados: Set<number> }
   return (
     <svg viewBox="0 0 248 248" className="h-full w-full" aria-hidden="true" focusable="false">
       {/* Respaldo */}
-      <g stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="text-white/70">
+      <g stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="text-fg/70">
         <line x1="86" y1="110" x2="86" y2="26" />
         <line x1="196" y1="110" x2="196" y2="26" />
         <line x1="86" y1="30" x2="196" y2="30" />
@@ -183,14 +183,14 @@ function Silla({ activo, visitados }: { activo: number; visitados: Set<number> }
               strokeWidth={esActivo ? 11 : 8}
               strokeDasharray={visitado || esActivo ? undefined : "6 8"}
               className={`transition-[stroke,stroke-width] duration-300 motion-reduce:transition-none ${
-                esActivo ? "stroke-jmv-gold-text" : visitado ? "stroke-white" : "stroke-white/40"
+                esActivo ? "stroke-accent-gold" : visitado ? "stroke-fg" : "stroke-fg/40"
               }`}
             />
             <text
               x={p.lx}
               y={p.ly}
               textAnchor="middle"
-              className={`text-[13px] font-bold ${esActivo ? "fill-jmv-gold-text" : "fill-white/80"}`}
+              className={`text-[13px] font-bold ${esActivo ? "fill-accent-gold" : "fill-fg/80"}`}
             >
               {i + 1}
             </text>
@@ -200,7 +200,7 @@ function Silla({ activo, visitados }: { activo: number; visitados: Set<number> }
       {/* Asiento */}
       <polygon
         points="40,138 174,138 208,108 74,108"
-        className="fill-jmv-blue stroke-white/80"
+        className="fill-jmv-blue stroke-fg/80"
         strokeWidth="4"
         strokeLinejoin="round"
       />
@@ -236,7 +236,7 @@ export default function PilaresInteractivo() {
     <section
       id="pilares"
       aria-labelledby="pilares-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink via-[#132f55] to-jmv-ink py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-page via-section-blue to-page py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -251,8 +251,8 @@ export default function PilaresInteractivo() {
             <div className="aspect-square">
               <Silla activo={active} visitados={visitados} />
             </div>
-            <figcaption className="mt-2 text-center text-sm text-slate-300">
-              Pata {active + 1} de 4: <span className="font-semibold text-white">{pilares[active].nombre}</span>
+            <figcaption className="mt-2 text-center text-sm text-fg-muted">
+              Pata {active + 1} de 4: <span className="font-semibold text-fg">{pilares[active].nombre}</span>
               . Has explorado {visitados.size} de 4 pilares.
             </figcaption>
           </figure>
@@ -271,23 +271,23 @@ export default function PilaresInteractivo() {
                   {...getTabProps(index)}
                   className={`flex min-h-14 items-center gap-3 rounded-xl border p-3 text-left transition-colors sm:p-4 ${
                     selected
-                      ? "border-jmv-gold-text bg-jmv-gold-text/15"
-                      : "border-white/15 bg-white/5 hover:border-white/30 hover:bg-white/10"
+                      ? "border-accent-gold bg-jmv-gold/15 dark:bg-accent-gold/15"
+                      : "border-fg/15 bg-surface shadow-card hover:border-fg/30 hover:bg-surface-2"
                   }`}
                 >
                   <span
                     aria-hidden
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                      selected ? "bg-jmv-gold text-jmv-ink" : "bg-white/10 text-jmv-gold-text"
+                      selected ? "bg-jmv-gold text-jmv-ink" : "bg-surface-2 text-accent-gold"
                     }`}
                   >
                     <PIcon className="h-5 w-5" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+                    <span className="block text-xs font-semibold uppercase tracking-wider text-fg-muted">
                       Pilar {index + 1}
                     </span>
-                    <span className="block font-bold leading-tight text-white">{p.nombre}</span>
+                    <span className="block font-bold leading-tight text-fg">{p.nombre}</span>
                   </span>
                 </button>
               );
@@ -301,9 +301,9 @@ export default function PilaresInteractivo() {
             <div
               key={pilar.id}
               {...getPanelProps(i)}
-              className="grid grid-cols-1 gap-6 overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-5 motion-safe:animate-in motion-safe:fade-in-0 sm:p-6 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:p-8"
+              className="grid grid-cols-1 gap-6 overflow-hidden rounded-3xl border border-fg/15 bg-surface p-5 shadow-card motion-safe:animate-in motion-safe:fade-in-0 sm:p-6 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:p-8"
             >
-              <div className="relative min-h-72 overflow-hidden rounded-2xl lg:min-h-[480px]">
+              <div data-tone="dark" className="relative min-h-72 overflow-hidden rounded-2xl lg:min-h-[480px]">
                 {pilar.imagen ? (
                   <Image
                     src={pilar.imagen}
@@ -318,7 +318,7 @@ export default function PilaresInteractivo() {
                     <TwoHearts className="absolute top-8 left-1/2 w-3/4 max-w-sm -translate-x-1/2 text-jmv-gold-text/40" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-jmv-ink via-jmv-ink/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-hero-veil via-hero-veil/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink shadow-lg">
                     <Icon className="h-6 w-6" aria-hidden />
@@ -347,33 +347,33 @@ export default function PilaresInteractivo() {
 
               <div className="flex flex-col">
                 {pilar.descripcion.map((parrafo, j) => (
-                  <p key={j} className={`text-base leading-7 text-slate-200 sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
+                  <p key={j} className={`text-base leading-7 text-fg-muted sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
                     {parrafo}
                   </p>
                 ))}
 
-                <figure className="mt-5 rounded-xl border border-jmv-gold-text/25 bg-jmv-ink/40 p-4">
-                  <Quote className="mb-2 h-5 w-5 text-jmv-gold-text" aria-hidden />
-                  <blockquote className="italic leading-6 text-slate-100">
+                <figure className="mt-5 rounded-xl border border-accent-gold/25 bg-surface-sunken p-4">
+                  <Quote className="mb-2 h-5 w-5 text-accent-gold" aria-hidden />
+                  <blockquote className="italic leading-6 text-fg/90">
                     <p>“{pilar.cita.texto}”</p>
                   </blockquote>
-                  <figcaption className="mt-1 text-sm font-semibold text-jmv-gold-text">
+                  <figcaption className="mt-1 text-sm font-semibold text-accent-gold">
                     — {pilar.cita.fuente}
                   </figcaption>
                 </figure>
 
                 <ol className="mt-5 space-y-2.5">
                   {pilar.puntos.map((punto, n) => (
-                    <li key={punto.titulo} className="flex gap-3 rounded-xl bg-white/5 p-3">
+                    <li key={punto.titulo} className="flex gap-3 rounded-xl bg-surface-2 p-3 dark:bg-white/5">
                       <span
                         aria-hidden
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-jmv-gold-text"
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
                       >
                         {n + 1}
                       </span>
                       <div>
-                        <h4 className="text-sm font-bold text-white">{punto.titulo}</h4>
-                        <p className="text-sm leading-6 text-slate-300">{punto.desc}</p>
+                        <h4 className="text-sm font-bold text-fg">{punto.titulo}</h4>
+                        <p className="text-sm leading-6 text-fg-muted">{punto.desc}</p>
                       </div>
                     </li>
                   ))}
@@ -382,7 +382,7 @@ export default function PilaresInteractivo() {
                 {pilar.enlace && (
                   <Link
                     href={pilar.enlace.href}
-                    className="mt-5 inline-flex min-h-11 items-center gap-2 self-start font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                    className="mt-5 inline-flex min-h-11 items-center gap-2 self-start font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
                   >
                     {pilar.enlace.label}
                     <ArrowRight className="h-4 w-4" aria-hidden />
@@ -393,11 +393,11 @@ export default function PilaresInteractivo() {
           );
         })}
 
-        <div className="mt-10 rounded-2xl border border-white/15 bg-white/5 p-6 text-center sm:p-8">
-          <h3 className="text-2xl font-bold text-white">
+        <div className="mt-10 rounded-2xl border border-fg/15 bg-surface p-6 text-center shadow-card sm:p-8">
+          <h3 className="text-2xl font-bold text-fg">
             {completa ? "Tu silla está completa" : "Una silla se sostiene con sus cuatro patas"}
           </h3>
-          <p className="mx-auto mt-2 max-w-2xl text-slate-300">
+          <p className="mx-auto mt-2 max-w-2xl text-fg-muted">
             {completa
               ? "Ahora da un paso concreto: empieza tu Proyecto Personal de Vida junto a un grupo de JMV que te acompañe."
               : "Recorre los cuatro pilares y descubre cómo se viven juntos en un grupo de JMV."}
