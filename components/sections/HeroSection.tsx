@@ -20,6 +20,8 @@ export default function HeroSection({
   return (
     <section
       aria-labelledby="home-hero-title"
+      // Cabecera con foto: velo oscuro y texto blanco en ambos modos
+      data-tone="dark"
       className="relative isolate flex min-h-[88svh] items-end overflow-hidden bg-jmv-ink pt-24 pb-14 sm:pt-28 sm:pb-20 lg:min-h-[90vh]"
     >
       <Image
@@ -34,11 +36,11 @@ export default function HeroSection({
       {/* Velo inferior y lateral: protege el texto y deja ver a los jóvenes */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-jmv-ink via-jmv-ink/75 via-45% to-jmv-ink/0"
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-hero-veil via-hero-veil/75 via-45% to-hero-veil/0"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-jmv-ink/70 via-jmv-ink/20 to-transparent md:block"
+        className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-hero-veil/70 via-hero-veil/20 to-transparent md:block"
       />
       <StarsRing
         withCircle
@@ -47,7 +49,7 @@ export default function HeroSection({
 
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl text-white">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/25 bg-jmv-ink/40 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/25 bg-hero-veil/40 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
             <span aria-hidden className="h-2 w-2 rounded-full bg-jmv-gold-text" />
             Desde {SITE.foundedYear} en Ecuador · {years} años
           </p>

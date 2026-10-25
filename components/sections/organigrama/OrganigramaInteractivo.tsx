@@ -13,7 +13,7 @@ const OrganigramaFlow = dynamic(() => import("./OrganigramaFlow"), {
       role="status"
       className="flex h-full items-center justify-center"
     >
-      <div className="h-24 w-64 animate-pulse rounded-2xl bg-white/10 motion-reduce:animate-none" />
+      <div className="h-24 w-64 animate-pulse rounded-2xl bg-fg/10 motion-reduce:animate-none" />
       <span className="sr-only">Cargando el organigrama…</span>
     </div>
   ),
@@ -59,7 +59,7 @@ export default function OrganigramaInteractivo({ nodos, lista }: Props) {
       aria-pressed={vista === valor}
       onClick={() => setVista(valor)}
       className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${
-        vista === valor ? "bg-jmv-gold text-jmv-ink" : "text-white hover:bg-white/10"
+        vista === valor ? "bg-jmv-gold text-jmv-ink" : "text-fg hover:bg-surface-2"
       }`}
     >
       <Icon className="h-4 w-4" aria-hidden />
@@ -74,7 +74,7 @@ export default function OrganigramaInteractivo({ nodos, lista }: Props) {
           <div
             role="group"
             aria-label="Forma de ver el organigrama"
-            className="inline-flex gap-1 rounded-xl border border-white/15 bg-white/5 p-1"
+            className="inline-flex gap-1 rounded-xl border border-line bg-surface p-1 shadow-card dark:border-white/15 dark:bg-white/5"
           >
             {opcion("diagrama", "Ver diagrama", Network)}
             {opcion("lista", "Ver como lista", List)}
@@ -83,7 +83,9 @@ export default function OrganigramaInteractivo({ nodos, lista }: Props) {
       )}
 
       {mostrarDiagrama ? (
-        <div className="relative h-[75vh] min-h-[560px] w-full border-y border-white/10 bg-jmv-ink">
+        // Colores del lienzo de React Flow (aristas y puntos) como variables del tema
+        <div
+          className="relative h-[75vh] min-h-[560px] w-full border-y border-line bg-page [--org-dots:rgb(15_23_42/0.14)] [--org-edge:rgb(138_90_0/0.55)] dark:[--org-dots:rgb(255_255_255/0.12)] dark:[--org-edge:rgb(245_184_61/0.7)]">
           <OrganigramaFlow nodos={nodos} onSelect={onSelect} />
         </div>
       ) : (

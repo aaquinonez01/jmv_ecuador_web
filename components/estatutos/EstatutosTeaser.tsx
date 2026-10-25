@@ -8,7 +8,11 @@ export default function EstatutosTeaser() {
   return (
     <section aria-labelledby="estatutos-teaser" className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-jmv-ink via-[#163a68] to-jmv-blue p-8 text-white sm:p-12">
+        {/* Tarjeta de marca: azul JMV en claro y tinta→azul en oscuro; data-tone="dark" mantiene el foco dorado */}
+        <div
+          data-tone="dark"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#163a68] via-jmv-blue to-[#245a9c] p-8 text-white sm:p-12 dark:from-jmv-ink dark:via-[#163a68] dark:to-jmv-blue"
+        >
           <ScrollText aria-hidden className="pointer-events-none absolute -right-6 -top-6 h-48 w-48 text-white/5 sm:h-64 sm:w-64" />
           <div className="relative max-w-2xl">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">Nuestros estatutos</p>

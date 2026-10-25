@@ -46,7 +46,7 @@ export default function CountdownClient({ targetDate, countdownTargetType }: Pro
 
   return (
     <div className="mt-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-200">{label}</p>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">{label}</p>
       {/* El valor cambia cada segundo: se anuncia una sola vez como texto, no en vivo */}
       <p className="sr-only">
         {countdown.days} días y {countdown.hours} horas
@@ -60,10 +60,10 @@ export default function CountdownClient({ targetDate, countdownTargetType }: Pro
         ].map((item) => (
           <div
             key={item.label}
-            className="rounded-2xl border border-white/15 bg-white/10 px-2 py-3 text-center sm:px-3 sm:py-4"
+            className="rounded-2xl border border-line bg-surface-2 px-2 py-3 dark:border-white/15 dark:bg-white/10 text-center sm:px-3 sm:py-4"
           >
-            <div className="text-xl font-bold tabular-nums text-white sm:text-2xl">{item.value}</div>
-            <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-slate-200 sm:text-xs">
+            <div className="text-xl font-bold tabular-nums text-fg sm:text-2xl">{item.value}</div>
+            <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-fg-muted sm:text-xs">
               {item.label}
             </div>
           </div>

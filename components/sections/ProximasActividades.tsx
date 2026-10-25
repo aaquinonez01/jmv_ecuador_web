@@ -52,13 +52,13 @@ function statusLabel(status?: string | null) {
 function badgeClass(status?: string | null) {
   switch (status) {
     case "inscripciones_abiertas":
-      return "bg-emerald-300 text-slate-900";
+      return "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-700/20 dark:bg-emerald-300 dark:text-slate-900 dark:ring-0";
     case "inscripciones_cerradas":
-      return "bg-rose-200 text-rose-950";
+      return "bg-rose-100 text-rose-900 ring-1 ring-rose-700/20 dark:bg-rose-200 dark:text-rose-950 dark:ring-0";
     case "proximo":
       return "bg-jmv-gold text-jmv-ink";
     default:
-      return "bg-white/15 text-white";
+      return "bg-surface-2 text-fg ring-1 ring-line dark:bg-white/15 dark:ring-0";
   }
 }
 
@@ -104,7 +104,7 @@ function Documents({ item, max }: { item: UpcomingActivityItem; max: number }) {
   if (!item.documents.length) return null;
   return (
     <div className="mt-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-200">Documentos</p>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">Documentos</p>
       <ul className="flex flex-wrap gap-2">
         {item.documents.slice(0, max).map((document) => (
           <li key={document.id}>
@@ -112,9 +112,9 @@ function Documents({ item, max }: { item: UpcomingActivityItem; max: number }) {
               href={document.fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/15"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-line-strong bg-surface px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface-2 dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/15"
             >
-              <FileText className="h-4 w-4 text-jmv-gold-text" aria-hidden />
+              <FileText className="h-4 w-4 text-accent-gold" aria-hidden />
               {document.documentType || document.name || "Documento"}
               <span className="sr-only"> (se abre en una pestaña nueva)</span>
             </a>
@@ -148,7 +148,7 @@ export default async function ProximasActividades({
     <section
       id={variant === "page" ? "proximas" : undefined}
       aria-labelledby={headingId}
-      className="relative scroll-mt-32 overflow-hidden bg-gradient-to-br from-jmv-ink via-[#0C2D69] to-[#0C4EA6] py-16 sm:py-20"
+      className="relative scroll-mt-32 overflow-hidden bg-gradient-to-br from-page via-section-blue to-section-b py-16 dark:from-jmv-ink dark:via-[#0C2D69] dark:to-[#0C4EA6] sm:py-20"
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -164,11 +164,11 @@ export default async function ProximasActividades({
         />
 
         {!featured ? (
-          <div className="rounded-[2rem] border border-white/15 bg-white/5 p-8 text-center sm:p-10">
-            <h3 className="text-2xl font-semibold text-white">
+          <div className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card dark:border-white/15 dark:bg-white/5 sm:p-10">
+            <h3 className="text-2xl font-semibold text-fg">
               Pronto anunciaremos el próximo encuentro
             </h3>
-            <p className="mx-auto mt-3 max-w-xl text-slate-200">
+            <p className="mx-auto mt-3 max-w-xl text-fg-muted">
               Síguenos en redes para enterarte primero de los retiros, encuentros y misiones.
             </p>
             {instagram && (
@@ -195,52 +195,52 @@ export default async function ProximasActividades({
           >
             <article
               aria-labelledby={`evento-${featured.id}`}
-              className="overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.06] shadow-2xl"
+              className="overflow-hidden rounded-[2rem] border border-line bg-surface shadow-card-lg dark:border-white/15 dark:shadow-2xl"
             >
               <div className="flex flex-col lg:flex-row">
                 <div className="order-2 min-w-0 flex-1 p-5 sm:p-6 lg:order-1 lg:p-10">
                   <div className="mb-4 flex flex-wrap gap-2">
                     <StatusBadge status={featured.registrationStatus} />
                     {featured.type?.name ? (
-                      <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                      <span className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg dark:border-white/15">
                         {featured.type.name}
                       </span>
                     ) : null}
                     {featured.pillar?.name ? (
-                      <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                      <span className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg dark:border-white/15">
                         {featured.pillar.name}
                       </span>
                     ) : null}
                   </div>
 
-                  <h3 id={`evento-${featured.id}`} className="text-2xl font-bold text-white lg:text-3xl">
+                  <h3 id={`evento-${featured.id}`} className="text-2xl font-bold text-fg lg:text-3xl">
                     {featured.title}
                   </h3>
-                  <p className="mt-3 max-w-2xl leading-7 text-slate-200">
+                  <p className="mt-3 max-w-2xl leading-7 text-fg-muted">
                     {featured.summary || featured.description}
                   </p>
 
                   <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <li className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white">
-                      <CalendarDays className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                      <CalendarDays className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                       <span className="sr-only">Fecha: </span>
                       <EventDate item={featured} />
                     </li>
-                    <li className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white">
-                      <MapPin className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                      <MapPin className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                       <span className="sr-only">Lugar: </span>
                       {featured.location || "Lugar por confirmar"}
                     </li>
                     {featured.participantsLabel ? (
-                      <li className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white">
-                        <Users className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                        <Users className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                         <span className="sr-only">Participantes: </span>
                         {featured.participantsLabel}
                       </li>
                     ) : null}
                     {featured.maxRegistrationDate ? (
-                      <li className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white">
-                        <Clock3 className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
+                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                        <Clock3 className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                         <span>
                           Inscripciones hasta el{" "}
                           <time dateTime={toIsoString(featured.maxRegistrationDate)}>
@@ -275,7 +275,7 @@ export default async function ProximasActividades({
                   {variant === "home" && (
                     <Link
                       href="/actividades#proximas"
-                      className="mt-6 inline-flex min-h-11 items-center font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+                      className="mt-6 inline-flex min-h-11 items-center font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
                     >
                       Ver toda la agenda y las actividades realizadas
                     </Link>
@@ -284,7 +284,7 @@ export default async function ProximasActividades({
 
                 {/* El afiche suele ser vertical: se muestra entero sobre una versión
                     desenfocada de sí mismo, que rellena el panel sin dejar huecos */}
-                <div className="relative isolate order-1 flex w-full shrink-0 items-center justify-center overflow-hidden bg-jmv-ink/60 lg:order-2 lg:w-[42%]">
+                <div className="relative isolate order-1 flex w-full shrink-0 items-center justify-center overflow-hidden bg-surface-sunken dark:bg-jmv-ink/60 lg:order-2 lg:w-[42%]">
                   {featured.coverImageUrl ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -323,34 +323,34 @@ export default async function ProximasActividades({
                   <li key={activity.id}>
                     <article
                       aria-labelledby={`evento-${activity.id}`}
-                      className="rounded-[1.75rem] border border-white/15 bg-white/[0.06] p-5"
+                      className="rounded-[1.75rem] border border-line bg-surface p-5 shadow-card dark:border-white/15"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-200">
+                          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">
                             {activity.type?.name || "Actividad"}
                           </p>
-                          <h3 id={`evento-${activity.id}`} className="mt-2 text-xl font-semibold text-white">
+                          <h3 id={`evento-${activity.id}`} className="mt-2 text-xl font-semibold text-fg">
                             {activity.title}
                           </h3>
                         </div>
                         <StatusBadge status={activity.registrationStatus} />
                       </div>
 
-                      <ul className="mt-4 space-y-2 text-sm text-slate-100">
+                      <ul className="mt-4 space-y-2 text-sm text-fg-muted dark:text-slate-100">
                         <li className="flex items-center gap-2">
-                          <CalendarDays className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                          <CalendarDays className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
                           <span className="sr-only">Fecha: </span>
                           <EventDate item={activity} />
                         </li>
                         <li className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                          <MapPin className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
                           <span className="sr-only">Lugar: </span>
                           {activity.location || "Lugar por confirmar"}
                         </li>
                       </ul>
 
-                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-200">
+                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-fg-muted">
                         {activity.summary || activity.description}
                       </p>
 

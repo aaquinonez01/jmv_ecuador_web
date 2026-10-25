@@ -10,7 +10,7 @@ export default function MisionVision() {
     <section
       id="mision"
       aria-labelledby="mision-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink via-[#132f55] to-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-page via-section-blue to-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -21,14 +21,14 @@ export default function MisionVision() {
         />
 
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <article className="rounded-2xl border border-white/15 bg-white/5 p-6 sm:p-8">
+          <article className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
             <div className="mb-5 flex items-center gap-4">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-red text-white">
                 <Target className="h-6 w-6" aria-hidden />
               </span>
-              <h3 className="text-2xl font-bold text-white sm:text-3xl">Misión</h3>
+              <h3 className="text-2xl font-bold text-fg sm:text-3xl">Misión</h3>
             </div>
-            <p className="text-lg leading-relaxed text-slate-200">
+            <p className="text-lg leading-relaxed text-fg-muted">
               Formar integralmente a jóvenes comprometidos con la fe católica y el
               servicio a los pobres, viviendo el carisma vicenciano bajo la
               protección maternal de María, para ser agentes de transformación en
@@ -36,14 +36,14 @@ export default function MisionVision() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-white/15 bg-white/5 p-6 sm:p-8">
+          <article className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
             <div className="mb-5 flex items-center gap-4">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                 <Eye className="h-6 w-6" aria-hidden />
               </span>
-              <h3 className="text-2xl font-bold text-white sm:text-3xl">Visión</h3>
+              <h3 className="text-2xl font-bold text-fg sm:text-3xl">Visión</h3>
             </div>
-            <p className="text-lg leading-relaxed text-slate-200">
+            <p className="text-lg leading-relaxed text-fg-muted">
               Ser una comunidad juvenil referente en Ecuador por la vivencia
               auténtica del carisma vicenciano, que contribuye a la transformación
               social y a la evangelización de las nuevas generaciones a través del
@@ -52,12 +52,12 @@ export default function MisionVision() {
           </article>
         </div>
 
-        <p className="mt-8 text-center text-slate-300">
+        <p className="mt-8 text-center text-fg-muted">
           Esta misión se sostiene en cuatro pilares: comunidad, espiritualidad,
           apostolado y formación.{" "}
           <Link
             href="/pilares"
-            className="inline-flex min-h-11 items-center gap-1 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+            className="inline-flex min-h-11 items-center gap-1 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
           >
             Conoce los pilares
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -66,15 +66,15 @@ export default function MisionVision() {
 
         <figure className="mx-auto mt-14 max-w-3xl text-center">
           <StarDivider className="mb-6" />
-          <blockquote className="font-display text-2xl italic leading-relaxed text-white sm:text-3xl">
+          <blockquote className="font-display text-2xl italic leading-relaxed text-fg sm:text-3xl">
             <p>
               “Entreguemos a Dios nuestras personas y nuestros bienes; Él cuidará
               de nosotros como cuida de las flores del campo y de las aves del
               cielo.”
             </p>
           </blockquote>
-          <figcaption className="mt-4 text-slate-300">
-            <span className="font-semibold text-jmv-gold-text">San Vicente de Paúl</span>
+          <figcaption className="mt-4 text-fg-muted">
+            <span className="font-semibold text-accent-gold">San Vicente de Paúl</span>
             , fundador de la Familia Vicenciana
           </figcaption>
         </figure>

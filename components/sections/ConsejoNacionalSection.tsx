@@ -37,7 +37,7 @@ export default function ConsejoNacionalSection({ consejo, asesores }: Props) {
       id="consejo-nacional"
       tabIndex={-1}
       aria-labelledby="consejo-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink to-[#132f55] py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-page to-section-blue py-16 sm:py-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -50,7 +50,7 @@ export default function ConsejoNacionalSection({ consejo, asesores }: Props) {
           }
         />
         {consejo?.nombre && (
-          <p className="-mt-6 mb-10 text-center text-sm text-slate-300">
+          <p className="-mt-6 mb-10 text-center text-sm text-fg-muted">
             {consejo.nombre}
             {consejo.fechaInicio && consejo.fechaFin && (
               <>
@@ -63,7 +63,7 @@ export default function ConsejoNacionalSection({ consejo, asesores }: Props) {
         )}
 
         {miembros.length === 0 ? (
-          <p className="rounded-2xl border border-white/15 bg-white/5 p-6 text-center text-slate-300">
+          <p className="rounded-2xl border border-line bg-surface p-6 text-center text-fg-muted shadow-card dark:border-white/15 dark:bg-white/5">
             Pronto publicaremos a los miembros del Consejo Nacional.
           </p>
         ) : (
@@ -88,7 +88,7 @@ export default function ConsejoNacionalSection({ consejo, asesores }: Props) {
 
         {asesoresActivos.length > 0 && (
           <>
-            <h3 className="mt-14 mb-6 text-center text-2xl font-bold text-white sm:text-3xl">
+            <h3 className="mt-14 mb-6 text-center text-2xl font-bold text-fg sm:text-3xl">
               Asesores nacionales
             </h3>
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -129,9 +129,9 @@ interface PersonaCardProps {
 
 function PersonaCard(p: PersonaCardProps) {
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-white/15 bg-white/5 p-5">
+    <article className="flex h-full flex-col rounded-2xl border border-line bg-surface p-5 shadow-card dark:border-white/15 dark:bg-white/5">
       <div className="flex items-center gap-4">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-jmv-ink">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface-sunken dark:bg-jmv-ink">
           {p.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -144,38 +144,38 @@ function PersonaCard(p: PersonaCardProps) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <User className="h-9 w-9 text-jmv-gold-text" aria-hidden />
+            <User className="h-9 w-9 text-accent-gold" aria-hidden />
           )}
         </div>
         <div className="min-w-0">
-          <h4 className="text-lg font-bold text-white">{p.nombre}</h4>
-          <p className="font-medium text-jmv-gold-text">{p.cargo}</p>
+          <h4 className="text-lg font-bold text-fg">{p.nombre}</h4>
+          <p className="font-medium text-accent-gold">{p.cargo}</p>
         </div>
       </div>
 
-      <dl className="mt-4 space-y-2 text-sm text-slate-200">
+      <dl className="mt-4 space-y-2 text-sm text-fg-muted dark:text-slate-200">
         {p.comunidad && (
           <div className="flex items-start gap-2">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
-            <dt className="text-slate-300">Comunidad:</dt>
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
+            <dt className="text-fg-subtle dark:text-slate-300">Comunidad:</dt>
             <dd>{p.comunidad}</dd>
           </div>
         )}
         {p.santoFavorito && (
           <div className="flex items-start gap-2">
-            <Star className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
-            <dt className="text-slate-300">Santo favorito:</dt>
+            <Star className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
+            <dt className="text-fg-subtle dark:text-slate-300">Santo favorito:</dt>
             <dd>{p.santoFavorito}</dd>
           </div>
         )}
       </dl>
 
-      {p.descripcion && <p className="mt-3 text-sm text-slate-300">{p.descripcion}</p>}
+      {p.descripcion && <p className="mt-3 text-sm text-fg-muted">{p.descripcion}</p>}
 
       {p.citaBiblica && (
-        <blockquote className="mt-3 flex items-start gap-2 rounded-lg border border-white/10 bg-white/5 p-3">
-          <Quote className="mt-0.5 h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
-          <p className="text-sm italic leading-relaxed text-slate-200">{p.citaBiblica}</p>
+        <blockquote className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-2 p-3 dark:bg-white/5">
+          <Quote className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
+          <p className="text-sm italic leading-relaxed text-fg-muted dark:text-slate-200">{p.citaBiblica}</p>
         </blockquote>
       )}
 

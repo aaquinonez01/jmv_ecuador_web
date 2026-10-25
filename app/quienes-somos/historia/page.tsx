@@ -35,18 +35,18 @@ export default function HistoriaPage() {
       />
       <HistoriaTimeline />
 
-      <section aria-labelledby="voces-titulo" className="bg-jmv-ink pt-14 sm:pt-16">
+      <section aria-labelledby="voces-titulo" className="bg-page pt-14 sm:pt-16">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-white/15 bg-white/5 p-6 text-center sm:p-8">
-            <h2 id="voces-titulo" className="text-2xl font-bold text-white">
+          <div className="rounded-2xl border border-line bg-surface p-6 text-center shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
+            <h2 id="voces-titulo" className="text-2xl font-bold text-fg">
               La historia la siguen escribiendo los jóvenes
             </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-slate-300">
+            <p className="mx-auto mt-2 max-w-2xl text-fg-muted">
               Lee los testimonios de quienes hoy viven JMV en sus comunidades.
             </p>
             <Link
               href="/quienes-somos#testimonios-titulo"
-              className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
             >
               Ver testimonios
               <ArrowRight className="h-4 w-4" aria-hidden />

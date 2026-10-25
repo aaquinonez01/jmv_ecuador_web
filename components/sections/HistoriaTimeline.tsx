@@ -85,7 +85,7 @@ export default function HistoriaTimeline() {
     <section
       id="historia"
       aria-labelledby="historia-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-jmv-ink via-[#132f55] to-jmv-ink py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-page via-section-blue to-page py-16 sm:py-20"
     >
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
@@ -95,28 +95,28 @@ export default function HistoriaTimeline() {
           description={`De las apariciones de la Medalla Milagrosa en París hasta los ${yearsSinceFoundation()} años de JMV en Ecuador.`}
         />
 
-        <ol className="relative space-y-10 border-l-2 border-jmv-gold-text/40 pl-6 sm:pl-10">
+        <ol className="relative space-y-10 border-l-2 border-accent-gold/40 pl-6 sm:pl-10">
           {hitos.map((hito) => (
             <li key={hito.year} className="relative">
               <span
                 aria-hidden="true"
-                className="absolute -left-[2.05rem] top-1.5 h-4 w-4 rounded-full border-4 border-jmv-ink bg-jmv-gold-text sm:-left-[3.05rem]"
+                className="absolute -left-[2.05rem] top-1.5 h-4 w-4 rounded-full border-4 border-page bg-accent-gold sm:-left-[3.05rem]"
               />
-              <article className="grid overflow-hidden rounded-2xl border border-white/15 bg-white/5 md:grid-cols-[1fr_16rem]">
+              <article className="grid overflow-hidden rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/5 md:grid-cols-[1fr_16rem]">
                 <div className="p-5 sm:p-6">
                   <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span className="text-2xl font-bold text-jmv-gold-text">{hito.year}</span>
+                    <span className="text-2xl font-bold text-accent-gold">{hito.year}</span>
                     {hito.lugar && (
-                      <span className="inline-flex items-center gap-1 text-sm text-slate-300">
+                      <span className="inline-flex items-center gap-1 text-sm text-fg-subtle dark:text-slate-300">
                         <MapPin className="h-4 w-4" aria-hidden />
                         {hito.lugar}
                       </span>
                     )}
                   </p>
-                  <h3 className="mt-2 text-xl font-bold text-white">{hito.title}</h3>
-                  <p className="mt-3 leading-relaxed text-slate-300">{hito.description}</p>
+                  <h3 className="mt-2 text-xl font-bold text-fg">{hito.title}</h3>
+                  <p className="mt-3 leading-relaxed text-fg-muted">{hito.description}</p>
                 </div>
-                <div className="relative order-first aspect-[16/9] bg-jmv-ink md:order-none md:aspect-auto md:min-h-56">
+                <div className="relative order-first aspect-[16/9] bg-surface-sunken dark:bg-jmv-ink md:order-none md:aspect-auto md:min-h-56">
                   {hito.image ? (
                     <Image
                       src={hito.image.src}
@@ -129,7 +129,7 @@ export default function HistoriaTimeline() {
                   ) : (
                     <div
                       aria-hidden="true"
-                      className="absolute inset-0 flex items-center justify-center text-jmv-gold-text/40"
+                      className="absolute inset-0 flex items-center justify-center text-accent-gold/40"
                     >
                       <StarsRing className="absolute h-44 w-44" />
                       <MarianMonogram className="h-20 w-16" strokeWidth={4} />
