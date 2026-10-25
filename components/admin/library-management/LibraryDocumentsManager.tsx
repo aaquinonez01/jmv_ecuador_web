@@ -31,7 +31,7 @@ import Modal from "@/components/admin/ui/Modal";
 import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import PageHeader from "@/components/admin/layout/PageHeader";
 import { useToast } from "@/lib/hooks/useToast";
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import BookCover from "@/components/biblioteca/BookCover";
 import { AXIS_LABELS, TYPE_SINGULAR, fileSizeLabel, libraryHref } from "@/lib/biblioteca";
 import type { LibraryAxis, LibraryDocument, LibraryType, LibraryVisibility } from "@/types/library";
 import LibraryDocumentForm, {
@@ -43,7 +43,7 @@ import LibraryDocumentForm, {
   type DocumentFormErrors,
   type DocumentFormState,
 } from "./LibraryDocumentForm";
-import { KindIcon, LibraryTabs, SLUG_PATTERN, iconButton, normalizeText, selectClass, toggleButton, UploadBar } from "./formParts";
+import { LibraryTabs, SLUG_PATTERN, iconButton, normalizeText, selectClass, toggleButton, UploadBar } from "./formParts";
 import { looksLikePdf, renderPdfCover } from "./pdfCover";
 
 type PublishedFilter = "todos" | "publicados" | "borradores";
@@ -708,7 +708,6 @@ function LibraryDocumentRow({
   onDelete: () => void;
   onToggle: (field: "published" | "featured") => void;
 }) {
-  const cover = doc.coverUrl ? getOptimizedUrl(doc.coverUrl, { w: 120 }) : null;
   const meta = [
     doc.kind === "pdf" && doc.pageCount ? `${doc.pageCount} pág.` : null,
     doc.kind === "pdf" ? fileSizeLabel(doc.fileSize) : doc.kind === "video" ? "Video" : "Enlace",
@@ -718,14 +717,8 @@ function LibraryDocumentRow({
   return (
     <li className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 transition-colors hover:border-slate-300 sm:flex-row sm:items-center">
       <div className="flex min-w-0 flex-1 items-start gap-3">
-        <div className="relative flex h-[72px] w-[54px] shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-100 shadow-sm ring-1 ring-slate-200">
-          {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} alt="" loading="lazy" className="h-full w-full object-cover" />
-          ) : (
-            <KindIcon kind={doc.kind} className="h-5 w-5 text-slate-400" />
-          )}
-        </div>
+        {/* La misma portada que ven los jóvenes en la biblioteca */}
+        <BookCover doc={doc} sizes="54px" className="w-[54px] shrink-0 shadow-sm" />
         <div className="min-w-0 flex-1">
           <h3 className="line-clamp-2 text-[14.5px] font-bold leading-tight text-slate-900">{doc.title}</h3>
           <p className="mt-0.5 line-clamp-1 text-xs text-slate-600">{meta.join(" · ")}</p>

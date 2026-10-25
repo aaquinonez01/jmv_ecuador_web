@@ -3,10 +3,12 @@
 import { useId, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CircleAlert, FileText, Link2, Video } from "lucide-react";
-import type { LibraryKind } from "@/types/library";
+import { CircleAlert } from "lucide-react";
 
 // Piezas de formulario compartidas por documentos y rutas (mismo estilo que el Año Vicenciano)
+
+// La búsqueda del admin normaliza igual que la biblioteca pública
+export { normalizeText } from "@/components/biblioteca/shared";
 
 export const inputClass =
   "block min-h-11 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-jmv-blue/30 aria-[invalid=true]:border-red-500 sm:min-h-10 border-slate-300 focus:border-jmv-blue";
@@ -19,19 +21,6 @@ export const iconButton =
 
 export const toggleButton =
   "inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-jmv-blue/40 disabled:opacity-60 sm:min-h-9";
-
-export function normalizeText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
-}
-
-export function KindIcon({ kind, className }: { kind: LibraryKind; className?: string }) {
-  if (kind === "video") return <Video className={className} aria-hidden />;
-  if (kind === "enlace") return <Link2 className={className} aria-hidden />;
-  return <FileText className={className} aria-hidden />;
-}
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

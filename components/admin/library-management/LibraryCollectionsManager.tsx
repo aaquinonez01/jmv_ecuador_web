@@ -51,6 +51,7 @@ import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import PageHeader from "@/components/admin/layout/PageHeader";
 import { useToast } from "@/lib/hooks/useToast";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import BookCover from "@/components/biblioteca/BookCover";
 import { TYPE_SINGULAR, collectionHref, readingTimeLabel } from "@/lib/biblioteca";
 import type { LibraryCollection, LibraryDocument } from "@/types/library";
 import {
@@ -60,7 +61,6 @@ import {
   SLUG_PATTERN,
   ToggleCard,
   iconButton,
-  KindIcon,
   inputClass,
   normalizeText,
   selectClass,
@@ -145,8 +145,6 @@ function SortableDocument({
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({
     id: doc.id,
   });
-  const cover = doc.coverUrl ? getOptimizedUrl(doc.coverUrl, { w: 80 }) : null;
-
   return (
     <li
       ref={setNodeRef}
@@ -171,14 +169,7 @@ function SortableDocument({
       >
         {index + 1}
       </span>
-      <span className="hidden h-12 w-9 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-100 ring-1 ring-slate-200 sm:flex">
-        {cover ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <KindIcon kind={doc.kind} className="h-4 w-4 text-slate-400" />
-        )}
-      </span>
+      <BookCover doc={doc} sizes="36px" className="hidden w-9 shrink-0 shadow-sm sm:block" />
       <span className="min-w-0 flex-1">
         <span className="line-clamp-2 text-sm font-semibold leading-tight text-slate-900">{doc.title}</span>
         <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500">
