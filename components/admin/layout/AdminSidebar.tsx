@@ -19,6 +19,7 @@ import {
   MapPinned,
   Megaphone,
   MessageSquareQuote,
+  ScrollText,
   Settings,
   Sparkles,
   Star,
@@ -91,6 +92,12 @@ export default function AdminSidebar() {
           href: "/admin/biblioteca",
           icon: <BookOpen className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/biblioteca"),
+        },
+        {
+          label: "Estatutos",
+          href: "/admin/estatutos",
+          icon: <ScrollText className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/estatutos"),
         },
         {
           label: "Catálogos",
