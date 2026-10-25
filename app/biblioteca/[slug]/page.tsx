@@ -137,20 +137,20 @@ export default async function LibraryDocumentPage({ params }: Props) {
             jsonLd
             className="mb-8"
           />
-          <div className="grid items-start gap-10 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16">
-            <div className="relative mx-auto w-48 sm:w-56 md:w-full">
+          <div className="grid items-start gap-7 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] md:gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16">
+            <div className="relative mx-auto w-36 sm:w-56 md:w-full">
               <StarsRing
                 withCircle
                 className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[150%] w-[150%] -translate-x-1/2 -translate-y-1/2 text-(--acc) opacity-20"
               />
               <div className="[perspective:1200px]">
                 <div className="[transform:rotateY(-10deg)] [transform-origin:left_center]">
-                  <BookCover doc={doc} priority sizes="(min-width: 1024px) 320px, (min-width: 768px) 256px, 224px" />
+                  <BookCover doc={doc} priority sizes="(min-width: 1024px) 320px, (min-width: 768px) 256px, (min-width: 640px) 224px, 144px" />
                 </div>
               </div>
             </div>
 
-            <div className="min-w-0">
+            <div className="flex min-w-0 flex-col">
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={filtersHref({ tipo: doc.type })}
@@ -185,9 +185,10 @@ export default async function LibraryDocumentPage({ params }: Props) {
                 {doc.title}
               </h1>
               {doc.author && <p className="mt-3 text-xl text-slate-200">{doc.author}</p>}
-              <p className="mt-5 max-w-2xl font-display text-xl leading-snug text-slate-100 sm:text-2xl">{doc.summary}</p>
+              <p className="mt-4 max-w-2xl font-display text-lg leading-snug text-slate-100 sm:mt-5 sm:text-2xl">{doc.summary}</p>
 
-              <dl className="mt-7 grid max-w-2xl grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+              {/* En el celular la acción va antes que la ficha técnica */}
+              <dl className="order-last mt-7 grid max-w-2xl grid-cols-2 md:order-none gap-x-4 gap-y-3 sm:grid-cols-3">
                 {facts.map((f) => (
                   <div key={f.label} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
                     <f.icon className="h-5 w-5 shrink-0 text-(--acc)" aria-hidden />
@@ -199,7 +200,7 @@ export default async function LibraryDocumentPage({ params }: Props) {
                 ))}
               </dl>
 
-              <div className="mt-8 max-w-2xl">
+              <div className="mt-6 max-w-2xl md:mt-8">
                 <DocumentActions doc={actionDoc} shareUrl={url} shareText={shareText} />
               </div>
             </div>
