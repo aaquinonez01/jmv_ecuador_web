@@ -53,8 +53,8 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
   const photos = activity.gallery.length;
   return (
     <li>
-      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/[0.06] text-left shadow-xl transition-colors hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-900/40">
+      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-surface text-left shadow-card transition-colors hover:bg-surface-2 dark:border-white/15 dark:shadow-xl dark:hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
+        <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
           {activity.coverImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -67,11 +67,11 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
               className="h-full w-full object-cover transition duration-500 motion-safe:group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-white/60">
+            <div className="flex h-full items-center justify-center text-fg-subtle">
               <Camera className="h-10 w-10" aria-hidden />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07132F] via-[#07132F]/25 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent dark:from-[#07132F] dark:via-[#07132F]/25" />
           <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
             {activity.type?.name ? (
               <span className="rounded-full bg-jmv-ink/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
@@ -86,7 +86,7 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-4 p-6 text-white">
+        <div className="flex flex-1 flex-col gap-4 p-6 text-fg">
           <h3 className="text-2xl font-semibold">
             {/* Botón "estirado": toda la tarjeta abre el álbum, sin anidar contenido de bloque en el botón */}
             <button
@@ -98,31 +98,31 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
               <span className="sr-only">. Ver álbum{photos ? ` de ${photos} fotos` : ""}</span>
             </button>
           </h3>
-          <p className="line-clamp-3 text-sm leading-6 text-slate-200">
+          <p className="line-clamp-3 text-sm leading-6 text-fg-muted">
             {activity.summary || activity.description}
           </p>
 
-          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-slate-100 sm:grid-cols-2">
+          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-fg-muted sm:grid-cols-2">
             {date && (
               <li className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                <CalendarDays className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
                 <time dateTime={toIsoString(activity.startDate!)}>{date}</time>
               </li>
             )}
             {activity.location && (
               <li className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                <MapPin className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
                 {activity.location}
               </li>
             )}
             {activity.participantsLabel && (
               <li className="flex items-center gap-2">
-                <Users className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                <Users className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
                 {activity.participantsLabel}
               </li>
             )}
             <li className="flex items-center gap-2" aria-hidden="true">
-              <Camera className="h-4 w-4 shrink-0 text-jmv-gold-text" />
+              <Camera className="h-4 w-4 shrink-0 text-accent-gold" />
               {photos} {photos === 1 ? "foto" : "fotos"}
             </li>
           </ul>
@@ -133,9 +133,9 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
 }
 
 const selectTrigger =
-  "h-11 w-full rounded-xl border-white/20 bg-jmv-ink/40 px-3.5 text-sm text-white data-[size=default]:h-11 hover:border-white/40 [&>svg]:text-white/80 [&_[data-placeholder]]:text-white/80";
+  "h-11 w-full rounded-xl border-line-strong bg-surface px-3.5 text-sm text-fg shadow-card data-[size=default]:h-11 hover:border-fg/40 [&>svg]:text-fg/80 [&_[data-placeholder]]:text-fg/80";
 const selectItem =
-  "min-h-11 text-white focus:bg-white/10 focus:text-white data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-jmv-gold-text";
+  "min-h-11 text-fg focus:bg-surface-2 focus:text-fg data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-accent-gold";
 
 function CatalogSelect({
   id,
@@ -158,7 +158,7 @@ function CatalogSelect({
     <div className="space-y-1.5">
       <label
         htmlFor={id}
-        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-200"
+        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-fg-muted"
       >
         <Icon className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden />
         {label}
@@ -167,7 +167,7 @@ function CatalogSelect({
         <SelectTrigger id={id} className={selectTrigger}>
           <SelectValue placeholder={allLabel} />
         </SelectTrigger>
-        <SelectContent className="border-white/10 bg-[#0F2A4A] text-white shadow-2xl">
+        <SelectContent className="border-line bg-surface-raised text-fg shadow-card-lg dark:bg-[#0F2A4A] dark:shadow-2xl">
           <SelectItem value="all" className={selectItem}>
             {allLabel}
           </SelectItem>
@@ -270,18 +270,18 @@ export default function ActivitiesAlbumsClient({
       aria-labelledby="realizadas-titulo"
       className="relative scroll-mt-32 overflow-hidden py-16 sm:py-20"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#07132F_0%,#0C2D69_55%,#0F4A8A_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,var(--section-a)_0%,var(--section-b)_100%)] dark:bg-[linear-gradient(180deg,#07132F_0%,#0C2D69_55%,#0F4A8A_100%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
               Memoria visual JMV
             </p>
-            <h2 id="realizadas-titulo" className="mt-3 text-3xl font-bold text-white sm:text-4xl">
+            <h2 id="realizadas-titulo" className="mt-3 text-3xl font-bold text-fg sm:text-4xl">
               Actividades realizadas
             </h2>
-            <p className="mt-3 text-lg text-slate-200">
+            <p className="mt-3 text-lg text-fg-muted">
               Retiros, encuentros, misiones y asambleas que ya vivimos. Abre un álbum para ver las fotos.
             </p>
           </div>
@@ -289,18 +289,18 @@ export default function ActivitiesAlbumsClient({
           <div
             role="search"
             aria-label="Filtrar actividades realizadas"
-            className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] p-5 shadow-2xl lg:min-w-[26rem]"
+            className="rounded-[1.5rem] border border-line bg-surface p-5 shadow-card-lg lg:min-w-[26rem] dark:border-white/15 dark:bg-white/[0.07] dark:shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-200">
-                <Filter className="h-4 w-4 text-jmv-gold-text" strokeWidth={2.4} aria-hidden />
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-fg-muted">
+                <Filter className="h-4 w-4 text-accent-gold" strokeWidth={2.4} aria-hidden />
                 Filtros
               </p>
               {hasFilters && (
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="inline-flex min-h-11 items-center gap-1 rounded-md px-3 text-sm font-semibold text-white hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center gap-1 rounded-md px-3 text-sm font-semibold text-fg hover:bg-surface-2"
                 >
                   <X className="h-4 w-4" strokeWidth={2.4} aria-hidden />
                   Limpiar filtros
@@ -329,14 +329,14 @@ export default function ActivitiesAlbumsClient({
               />
             </div>
 
-            <p className="mt-3 text-sm text-slate-200" aria-live="polite" aria-atomic="true">
+            <p className="mt-3 text-sm text-fg-muted" aria-live="polite" aria-atomic="true">
               {status === "loading" ? (
                 "Buscando actividades…"
               ) : status === "error" ? (
                 ""
               ) : (
                 <>
-                  <strong className="font-bold text-white">{total}</strong> {noun}{" "}
+                  <strong className="font-bold text-fg">{total}</strong> {noun}{" "}
                   {total === 1 ? "encontrada" : "encontradas"}
                 </>
               )}
@@ -345,9 +345,9 @@ export default function ActivitiesAlbumsClient({
         </div>
 
         {status === "error" && items.length === 0 ? (
-          <div role="alert" className="rounded-[2rem] border border-white/15 bg-white/5 p-8 text-center sm:p-10">
-            <h3 className="text-2xl font-semibold text-white">No pudimos cargar las actividades</h3>
-            <p className="mt-2 text-slate-200">Revisa tu conexión e inténtalo de nuevo en un momento.</p>
+          <div role="alert" className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card sm:p-10 dark:border-white/15 dark:bg-white/5">
+            <h3 className="text-2xl font-semibold text-fg">No pudimos cargar las actividades</h3>
+            <p className="mt-2 text-fg-muted">Revisa tu conexión e inténtalo de nuevo en un momento.</p>
             <button
               type="button"
               onClick={() => void fetchPage(0, false)}
@@ -360,11 +360,11 @@ export default function ActivitiesAlbumsClient({
         ) : status === "loading" && items.length === 0 ? (
           <AlbumGridSkeleton />
         ) : items.length === 0 ? (
-          <div className="rounded-[2rem] border border-white/15 bg-white/5 p-8 text-center sm:p-10">
+          <div className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card sm:p-10 dark:border-white/15 dark:bg-white/5">
             {hasFilters ? (
               <>
-                <h3 className="text-2xl font-semibold text-white">No hay actividades con esos filtros</h3>
-                <p className="mt-2 text-slate-200">Prueba con otro pilar o tipo de actividad.</p>
+                <h3 className="text-2xl font-semibold text-fg">No hay actividades con esos filtros</h3>
+                <p className="mt-2 text-fg-muted">Prueba con otro pilar o tipo de actividad.</p>
                 <button
                   type="button"
                   onClick={clearFilters}
@@ -375,8 +375,8 @@ export default function ActivitiesAlbumsClient({
               </>
             ) : (
               <>
-                <h3 className="text-2xl font-semibold text-white">Pronto compartiremos los álbumes</h3>
-                <p className="mt-2 text-slate-200">Aquí verás las fotos de nuestras actividades.</p>
+                <h3 className="text-2xl font-semibold text-fg">Pronto compartiremos los álbumes</h3>
+                <p className="mt-2 text-fg-muted">Aquí verás las fotos de nuestras actividades.</p>
               </>
             )}
           </div>
@@ -395,12 +395,12 @@ export default function ActivitiesAlbumsClient({
             </ul>
 
             {status === "error" && (
-              <p role="alert" className="mt-6 text-center text-slate-100">
+              <p role="alert" className="mt-6 text-center text-fg-muted">
                 No pudimos cargar más actividades.{" "}
                 <button
                   type="button"
                   onClick={() => void fetchPage(items.length, true)}
-                  className="min-h-11 font-semibold text-jmv-gold-text underline underline-offset-4"
+                  className="min-h-11 font-semibold text-accent-gold underline underline-offset-4"
                 >
                   Reintentar
                 </button>
@@ -413,11 +413,11 @@ export default function ActivitiesAlbumsClient({
                   type="button"
                   onClick={() => void fetchPage(items.length, true)}
                   disabled={status === "loadingMore"}
-                  className={buttonVariants({ variant: "outlineLight", size: "md" })}
+                  className={buttonVariants({ variant: "outlineAuto", size: "md" })}
                 >
                   {status === "loadingMore" ? "Cargando…" : "Cargar más actividades"}
                 </button>
-                <p className="text-sm text-slate-200">
+                <p className="text-sm text-fg-muted">
                   Mostrando {items.length} de {total}
                 </p>
               </div>
@@ -458,15 +458,15 @@ export function AlbumGridSkeleton({ count = 3 }: { count?: number }) {
   return (
     <ul aria-hidden="true" className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <li key={i} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.06]">
-          <div className="aspect-[4/3] bg-white/10 motion-safe:animate-pulse" />
+        <li key={i} className="overflow-hidden rounded-[1.75rem] border border-line bg-surface shadow-card">
+          <div className="aspect-[4/3] bg-fg/10 motion-safe:animate-pulse" />
           <div className="space-y-3 p-6">
-            <div className="h-7 w-3/4 rounded bg-white/10 motion-safe:animate-pulse" />
-            <div className="h-4 w-full rounded bg-white/10 motion-safe:animate-pulse" />
-            <div className="h-4 w-5/6 rounded bg-white/10 motion-safe:animate-pulse" />
+            <div className="h-7 w-3/4 rounded bg-fg/10 motion-safe:animate-pulse" />
+            <div className="h-4 w-full rounded bg-fg/10 motion-safe:animate-pulse" />
+            <div className="h-4 w-5/6 rounded bg-fg/10 motion-safe:animate-pulse" />
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="h-4 rounded bg-white/10 motion-safe:animate-pulse" />
-              <div className="h-4 rounded bg-white/10 motion-safe:animate-pulse" />
+              <div className="h-4 rounded bg-fg/10 motion-safe:animate-pulse" />
+              <div className="h-4 rounded bg-fg/10 motion-safe:animate-pulse" />
             </div>
           </div>
         </li>
