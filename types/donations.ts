@@ -3,20 +3,18 @@
 
 export type DonationAccountType = "ahorros" | "corriente";
 
-/** Iconos lucide permitidos para "En qué se usa tu donación" */
+/** Iconos lucide permitidos para "En qué se usa tu donación" (los mismos que valida el backend) */
 export const DONATION_PURPOSE_ICONS = [
-  "heart-handshake",
-  "hand-heart",
-  "users",
-  "book-open",
-  "graduation-cap",
-  "church",
-  "bus",
-  "tent",
-  "utensils",
-  "shirt",
-  "home",
-  "sparkles",
+  "Heart",
+  "HandHeart",
+  "Users",
+  "BookOpen",
+  "Tent",
+  "Church",
+  "GraduationCap",
+  "Gift",
+  "Sparkles",
+  "Globe",
 ] as const;
 
 export type DonationPurposeIcon = (typeof DONATION_PURPOSE_ICONS)[number];

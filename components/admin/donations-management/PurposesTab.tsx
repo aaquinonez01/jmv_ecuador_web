@@ -43,7 +43,7 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 const emptyForm = (): FormState => ({
   title: "",
   description: "",
-  icon: "heart-handshake",
+  icon: "Heart",
   active: true,
   image: null,
   removeImage: false,
@@ -52,7 +52,7 @@ const emptyForm = (): FormState => ({
 function toForm(purpose: DonationPurpose): FormState {
   const icon = (DONATION_PURPOSE_ICONS as readonly string[]).includes(purpose.icon)
     ? (purpose.icon as DonationPurposeIcon)
-    : "heart-handshake";
+    : "Heart";
   return { title: purpose.title, description: purpose.description, icon, active: purpose.active, image: null, removeImage: false };
 }
 

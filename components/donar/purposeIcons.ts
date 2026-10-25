@@ -1,36 +1,32 @@
 import {
   BookOpen,
-  Bus,
   Church,
+  Gift,
+  Globe,
   GraduationCap,
   HandHeart,
-  HeartHandshake,
-  House,
-  Shirt,
+  Heart,
   Sparkles,
   Tent,
   Users,
-  Utensils,
   type LucideIcon,
 } from "lucide-react";
 import type { DonationPurposeIcon } from "@/types/donations";
 
 // Lista corta y cerrada: el admin elige de aquí y la web nunca recibe un nombre desconocido.
 export const PURPOSE_ICONS: Record<DonationPurposeIcon, { icon: LucideIcon; label: string }> = {
-  "heart-handshake": { icon: HeartHandshake, label: "Servicio" },
-  "hand-heart": { icon: HandHeart, label: "Caridad" },
-  users: { icon: Users, label: "Encuentros" },
-  "book-open": { icon: BookOpen, label: "Formación" },
-  "graduation-cap": { icon: GraduationCap, label: "Becas" },
-  church: { icon: Church, label: "Pastoral" },
-  bus: { icon: Bus, label: "Transporte" },
-  tent: { icon: Tent, label: "Campamentos" },
-  utensils: { icon: Utensils, label: "Alimentación" },
-  shirt: { icon: Shirt, label: "Ropa" },
-  home: { icon: House, label: "Hogar" },
-  sparkles: { icon: Sparkles, label: "Otros" },
+  Heart: { icon: Heart, label: "Servicio" },
+  HandHeart: { icon: HandHeart, label: "Caridad" },
+  Users: { icon: Users, label: "Encuentros" },
+  BookOpen: { icon: BookOpen, label: "Formación" },
+  Tent: { icon: Tent, label: "Campamentos" },
+  Church: { icon: Church, label: "Pastoral" },
+  GraduationCap: { icon: GraduationCap, label: "Becas" },
+  Gift: { icon: Gift, label: "Solidaridad" },
+  Globe: { icon: Globe, label: "Misiones" },
+  Sparkles: { icon: Sparkles, label: "Otros" },
 };
 
 export function purposeIcon(name: string): LucideIcon {
-  return PURPOSE_ICONS[name as DonationPurposeIcon]?.icon ?? HeartHandshake;
+  return PURPOSE_ICONS[name as DonationPurposeIcon]?.icon ?? Heart;
 }
