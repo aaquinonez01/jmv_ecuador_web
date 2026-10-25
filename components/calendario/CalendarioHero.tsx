@@ -7,7 +7,7 @@ export default function CalendarioHero() {
   return (
     <section
       aria-labelledby="calendario-title"
-      className="relative isolate overflow-hidden bg-[#070d1d] pb-32 pt-28 sm:pb-40 sm:pt-32"
+      className="relative isolate overflow-hidden bg-[#070d1d] pb-14 pt-28 sm:pb-16 sm:pt-32"
     >
       <div
         aria-hidden="true"

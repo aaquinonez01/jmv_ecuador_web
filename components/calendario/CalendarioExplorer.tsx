@@ -17,7 +17,6 @@ import CategoryFilter from "./CategoryFilter";
 import DateCard from "./DateCard";
 import MobileRing from "./MobileRing";
 import StarRing from "./StarRing";
-import TodaySpotlight from "./TodaySpotlight";
 import YearList from "./YearList";
 import EmptyState from "./EmptyState";
 import { entryToEvent, slugifyFile, type EntryCategory } from "./shared";
@@ -69,7 +68,6 @@ export default function CalendarioExplorer({
   }, []);
 
   const entries = useMemo(() => [...datesToEntries(items, now), ...activities], [items, activities, now]);
-  const upcoming = useMemo(() => sortByUpcoming(entries.filter((e) => daysUntil(e.date, now) >= 0)), [entries, now]);
   const filtered = useMemo(
     () => (category ? entries.filter((e) => e.category === category) : entries),
     [entries, category],
@@ -109,11 +107,7 @@ export default function CalendarioExplorer({
 
   return (
     <>
-      <div className="relative -mt-16 sm:-mt-20">
-        <TodaySpotlight upcoming={upcoming} now={now} />
-      </div>
-
-      <section aria-labelledby="explora-title" className="relative mx-auto max-w-7xl px-4 pt-16 sm:px-6 sm:pt-20 lg:px-8">
+      <section aria-labelledby="explora-title" className="relative mx-auto max-w-7xl px-4 pt-10 sm:px-6 sm:pt-14 lg:px-8">
         <div className="max-w-2xl">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
             El anillo de las 12 estrellas
