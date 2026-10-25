@@ -2,7 +2,94 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* dark: aplica con <html class="dark"> y dentro de islas data-tone="dark"
+   (cabeceras con foto, header, footer); deja de aplicar dentro de data-tone="light". */
+@custom-variant dark (&:is(.dark *, [data-tone="dark"] *):not([data-tone="light"] *));
+/* Tema GLOBAL elegido (ignora las islas data-tone): p. ej. el icono sol/luna del selector */
+@custom-variant theme-dark (&:is(html.dark *));
+@custom-variant theme-light (&:is(html:not(.dark) *));
+
+/* ==========================================================================
+   TOKENS SEMÁNTICOS DEL TEMA (guía: docs/MODO-CLARO.md)
+   Claro en :root, oscuro en .dark. Las islas data-tone="dark|light" fuerzan
+   un modo en su subárbol (p. ej. texto blanco sobre foto en ambos modos).
+   El cambio de tema sólo cambia estas variables: sin re-render de React.
+   ========================================================================== */
+:root,
+[data-tone="light"] {
+  color-scheme: light;
+  /* Fondos de página y de sección */
+  --page: #faf7f1;               /* marfil cálido muy suave */
+  --page-deep: #f3eee4;          /* banda algo más marcada (antes #070d1d) */
+  --section-a: #faf7f1;          /* degradado de sección: arriba */
+  --section-b: #eaf1fa;          /* degradado de sección: abajo (azul muy claro) */
+  --section-blue: #e8eff8;       /* banda azulada (antes #132f55) */
+  /* Superficies */
+  --surface: #ffffff;            /* tarjeta */
+  --surface-2: #f3f1ec;          /* tarjeta secundaria / hover / chip neutro */
+  --surface-sunken: #efebe3;     /* hundido: pozos, inputs sobre tarjeta, pistas */
+  --surface-raised: #ffffff;     /* opaco: menús, popovers, barras fijas */
+  /* Texto (AA sobre --page y --surface) */
+  --fg: #0f172a;                 /* 17:1 */
+  --fg-muted: #334155;           /* 10:1 */
+  --fg-subtle: #475569;          /* 7:1 */
+  /* Bordes */
+  --line: rgb(15 23 42 / 0.10);
+  --line-strong: rgb(15 23 42 / 0.20);
+  /* Acentos de TEXTO (no fondos) */
+  --accent-gold-text: #8a5a00;   /* 5.5:1 sobre marfil; nunca #F5B83D sobre claro */
+  --accent-blue-text: #1d4e8a;   /* 8:1 */
+  /* Foco */
+  --focus-ring: #1d4e8a;
+  /* Cabecera sin foto (PageHero) */
+  --hero-a: #fbf8f2;
+  --hero-b: #f1ebde;
+  --hero-c: #dbe7f5;
+  /* Velo de foto: oscuro en ambos modos */
+  --hero-veil: #0f172a;
+  /* Sombras */
+  --card-shadow: 0 1px 2px rgb(15 23 42 / 0.05), 0 6px 20px -8px rgb(15 23 42 / 0.12);
+  --card-shadow-lg: 0 2px 4px rgb(15 23 42 / 0.05), 0 18px 40px -12px rgb(15 23 42 / 0.18);
+  /* Scrollbar */
+  --scrollbar-thumb: #c9c1b2;
+}
+
+.dark,
+[data-tone="dark"] {
+  color-scheme: dark;
+  --page: #0f172a;               /* = bg-jmv-ink / slate-900 */
+  --page-deep: #070d1d;
+  --section-a: #0f172a;          /* from-jmv-ink */
+  --section-b: #163a68;          /* to-[#163a68] */
+  --section-blue: #132f55;
+  --surface: rgb(255 255 255 / 0.06);
+  --surface-2: rgb(255 255 255 / 0.10);
+  --surface-sunken: rgb(2 6 23 / 0.35);
+  --surface-raised: #1e293b;
+  --fg: #ffffff;
+  --fg-muted: #cbd5e1;           /* slate-300 */
+  --fg-subtle: #94a3b8;          /* slate-400 */
+  --line: rgb(255 255 255 / 0.10);
+  --line-strong: rgb(255 255 255 / 0.20);
+  --accent-gold-text: #f5b83d;   /* = jmv-gold-text */
+  --accent-blue-text: #93c5fd;   /* blue-300 */
+  --focus-ring: #f5b83d;
+  --hero-a: #0f172a;
+  --hero-b: #163a68;
+  --hero-c: #1d4e8a;
+  --hero-veil: #0f172a;
+  --card-shadow: 0 0 #0000;
+  --card-shadow-lg: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+  --scrollbar-thumb: #334155;
+}
+
+/* Cambio de tema: sin transiciones mientras se alterna (lo pone lib/theme.ts) */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
 
 :root {
 
@@ -28,10 +115,9 @@
   --jmv-gold-text: #F5B83D;
   --jmv-gold-ink: #8A5A00;
   --jmv-ink: #0f172a;
-  /* Anillo de foco; en superficies claras usar data-surface="light" */
-  --focus-ring: #F5B83D;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* El anillo de foco (--focus-ring) está en los tokens semánticos de arriba */
+  --background: var(--page);
+  --foreground: var(--fg);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -65,6 +151,29 @@
 }
 
 @theme inline {
+  /* Tokens semánticos del tema (claro/oscuro) → utilidades bg-*, text-*, border-*, ring-*,
+     from-, via-, to-, fill-, stroke-… Admiten opacidad: bg-surface/80, border-fg/15 */
+  --color-page: var(--page);
+  --color-page-deep: var(--page-deep);
+  --color-section-a: var(--section-a);
+  --color-section-b: var(--section-b);
+  --color-section-blue: var(--section-blue);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent-gold: var(--accent-gold-text);
+  --color-accent-blue: var(--accent-blue-text);
+  --color-focus: var(--focus-ring);
+  --color-hero-veil: var(--hero-veil);
+  --shadow-card: var(--card-shadow);
+  --shadow-card-lg: var(--card-shadow-lg);
+
   /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -130,7 +239,21 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Tema oscuro forzado (clase .dark en <html>) */
+/* Utilidades compuestas del tema (ver docs/MODO-CLARO.md) */
+/* Degradado de sección: antes bg-gradient-to-b from-jmv-ink to-[#163a68] */
+@utility bg-section {
+  background-image: linear-gradient(to bottom, var(--section-a), var(--section-b));
+}
+/* Fondo de cabecera sin foto: antes from-jmv-ink via-[#163a68] to-jmv-blue */
+@utility bg-hero-plain {
+  background-image: linear-gradient(to bottom right, var(--hero-a), var(--hero-b) 50%, var(--hero-c));
+}
+/* Tarjeta estándar: fondo, borde y sombra del tema (añade tú el radio y el padding) */
+@utility surface-card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--card-shadow);
+}
 
 body {
   font-family: var(--font-sans);
@@ -139,21 +262,21 @@ body {
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #334155 var(--jmv-ink);
+  scrollbar-color: var(--scrollbar-thumb) var(--page);
 }
 
-/* Scrollbar acorde al tema oscuro */
+/* Scrollbar acorde al tema */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--jmv-ink);
+  background: var(--page);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border: 2px solid var(--jmv-ink);
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--page);
   border-radius: 999px;
 }
 
@@ -376,13 +499,16 @@ html {
     transition-duration: 150ms;
     transition-timing-function: ease-in-out;
   }
-  /* Foco visible global: dorado claro, visible sobre slate-900 y sobre el header azul */
+  /* Foco visible global: dorado en oscuro (y en header/footer azules, data-tone="dark"),
+     azul JMV en claro. --focus-ring lo definen los tokens del tema. */
   :focus-visible {
     outline: 3px solid var(--focus-ring);
     outline-offset: 2px;
   }
+  /* Isla clara heredada (tarjetas/paneles blancos fijos): foco azul y controles nativos claros */
   [data-surface="light"] {
     --focus-ring: var(--jmv-blue);
+    color-scheme: light;
   }
   /* Destino del enlace "Saltar al contenido": no necesita anillo */
   main:focus {
