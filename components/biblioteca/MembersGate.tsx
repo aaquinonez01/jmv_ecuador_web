@@ -20,7 +20,7 @@ export default function MembersGate({ slug, className }: { slug: string; classNa
         </span>
         <div>
           <h2 className="font-display text-xl font-semibold text-fg sm:text-2xl">Inicia sesión para verlo</h2>
-          <p className="mt-1.5 text-sm leading-relaxed text-fg-muted sm:text-base">
+          <p className="mt-1.5 text-sm leading-relaxed text-fg-soft sm:text-base">
             Este material está reservado para quienes tienen cuenta en la web de JMV Ecuador. Entra con la tuya y te traemos de vuelta aquí mismo.
           </p>
         </div>

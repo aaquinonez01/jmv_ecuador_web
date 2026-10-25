@@ -394,7 +394,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                         onPointerLeave={() => setActive((k) => (k === e.key ? null : k))}
                         className={cn(
                           "flex min-h-11 w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left text-sm transition-colors",
-                          selected ? "bg-jmv-blue/10 text-fg dark:bg-white/12" : "text-fg-muted hover:bg-fg/5",
+                          selected ? "bg-jmv-blue/10 text-fg dark:bg-white/12" : "text-fg-soft hover:bg-fg/5",
                         )}
                       >
                         <span
@@ -442,7 +442,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
         type="button"
         onClick={() => go(month - 1)}
         aria-label={`Mes anterior: ${MONTHS[(month + 10) % 12]}`}
-        className="absolute bottom-1 left-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:bg-white/5 dark:hover:bg-white/15"
+        className="absolute bottom-1 left-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface-card text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:hover:bg-white/15"
       >
         <ChevronLeft className="h-5 w-5" aria-hidden />
       </button>
@@ -450,7 +450,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
         type="button"
         onClick={() => go(month + 1)}
         aria-label={`Mes siguiente: ${MONTHS[month % 12]}`}
-        className="absolute bottom-1 right-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:bg-white/5 dark:hover:bg-white/15"
+        className="absolute bottom-1 right-1 flex h-12 w-12 items-center justify-center rounded-full border border-fg/15 bg-surface-card text-fg shadow-card transition-colors hover:bg-jmv-blue/10 dark:hover:bg-white/15"
       >
         <ChevronRight className="h-5 w-5" aria-hidden />
       </button>

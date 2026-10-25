@@ -11,7 +11,7 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
   return (
     <article
       aria-labelledby={titleId}
-      className="flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-fg shadow-card dark:border-white/15 dark:bg-white/[0.07]"
+      className="flex h-full flex-col overflow-hidden rounded-3xl border border-line-card bg-surface text-fg shadow-card dark:bg-white/[0.07]"
     >
       {campaign.imageUrl ? (
         <div className="relative aspect-[16/9] bg-surface-sunken dark:bg-white/5">
@@ -40,7 +40,7 @@ export default function CampaignCard({ campaign }: { campaign: DonationCampaign 
             {dates}
           </p>
         ) : null}
-        <p className="mt-4 whitespace-pre-line leading-relaxed text-fg-muted">{campaign.description}</p>
+        <p className="mt-4 whitespace-pre-line leading-relaxed text-fg-soft">{campaign.description}</p>
 
         {progress ? (
           <div className="mt-auto pt-6">

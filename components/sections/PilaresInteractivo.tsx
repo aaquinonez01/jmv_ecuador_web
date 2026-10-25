@@ -347,7 +347,7 @@ export default function PilaresInteractivo() {
 
               <div className="flex flex-col">
                 {pilar.descripcion.map((parrafo, j) => (
-                  <p key={j} className={`text-base leading-7 text-fg-muted sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
+                  <p key={j} className={`text-base leading-7 text-fg-soft sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
                     {parrafo}
                   </p>
                 ))}

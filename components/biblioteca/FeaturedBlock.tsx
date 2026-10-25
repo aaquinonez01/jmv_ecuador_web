@@ -43,8 +43,8 @@ export default function FeaturedBlock({ docs }: { docs: LibraryCardDoc[] }) {
                 {main.title}
               </Link>
             </h2>
-            {main.author && <p className="mt-3 text-lg text-fg-muted">{main.author}</p>}
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-fg-muted sm:text-lg">{main.summary}</p>
+            {main.author && <p className="mt-3 text-lg text-fg-soft">{main.author}</p>}
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-fg-soft sm:text-lg">{main.summary}</p>
 
             <ul className="mt-6 flex flex-wrap gap-2 text-sm text-fg-muted dark:text-slate-100" aria-label="Detalles">
               <li className="inline-flex items-center gap-1.5 rounded-full border border-fg/15 bg-fg/[0.06] px-3 py-1.5">

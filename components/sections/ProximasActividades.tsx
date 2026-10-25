@@ -104,7 +104,7 @@ function Documents({ item, max }: { item: UpcomingActivityItem; max: number }) {
   if (!item.documents.length) return null;
   return (
     <div className="mt-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">Documentos</p>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-fg-soft">Documentos</p>
       <ul className="flex flex-wrap gap-2">
         {item.documents.slice(0, max).map((document) => (
           <li key={document.id}>
@@ -164,11 +164,11 @@ export default async function ProximasActividades({
         />
 
         {!featured ? (
-          <div className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card dark:border-white/15 dark:bg-white/5 sm:p-10">
+          <div className="rounded-[2rem] border border-line-card bg-surface-card p-8 text-center shadow-card sm:p-10">
             <h3 className="text-2xl font-semibold text-fg">
               Pronto anunciaremos el próximo encuentro
             </h3>
-            <p className="mx-auto mt-3 max-w-xl text-fg-muted">
+            <p className="mx-auto mt-3 max-w-xl text-fg-soft">
               Síguenos en redes para enterarte primero de los retiros, encuentros y misiones.
             </p>
             {instagram && (
@@ -195,19 +195,19 @@ export default async function ProximasActividades({
           >
             <article
               aria-labelledby={`evento-${featured.id}`}
-              className="overflow-hidden rounded-[2rem] border border-line bg-surface shadow-card-lg dark:border-white/15 dark:shadow-2xl"
+              className="overflow-hidden rounded-[2rem] border border-line-card bg-surface shadow-card-lg dark:shadow-2xl"
             >
               <div className="flex flex-col lg:flex-row">
                 <div className="order-2 min-w-0 flex-1 p-5 sm:p-6 lg:order-1 lg:p-10">
                   <div className="mb-4 flex flex-wrap gap-2">
                     <StatusBadge status={featured.registrationStatus} />
                     {featured.type?.name ? (
-                      <span className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg dark:border-white/15">
+                      <span className="rounded-full border border-line-card bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg">
                         {featured.type.name}
                       </span>
                     ) : null}
                     {featured.pillar?.name ? (
-                      <span className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg dark:border-white/15">
+                      <span className="rounded-full border border-line-card bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-fg">
                         {featured.pillar.name}
                       </span>
                     ) : null}
@@ -216,30 +216,30 @@ export default async function ProximasActividades({
                   <h3 id={`evento-${featured.id}`} className="text-2xl font-bold text-fg lg:text-3xl">
                     {featured.title}
                   </h3>
-                  <p className="mt-3 max-w-2xl leading-7 text-fg-muted">
+                  <p className="mt-3 max-w-2xl leading-7 text-fg-soft">
                     {featured.summary || featured.description}
                   </p>
 
                   <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg">
                       <CalendarDays className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                       <span className="sr-only">Fecha: </span>
                       <EventDate item={featured} />
                     </li>
-                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                    <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg">
                       <MapPin className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                       <span className="sr-only">Lugar: </span>
                       {featured.location || "Lugar por confirmar"}
                     </li>
                     {featured.participantsLabel ? (
-                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg">
                         <Users className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                         <span className="sr-only">Participantes: </span>
                         {featured.participantsLabel}
                       </li>
                     ) : null}
                     {featured.maxRegistrationDate ? (
-                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg dark:bg-white/10">
+                      <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg">
                         <Clock3 className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                         <span>
                           Inscripciones hasta el{" "}
@@ -323,11 +323,11 @@ export default async function ProximasActividades({
                   <li key={activity.id}>
                     <article
                       aria-labelledby={`evento-${activity.id}`}
-                      className="rounded-[1.75rem] border border-line bg-surface p-5 shadow-card dark:border-white/15"
+                      className="rounded-[1.75rem] border border-line-card bg-surface p-5 shadow-card"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-fg-muted">
+                          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-fg-soft">
                             {activity.type?.name || "Actividad"}
                           </p>
                           <h3 id={`evento-${activity.id}`} className="mt-2 text-xl font-semibold text-fg">
@@ -350,7 +350,7 @@ export default async function ProximasActividades({
                         </li>
                       </ul>
 
-                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-fg-muted">
+                      <p className="mt-4 line-clamp-3 text-sm leading-6 text-fg-soft">
                         {activity.summary || activity.description}
                       </p>
 

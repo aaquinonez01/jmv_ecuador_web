@@ -49,7 +49,7 @@ export default function ProximaFiestaClient({
       <div className="relative mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 sm:px-6 md:flex-row md:items-center md:justify-between md:gap-8 lg:px-8">
         <div className="flex min-w-0 items-center gap-4 sm:pl-24 md:pl-28">
           <div
-            className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/5"
+            className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-2xl border border-line-card bg-surface-card shadow-card"
             aria-hidden
           >
             <span className="font-display text-2xl font-semibold leading-none">{fiesta.day}</span>

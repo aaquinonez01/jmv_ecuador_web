@@ -34,7 +34,7 @@ export default function OrganigramaLista({ nodos }: { nodos: OrgEntidad[] }) {
       )}
 
       {zonas.length === 0 ? (
-        <p className="rounded-2xl border border-line bg-surface p-5 text-fg-muted shadow-card dark:border-white/15 dark:bg-white/5">
+        <p className="rounded-2xl border border-line-card bg-surface-card p-5 text-fg-muted shadow-card">
           Pronto publicaremos las zonas pastorales y sus grupos.
         </p>
       ) : (
@@ -43,7 +43,7 @@ export default function OrganigramaLista({ nodos }: { nodos: OrgEntidad[] }) {
             const grupos = gruposDe(nodos, zona.id);
             return (
               <li key={zona.id}>
-                <details className="group rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/5 dark:open:bg-white/[0.07]">
+                <details className="group rounded-2xl border border-line-card bg-surface-card shadow-card dark:open:bg-white/[0.07]">
                   <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 rounded-2xl px-4 py-3 hover:bg-surface-2 [&::-webkit-details-marker]:hidden">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-jmv-red/10 text-jmv-red dark:bg-jmv-red/20 dark:text-red-200">
                       <MapPin className="h-5 w-5" aria-hidden />

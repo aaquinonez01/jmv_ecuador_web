@@ -40,7 +40,7 @@ export default function FilterChips<T extends string>({
             base,
             value === null
               ? "border-jmv-ink bg-jmv-ink text-white dark:border-white dark:bg-white dark:text-jmv-ink"
-              : "border-fg/20 bg-surface text-fg shadow-card hover:bg-surface-2 dark:bg-white/5 dark:hover:bg-white/10",
+              : "border-fg/20 bg-surface-card text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/10",
           )}
         >
           {value === null && <Check className="h-4 w-4" aria-hidden />}
@@ -59,7 +59,7 @@ export default function FilterChips<T extends string>({
                 base,
                 pressed
                   ? "border-jmv-gold bg-jmv-gold text-jmv-ink dark:border-jmv-gold-text dark:bg-jmv-gold-text"
-                  : "border-fg/20 bg-surface text-fg shadow-card hover:border-accent-gold/60 hover:bg-surface-2 dark:bg-white/5 dark:hover:bg-white/10",
+                  : "border-fg/20 bg-surface-card text-fg shadow-card hover:border-accent-gold/60 hover:bg-surface-2 dark:hover:bg-white/10",
                 !pressed && count === 0 && "text-fg-subtle",
               )}
             >

@@ -90,7 +90,7 @@ export default function CollectionCard({ collection, index = 0 }: { collection: 
               {done}/{total}
             </span>
           </ProgressRing>
-          <p className="text-sm text-fg-muted">
+          <p className="text-sm text-fg-soft">
             <span className="block font-semibold text-fg">{readingsLabel(total)}</span>
             {done > 0 ? `${done} de ${total} leídas` : "Aún no empiezas"}
           </p>

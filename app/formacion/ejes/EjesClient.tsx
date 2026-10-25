@@ -168,7 +168,7 @@ export default function EjesClient() {
                 </span>
                 <div>
                   <h3 className="mb-2 text-2xl font-bold sm:text-3xl lg:text-4xl">{eje.titulo}</h3>
-                  <p className="text-base leading-relaxed text-fg-muted sm:text-lg">{eje.descripcion}</p>
+                  <p className="text-base leading-relaxed text-fg-soft sm:text-lg">{eje.descripcion}</p>
                 </div>
               </div>
 
@@ -179,7 +179,7 @@ export default function EjesClient() {
                     {eje.detalles.map((detalle) => (
                       <li key={detalle} className="flex items-start gap-3">
                         <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
-                        <span className="leading-relaxed text-fg-muted">{detalle}</span>
+                        <span className="leading-relaxed text-fg-soft">{detalle}</span>
                       </li>
                     ))}
                   </ul>
@@ -196,7 +196,7 @@ export default function EjesClient() {
                         >
                           {n + 1}
                         </span>
-                        <span className="leading-relaxed text-fg-muted">{objetivo}</span>
+                        <span className="leading-relaxed text-fg-soft">{objetivo}</span>
                       </li>
                     ))}
                   </ol>

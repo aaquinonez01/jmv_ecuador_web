@@ -19,7 +19,7 @@ const MapaInteractivo = dynamic(() => import("@/components/ui/MapaInteractivo"),
 function MapPlaceholder({ text }: { text: string }) {
   return (
     <div className="flex h-[60svh] min-h-[360px] w-full items-center justify-center rounded-2xl border border-line-strong bg-surface md:h-[640px]">
-      <p className="flex items-center gap-2 text-fg-muted">
+      <p className="flex items-center gap-2 text-fg-soft">
         <MapPin className="h-5 w-5 text-accent-gold" aria-hidden />
         {text}
       </p>
@@ -47,9 +47,9 @@ const GENERAL_WHATSAPP = whatsappLink("Hola, vi la web de JMV y quiero encontrar
 function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; distance?: number }) {
   const whatsapp = comunidadWhatsappLink(comunidad);
   return (
-    <li className="flex flex-col rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-5 text-fg">
+    <li className="flex flex-col rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-5 text-fg">
       <h3 className="text-lg font-semibold">{comunidad.nombre}</h3>
-      <p className="mt-1 flex items-center gap-1.5 text-sm text-fg-muted">
+      <p className="mt-1 flex items-center gap-1.5 text-sm text-fg-soft">
         <MapPin className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
         {comunidad.ciudad}
         {comunidad.zona?.nombre ? ` · ${comunidad.zona.nombre}` : ""}
@@ -185,7 +185,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
 
   return (
     <div>
-      <div className="flex flex-col gap-4 rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-5 sm:flex-row sm:items-end">
+      <div className="flex flex-col gap-4 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-5 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label htmlFor="buscar-ciudad" className="mb-2 block text-sm font-semibold text-fg">
             ¿En qué ciudad vives?
@@ -226,7 +226,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
         )}
       </div>
 
-      <div aria-live="polite" className="mt-4 min-h-6 text-sm text-fg-muted">
+      <div aria-live="polite" className="mt-4 min-h-6 text-sm text-fg-soft">
         {geo === "denied" && <p>No pudimos acceder a tu ubicación. Elige tu ciudad en la lista.</p>}
         {geo === "unavailable" && <p>Tu ubicación no está disponible ahora. Elige tu ciudad en la lista.</p>}
         {geo === "ok" && (
@@ -236,15 +236,15 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       </div>
 
       {status === "loading" && (
-        <p className="mt-6 text-fg-muted" role="status">
+        <p className="mt-6 text-fg-soft" role="status">
           Cargando comunidades…
         </p>
       )}
 
       {status === "error" && (
-        <div className="mt-6 rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-6 text-fg" role="alert">
+        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg" role="alert">
           <p className="font-semibold">No pudimos cargar la lista de comunidades.</p>
-          <p className="mt-1 text-fg-muted">
+          <p className="mt-1 text-fg-soft">
             Escríbenos por WhatsApp y te ponemos en contacto con la más cercana.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
@@ -266,9 +266,9 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       )}
 
       {status === "ready" && comunidades.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-6 text-fg">
+        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
           <p className="font-semibold">Pronto publicaremos aquí las comunidades JMV.</p>
-          <p className="mt-1 text-fg-muted">Mientras tanto, escríbenos y te ponemos en contacto.</p>
+          <p className="mt-1 text-fg-soft">Mientras tanto, escríbenos y te ponemos en contacto.</p>
           <a
             href={GENERAL_WHATSAPP}
             target="_blank"

@@ -26,7 +26,7 @@ export default async function HomeAnnouncementBanner() {
       className="relative overflow-hidden bg-hero-plain py-12 sm:py-16"
     >
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-3xl border border-line bg-surface shadow-card-lg dark:border-white/15 dark:bg-white/5 dark:shadow-2xl">
+        <div className="overflow-hidden rounded-3xl border border-line-card bg-surface-card shadow-card-lg dark:shadow-2xl">
           <div className="grid md:grid-cols-[minmax(0,320px)_1fr]">
             {primary.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -61,7 +61,7 @@ export default async function HomeAnnouncementBanner() {
                 </p>
               )}
 
-              <p className="mb-6 leading-relaxed text-fg-muted">
+              <p className="mb-6 leading-relaxed text-fg-soft">
                 {primary.mensaje}
               </p>
 

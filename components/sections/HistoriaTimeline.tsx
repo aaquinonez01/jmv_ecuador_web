@@ -102,7 +102,7 @@ export default function HistoriaTimeline() {
                 aria-hidden="true"
                 className="absolute -left-[2.05rem] top-1.5 h-4 w-4 rounded-full border-4 border-page bg-accent-gold sm:-left-[3.05rem]"
               />
-              <article className="grid overflow-hidden rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/5 md:grid-cols-[1fr_16rem]">
+              <article className="grid overflow-hidden rounded-2xl border border-line-card bg-surface-card shadow-card md:grid-cols-[1fr_16rem]">
                 <div className="p-5 sm:p-6">
                   <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span className="text-2xl font-bold text-accent-gold">{hito.year}</span>

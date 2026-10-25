@@ -32,7 +32,7 @@ export default function JmvMundoCarisma() {
           >
             ¿Qué vive la JMV?
           </h2>
-          <p className="text-lg leading-relaxed text-fg-muted">
+          <p className="text-lg leading-relaxed text-fg-soft">
             Las Juventudes Marianas Vicencianas son la renovación de la antigua
             Asociación de Hijas e Hijos de María. Como parte de la Familia de San
             Vicente de Paúl, comparten un mismo carisma en todo el mundo: amor a

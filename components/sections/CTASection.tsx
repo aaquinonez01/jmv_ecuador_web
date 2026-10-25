@@ -44,7 +44,7 @@ export default function CTASection() {
           >
             ¿Estás listo para transformar vidas?
           </h2>
-          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-fg-muted sm:text-xl">
+          <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-fg-soft sm:text-xl">
             En JMV Ecuador creemos que cada joven puede ser agente de cambio. Únete a nuestra misión
             de servir a los más necesitados y vivir el carisma vicenciano con alegría y esperanza.
           </p>
@@ -64,7 +64,7 @@ export default function CTASection() {
             </Link>
           </div>
 
-          <p className="mt-6 text-base text-fg-muted">
+          <p className="mt-6 text-base text-fg-soft">
             ¿Quieres apoyar la misión de otra forma?{" "}
             <Link
               href="/donar"
@@ -87,7 +87,7 @@ export default function CTASection() {
                   <Icon className="h-7 w-7" aria-hidden />
                 </span>
                 <span className="text-2xl font-bold text-fg">{title}</span>
-                <span className="mt-3 mb-6 leading-relaxed text-fg-muted">{description}</span>
+                <span className="mt-3 mb-6 leading-relaxed text-fg-soft">{description}</span>
                 <span className="mt-auto inline-flex items-center font-semibold text-accent-gold">
                   Explorar
                   <ArrowRight
@@ -105,7 +105,7 @@ export default function CTASection() {
           <blockquote className="mx-auto max-w-4xl font-display text-2xl italic leading-snug text-fg md:text-3xl">
             “Si amas a Cristo, ayuda al pobre, porque en él encontrarás a Cristo”
           </blockquote>
-          <figcaption className="mt-6 text-lg font-semibold text-fg-muted">
+          <figcaption className="mt-6 text-lg font-semibold text-fg-soft">
             — San Vicente de Paúl
           </figcaption>
         </figure>

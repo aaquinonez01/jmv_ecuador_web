@@ -33,7 +33,7 @@ export default function CalendarioHero() {
         >
           Año <span className="italic text-accent-gold">Vicenciano</span>
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-fg-soft sm:text-xl">
           Las fechas que nos unen como JMV y Familia Vicenciana
         </p>
       </div>

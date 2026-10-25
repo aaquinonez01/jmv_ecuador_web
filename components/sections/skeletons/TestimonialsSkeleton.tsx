@@ -11,7 +11,7 @@ export default function TestimonialsSkeleton() {
           <div className="h-10 w-72 animate-pulse rounded-lg bg-fg/10" />
           <div className="h-5 w-full max-w-xl animate-pulse rounded bg-fg/[0.08]" />
         </div>
-        <div className="mx-auto max-w-4xl rounded-3xl border border-line bg-surface p-6 dark:bg-white/5 sm:p-10 md:p-12">
+        <div className="mx-auto max-w-4xl rounded-3xl border border-line bg-surface-card p-6 sm:p-10 md:p-12">
           <div className="mx-auto mb-6 h-10 w-10 animate-pulse rounded-full bg-fg/10" />
           <div className="mx-auto space-y-3">
             <div className="h-5 w-full animate-pulse rounded bg-fg/[0.08]" />

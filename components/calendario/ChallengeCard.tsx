@@ -33,7 +33,7 @@ export default function ChallengeCard({ slug, challenge }: { slug: string; chall
       aria-labelledby="reto-title"
       className={cn(
         "relative overflow-hidden rounded-3xl border p-6 transition-colors duration-500 sm:p-8",
-        done ? "border-accent-gold/60 bg-accent-gold/10" : "border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.04]",
+        done ? "border-accent-gold/60 bg-accent-gold/10" : "border-line-card bg-surface shadow-card dark:bg-white/[0.04]",
       )}
     >
       <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export default function ChallengeCard({ slug, challenge }: { slug: string; chall
           </span>
           Lo haré
         </button>
-        <p aria-live="polite" className="text-sm text-fg-muted">
+        <p aria-live="polite" className="text-sm text-fg-soft">
           {done ? "¡Bien! Cuéntale a tu comunidad cómo te fue." : ""}
         </p>
       </div>

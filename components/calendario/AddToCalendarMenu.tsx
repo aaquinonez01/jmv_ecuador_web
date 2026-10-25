@@ -44,7 +44,7 @@ export default function AddToCalendarMenu({
         <DropdownMenu.Content
           align="start"
           sideOffset={8}
-          className="z-50 min-w-60 rounded-2xl border border-line bg-surface-raised p-1.5 shadow-card-lg dark:border-white/15 dark:bg-[#13213b] dark:shadow-2xl dark:shadow-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+          className="z-50 min-w-60 rounded-2xl border border-line-card bg-surface-raised p-1.5 shadow-card-lg dark:bg-[#13213b] dark:shadow-2xl dark:shadow-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
         >
           <DropdownMenu.Item asChild className={itemClass}>
             <a href={googleCalendarUrl(event)} target="_blank" rel="noopener noreferrer">

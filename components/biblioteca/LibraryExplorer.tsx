@@ -119,7 +119,7 @@ function ExplorerView({
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-        <p aria-live="polite" aria-atomic="true" className="text-sm font-medium text-fg-muted">
+        <p aria-live="polite" aria-atomic="true" className="text-sm font-medium text-fg-soft">
           {resultsLabel(results.length, filters)}
         </p>
         {active && results.length > 0 && (

@@ -61,7 +61,7 @@ export default async function EstructuraPage() {
           <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
             {cifras.map((c) => (
               <div key={c.plural} className="flex flex-col-reverse">
-                <dt className="text-sm text-fg-muted dark:text-slate-200">
+                <dt className="text-sm text-fg-soft">
                   {c.valor === 1 ? c.singular : c.plural}
                 </dt>
                 <dd className="text-3xl font-bold text-accent-gold sm:text-4xl">{c.valor}</dd>

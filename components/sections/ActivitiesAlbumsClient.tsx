@@ -53,7 +53,7 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
   const photos = activity.gallery.length;
   return (
     <li>
-      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-surface text-left shadow-card transition-colors hover:bg-surface-2 dark:border-white/15 dark:shadow-xl dark:hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
+      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line-card bg-surface text-left shadow-card transition-colors hover:bg-surface-2 dark:shadow-xl dark:hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
         <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
           {activity.coverImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -98,11 +98,11 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
               <span className="sr-only">. Ver álbum{photos ? ` de ${photos} fotos` : ""}</span>
             </button>
           </h3>
-          <p className="line-clamp-3 text-sm leading-6 text-fg-muted">
+          <p className="line-clamp-3 text-sm leading-6 text-fg-soft">
             {activity.summary || activity.description}
           </p>
 
-          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-fg-muted sm:grid-cols-2">
+          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-fg-muted dark:text-slate-100 sm:grid-cols-2">
             {date && (
               <li className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
@@ -133,7 +133,7 @@ function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: ()
 }
 
 const selectTrigger =
-  "h-11 w-full rounded-xl border-line-strong bg-surface px-3.5 text-sm text-fg shadow-card data-[size=default]:h-11 hover:border-fg/40 [&>svg]:text-fg/80 [&_[data-placeholder]]:text-fg/80";
+  "h-11 w-full rounded-xl border-line-input bg-surface px-3.5 text-sm text-fg shadow-card data-[size=default]:h-11 hover:border-fg/40 [&>svg]:text-fg/80 [&_[data-placeholder]]:text-fg/80";
 const selectItem =
   "min-h-11 text-fg focus:bg-surface-2 focus:text-fg data-[state=checked]:bg-jmv-gold/15 data-[state=checked]:text-accent-gold";
 
@@ -158,7 +158,7 @@ function CatalogSelect({
     <div className="space-y-1.5">
       <label
         htmlFor={id}
-        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-fg-muted"
+        className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-fg-soft"
       >
         <Icon className="h-3.5 w-3.5" strokeWidth={2.4} aria-hidden />
         {label}
@@ -281,7 +281,7 @@ export default function ActivitiesAlbumsClient({
             <h2 id="realizadas-titulo" className="mt-3 text-3xl font-bold text-fg sm:text-4xl">
               Actividades realizadas
             </h2>
-            <p className="mt-3 text-lg text-fg-muted">
+            <p className="mt-3 text-lg text-fg-soft">
               Retiros, encuentros, misiones y asambleas que ya vivimos. Abre un álbum para ver las fotos.
             </p>
           </div>
@@ -289,10 +289,10 @@ export default function ActivitiesAlbumsClient({
           <div
             role="search"
             aria-label="Filtrar actividades realizadas"
-            className="rounded-[1.5rem] border border-line bg-surface p-5 shadow-card-lg lg:min-w-[26rem] dark:border-white/15 dark:bg-white/[0.07] dark:shadow-2xl"
+            className="rounded-[1.5rem] border border-line-card bg-surface p-5 shadow-card-lg lg:min-w-[26rem] dark:bg-white/[0.07] dark:shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-fg-muted">
+              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-fg-soft">
                 <Filter className="h-4 w-4 text-accent-gold" strokeWidth={2.4} aria-hidden />
                 Filtros
               </p>
@@ -329,7 +329,7 @@ export default function ActivitiesAlbumsClient({
               />
             </div>
 
-            <p className="mt-3 text-sm text-fg-muted" aria-live="polite" aria-atomic="true">
+            <p className="mt-3 text-sm text-fg-soft" aria-live="polite" aria-atomic="true">
               {status === "loading" ? (
                 "Buscando actividades…"
               ) : status === "error" ? (
@@ -345,9 +345,9 @@ export default function ActivitiesAlbumsClient({
         </div>
 
         {status === "error" && items.length === 0 ? (
-          <div role="alert" className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card sm:p-10 dark:border-white/15 dark:bg-white/5">
+          <div role="alert" className="rounded-[2rem] border border-line-card bg-surface-card p-8 text-center shadow-card sm:p-10">
             <h3 className="text-2xl font-semibold text-fg">No pudimos cargar las actividades</h3>
-            <p className="mt-2 text-fg-muted">Revisa tu conexión e inténtalo de nuevo en un momento.</p>
+            <p className="mt-2 text-fg-soft">Revisa tu conexión e inténtalo de nuevo en un momento.</p>
             <button
               type="button"
               onClick={() => void fetchPage(0, false)}
@@ -360,11 +360,11 @@ export default function ActivitiesAlbumsClient({
         ) : status === "loading" && items.length === 0 ? (
           <AlbumGridSkeleton />
         ) : items.length === 0 ? (
-          <div className="rounded-[2rem] border border-line bg-surface p-8 text-center shadow-card sm:p-10 dark:border-white/15 dark:bg-white/5">
+          <div className="rounded-[2rem] border border-line-card bg-surface-card p-8 text-center shadow-card sm:p-10">
             {hasFilters ? (
               <>
                 <h3 className="text-2xl font-semibold text-fg">No hay actividades con esos filtros</h3>
-                <p className="mt-2 text-fg-muted">Prueba con otro pilar o tipo de actividad.</p>
+                <p className="mt-2 text-fg-soft">Prueba con otro pilar o tipo de actividad.</p>
                 <button
                   type="button"
                   onClick={clearFilters}
@@ -376,7 +376,7 @@ export default function ActivitiesAlbumsClient({
             ) : (
               <>
                 <h3 className="text-2xl font-semibold text-fg">Pronto compartiremos los álbumes</h3>
-                <p className="mt-2 text-fg-muted">Aquí verás las fotos de nuestras actividades.</p>
+                <p className="mt-2 text-fg-soft">Aquí verás las fotos de nuestras actividades.</p>
               </>
             )}
           </div>
@@ -395,7 +395,7 @@ export default function ActivitiesAlbumsClient({
             </ul>
 
             {status === "error" && (
-              <p role="alert" className="mt-6 text-center text-fg-muted">
+              <p role="alert" className="mt-6 text-center text-fg-muted dark:text-slate-100">
                 No pudimos cargar más actividades.{" "}
                 <button
                   type="button"
@@ -417,7 +417,7 @@ export default function ActivitiesAlbumsClient({
                 >
                   {status === "loadingMore" ? "Cargando…" : "Cargar más actividades"}
                 </button>
-                <p className="text-sm text-fg-muted">
+                <p className="text-sm text-fg-soft">
                   Mostrando {items.length} de {total}
                 </p>
               </div>

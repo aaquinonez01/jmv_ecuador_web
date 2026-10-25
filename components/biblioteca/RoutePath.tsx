@@ -23,7 +23,7 @@ export function RouteProgressSummary({ docs }: { docs: LibraryCardDoc[] }) {
           {percent}%
         </span>
       </ProgressRing>
-      <p className="text-sm text-fg-muted">
+      <p className="text-sm text-fg-soft">
         <span className="block text-base font-semibold text-fg">
           {done === total && total > 0 ? "¡Ruta completada!" : done > 0 ? "Vas muy bien" : "Tu camino empieza aquí"}
         </span>
@@ -180,7 +180,7 @@ export default function RoutePath({ docs }: { docs: LibraryCardDoc[] }) {
               </Link>
             </>
           ) : all ? (
-            <p className="mt-4 text-fg-muted">
+            <p className="mt-4 text-fg-soft">
               Leíste todas las lecturas de esta ruta. ¡Qué bien! Compártela con tu grupo o elige otra ruta en la biblioteca.
             </p>
           ) : (

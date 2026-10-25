@@ -48,9 +48,9 @@ export default function StatutesView({
         ]}
         actions={actions}
       >
-        <div className="mt-8 flex max-w-xl items-start gap-3 rounded-2xl border border-accent-gold/40 bg-surface p-4 shadow-card dark:bg-white/5 dark:backdrop-blur-sm">
+        <div className="mt-8 flex max-w-xl items-start gap-3 rounded-2xl border border-accent-gold/40 bg-surface-card p-4 shadow-card dark:backdrop-blur-sm">
           <BadgeCheck className="mt-0.5 h-6 w-6 shrink-0 text-accent-gold" aria-hidden />
-          <p className="text-sm leading-relaxed text-fg-muted dark:text-slate-200 sm:text-base">
+          <p className="text-sm leading-relaxed text-fg-soft sm:text-base">
             <strong className="block font-semibold text-fg">
               Aprobados el {approved}
             </strong>
@@ -59,7 +59,7 @@ export default function StatutesView({
         </div>
         <ul aria-label="Hitos de la Asociación" className="mt-5 flex flex-wrap gap-2">
           {MILESTONES.map((m) => (
-            <li key={m.year} className="rounded-full border border-line-strong bg-surface/60 px-3 py-1.5 text-sm text-fg-muted dark:bg-transparent dark:text-slate-200">
+            <li key={m.year} className="rounded-full border border-line-strong bg-surface/60 px-3 py-1.5 text-sm text-fg-soft dark:bg-transparent">
               {m.label} <strong className="font-semibold text-accent-gold">{m.year}</strong>
             </li>
           ))}

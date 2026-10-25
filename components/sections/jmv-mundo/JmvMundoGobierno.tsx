@@ -122,7 +122,7 @@ export default function JmvMundoGobierno() {
 
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <p className="mb-6 leading-relaxed text-fg-muted">
+              <p className="mb-6 leading-relaxed text-fg-soft">
                 Su misión es centralizar la información de la asociación y
                 promover la comunicación entre los países miembros. Lo integran
                 el Subdirector General, la Delegada Internacional y un equipo de
@@ -139,12 +139,12 @@ export default function JmvMundoGobierno() {
                     className="object-cover"
                   />
                 </div>
-                <figcaption className="text-sm text-fg-muted">
+                <figcaption className="text-sm text-fg-soft">
                   El <span className="font-semibold text-fg">P. Robert Maloney, CM</span>{" "}
                   estableció el Secretariado Internacional en Madrid en 1999.
                 </figcaption>
               </figure>
-              <ul className="space-y-3 text-fg-muted">
+              <ul className="space-y-3 text-fg-soft">
                 <li className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
                   <span>
@@ -174,11 +174,11 @@ export default function JmvMundoGobierno() {
             <div className="rounded-xl border border-line bg-surface-sunken p-6 dark:bg-jmv-ink/50">
               <h4 className="mb-4 text-lg font-semibold text-fg">Equipo del Secretariado</h4>
               <ul className="space-y-3 text-sm">
-                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface px-3 py-2 dark:bg-white/5">
+                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-card px-3 py-2">
                   <span className="font-medium text-fg">P. Francisco Magnaye Jr., CM</span>
                   <span className="text-accent-gold">Subdirector</span>
                 </li>
-                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface px-3 py-2 dark:bg-white/5">
+                <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-card px-3 py-2">
                   <span className="font-medium text-fg">Sor Isabel Higueras, DC</span>
                   <span className="text-accent-gold">Delegada Internacional</span>
                 </li>

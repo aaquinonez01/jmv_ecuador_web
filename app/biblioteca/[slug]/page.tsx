@@ -186,7 +186,7 @@ export default async function LibraryDocumentPage({ params }: Props) {
               >
                 {doc.title}
               </h1>
-              {doc.author && <p className="mt-3 text-xl text-fg-muted">{doc.author}</p>}
+              {doc.author && <p className="mt-3 text-xl text-fg-soft">{doc.author}</p>}
               <p className="mt-4 max-w-2xl font-display text-lg leading-snug text-fg-muted dark:text-slate-100 sm:mt-5 sm:text-2xl">{doc.summary}</p>
 
               {/* En el celular la acción va antes que la ficha técnica */}
@@ -219,7 +219,7 @@ export default async function LibraryDocumentPage({ params }: Props) {
               <h2 id="sobre-title" className="font-display text-2xl font-semibold text-fg sm:text-3xl">
                 {doc.kind === "video" ? "Sobre este video" : "De qué trata"}
               </h2>
-              <div className="mt-4 space-y-5 text-lg leading-relaxed text-fg-muted">
+              <div className="mt-4 space-y-5 text-lg leading-relaxed text-fg-soft">
                 {paragraphs.map((p, i) => (
                   <p key={i}>{p}</p>
                 ))}

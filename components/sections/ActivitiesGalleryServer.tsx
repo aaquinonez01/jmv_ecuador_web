@@ -51,7 +51,7 @@ export default async function ActivitiesGalleryServer() {
         <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {items.map((activity) => (
             <li key={activity.id}>
-              <article className="h-full overflow-hidden rounded-[1.75rem] border border-line bg-surface shadow-card dark:border-white/15 dark:shadow-xl">
+              <article className="h-full overflow-hidden rounded-[1.75rem] border border-line-card bg-surface shadow-card dark:shadow-xl">
                 <div className="relative aspect-[4/3] bg-surface-sunken dark:bg-slate-900/40">
                   {activity.coverImageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -92,7 +92,7 @@ export default async function ActivitiesGalleryServer() {
                 <div className="space-y-4 p-6 text-fg">
                   <div>
                     <h3 className="text-2xl font-semibold">{activity.title}</h3>
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-fg-muted">
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-fg-soft">
                       {activity.summary || activity.description}
                     </p>
                   </div>

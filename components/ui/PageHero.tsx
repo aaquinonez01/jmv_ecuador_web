@@ -157,7 +157,7 @@ export default function PageHero({
           )}
 
           {description && (
-            <p className={cn("mt-5 max-w-2xl text-base leading-relaxed text-fg-muted dark:text-slate-200 sm:text-lg", centered && "mx-auto")}>
+            <p className={cn("mt-5 max-w-2xl text-base leading-relaxed text-fg-soft sm:text-lg", centered && "mx-auto")}>
               {description}
             </p>
           )}

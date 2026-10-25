@@ -63,7 +63,7 @@ export default function ConsejoNacionalSection({ consejo, asesores }: Props) {
         )}
 
         {miembros.length === 0 ? (
-          <p className="rounded-2xl border border-line bg-surface p-6 text-center text-fg-muted shadow-card dark:border-white/15 dark:bg-white/5">
+          <p className="rounded-2xl border border-line-card bg-surface-card p-6 text-center text-fg-muted shadow-card">
             Pronto publicaremos a los miembros del Consejo Nacional.
           </p>
         ) : (
@@ -129,7 +129,7 @@ interface PersonaCardProps {
 
 function PersonaCard(p: PersonaCardProps) {
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-line bg-surface p-5 shadow-card dark:border-white/15 dark:bg-white/5">
+    <article className="flex h-full flex-col rounded-2xl border border-line-card bg-surface-card p-5 shadow-card">
       <div className="flex items-center gap-4">
         <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-line-strong bg-surface-sunken dark:bg-jmv-ink">
           {p.imageUrl ? (
@@ -153,7 +153,7 @@ function PersonaCard(p: PersonaCardProps) {
         </div>
       </div>
 
-      <dl className="mt-4 space-y-2 text-sm text-fg-muted dark:text-slate-200">
+      <dl className="mt-4 space-y-2 text-sm text-fg-soft">
         {p.comunidad && (
           <div className="flex items-start gap-2">
             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
@@ -175,7 +175,7 @@ function PersonaCard(p: PersonaCardProps) {
       {p.citaBiblica && (
         <blockquote className="mt-3 flex items-start gap-2 rounded-lg border border-line bg-surface-2 p-3 dark:bg-white/5">
           <Quote className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
-          <p className="text-sm italic leading-relaxed text-fg-muted dark:text-slate-200">{p.citaBiblica}</p>
+          <p className="text-sm italic leading-relaxed text-fg-soft">{p.citaBiblica}</p>
         </blockquote>
       )}
 

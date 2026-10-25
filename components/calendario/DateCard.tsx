@@ -123,7 +123,7 @@ export default function DateCard({
           </Heading>
           {entry.subtitle && <p className="mt-1 text-sm text-fg-muted">{entry.subtitle}</p>}
           {entry.summary && (
-            <p className={cn("mt-3 text-sm leading-relaxed text-fg-muted", variant === "compact" && "line-clamp-3")}>
+            <p className={cn("mt-3 text-sm leading-relaxed text-fg-soft", variant === "compact" && "line-clamp-3")}>
               {entry.summary}
             </p>
           )}

@@ -74,7 +74,7 @@ export default function OrganigramaInteractivo({ nodos, lista }: Props) {
           <div
             role="group"
             aria-label="Forma de ver el organigrama"
-            className="inline-flex gap-1 rounded-xl border border-line bg-surface p-1 shadow-card dark:border-white/15 dark:bg-white/5"
+            className="inline-flex gap-1 rounded-xl border border-line-card bg-surface-card p-1 shadow-card"
           >
             {opcion("diagrama", "Ver diagrama", Network)}
             {opcion("lista", "Ver como lista", List)}

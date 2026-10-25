@@ -42,7 +42,7 @@ export default function LibraryHero({
           >
             Biblioteca <span className="italic text-accent-gold">JMV</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-muted sm:text-xl">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-fg-soft sm:text-xl">
             Lecturas para crecer en la fe, formarte y servir. Ábrelas desde tu celular y sigue donde te quedaste.
           </p>
 
@@ -105,7 +105,7 @@ export default function LibraryHero({
             })
           ) : (
             <div className="absolute inset-0 grid place-items-center">
-              <div className="h-56 w-40 rounded-[3px_10px_10px_3px] border border-line bg-surface shadow-card dark:bg-white/[0.04] dark:border-white/15" />
+              <div className="h-56 w-40 rounded-[3px_10px_10px_3px] border border-line-card bg-surface shadow-card dark:bg-white/[0.04]" />
             </div>
           )}
         </div>

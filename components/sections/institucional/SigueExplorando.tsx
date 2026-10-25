@@ -122,7 +122,7 @@ export default function SigueExplorando({ items, title = "Sigue explorando" }: P
                   className={`group flex h-full items-start gap-4 rounded-2xl border p-5 transition-colors ${
                     destacado
                       ? "border-accent-gold/60 bg-accent-gold/10 hover:bg-accent-gold/15"
-                      : "border-line bg-surface shadow-card hover:bg-surface-2 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10"
+                      : "border-line-card bg-surface-card shadow-card hover:bg-surface-2 dark:hover:bg-white/10"
                   }`}
                 >
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">

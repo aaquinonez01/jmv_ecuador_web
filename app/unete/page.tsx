@@ -112,7 +112,7 @@ export default function UnetePage() {
             {PASOS_UNETE.map((paso) => {
               const Icon = paso.icon;
               return (
-                <li key={paso.numero} className="rounded-2xl border border-line bg-surface shadow-card dark:border-white/15 dark:bg-white/[0.07] p-6 text-fg">
+                <li key={paso.numero} className="rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
                   <div className="flex items-center gap-3">
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-jmv-gold text-xl font-bold text-jmv-ink">
                       {paso.numero}
@@ -120,7 +120,7 @@ export default function UnetePage() {
                     <Icon className="h-6 w-6 text-accent-gold" aria-hidden />
                   </div>
                   <h3 className="mt-4 text-xl font-semibold">{paso.titulo}</h3>
-                  <p className="mt-2 text-fg-muted">{paso.descripcion}</p>
+                  <p className="mt-2 text-fg-soft">{paso.descripcion}</p>
                 </li>
               );
             })}
@@ -212,7 +212,7 @@ export default function UnetePage() {
               title="Déjanos tus datos"
               description="Si no sabes a qué comunidad escribir, completa el formulario y alguien del equipo nacional te contactará por WhatsApp."
             />
-            <p className="text-fg-muted">También puedes escribirnos directamente:</p>
+            <p className="text-fg-soft">También puedes escribirnos directamente:</p>
             <ul className="mt-3 space-y-2">
               <li>
                 <a
@@ -248,7 +248,7 @@ export default function UnetePage() {
             <h2 id="cta-unete-titulo" className="text-3xl font-bold sm:text-4xl">
               Es hora de dar el paso
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-fg-muted">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-fg-muted dark:text-slate-100">
               El mundo necesita tu corazón generoso y tu compromiso con quienes más sufren. Tu
               comunidad te está esperando.
             </p>
@@ -268,7 +268,7 @@ export default function UnetePage() {
                 <span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </div>
-            <p className="mt-6 text-fg-muted">
+            <p className="mt-6 text-fg-soft">
               ¿Quieres acompañar la misión de otra forma?{" "}
               <Link
                 href="/donar"

@@ -24,7 +24,7 @@ export function UnverifiedTag({ className }: { className?: string }) {
     <span
       title="Estamos confirmando este dato con nuestros asesores"
       className={cn(
-        "inline-flex items-center rounded-full border border-dashed border-fg/35 px-2.5 py-1 text-xs font-medium text-fg-muted",
+        "inline-flex items-center rounded-full border border-dashed border-fg/35 px-2.5 py-1 text-xs font-medium text-fg-soft",
         className,
       )}
     >

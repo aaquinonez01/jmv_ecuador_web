@@ -29,7 +29,7 @@ export default function SourceList({ source }: { source: string }) {
 
   return (
     <p className="[overflow-wrap:anywhere]">
-      <span className="font-semibold text-fg-muted">{parts.length > 1 ? "Fuentes:" : "Fuente:"}</span>{" "}
+      <span className="font-semibold text-fg-soft">{parts.length > 1 ? "Fuentes:" : "Fuente:"}</span>{" "}
       {parts.map((part, i) => (
         <span key={i}>
           {i > 0 && " · "}

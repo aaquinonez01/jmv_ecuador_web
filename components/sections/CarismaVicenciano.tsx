@@ -80,7 +80,7 @@ export default function CarismaVicenciano() {
         <div
           role="tablist"
           aria-label="Santos del carisma vicenciano"
-          className="mx-auto mb-8 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-line bg-surface p-2 shadow-card sm:flex-row dark:border-white/15 dark:bg-white/5"
+          className="mx-auto mb-8 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-line-card bg-surface-card p-2 shadow-card sm:flex-row"
         >
           {santos.map((s, i) => (
             <button
@@ -99,31 +99,31 @@ export default function CarismaVicenciano() {
 
         {santos.map((s, i) => (
           <div key={s.id} {...getPanelProps(i)} className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-            <article className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
+            <article className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card sm:p-8">
               <h3 className="text-2xl font-bold text-fg">{s.nombre}</h3>
               <p className="font-medium text-accent-gold">{s.subtitulo}</p>
               <p className="text-sm text-fg-subtle dark:text-slate-300">{s.anios}</p>
 
-              <p className="mt-5 text-lg leading-relaxed text-fg-muted">{s.descripcion}</p>
+              <p className="mt-5 text-lg leading-relaxed text-fg-soft">{s.descripcion}</p>
 
               <h4 className="mt-6 mb-3 text-lg font-bold text-fg">Enseñanzas principales</h4>
               <ul className="space-y-2">
                 {s.ensenanzas.map((e) => (
                   <li key={e} className="flex items-start gap-3">
                     <Star className="mt-1 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
-                    <span className="italic text-fg-muted">“{e}”</span>
+                    <span className="italic text-fg-soft">“{e}”</span>
                   </li>
                 ))}
               </ul>
 
               <div className="mt-6 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
                 <h4 className="mb-1 font-semibold text-accent-gold">Para nuestra vida hoy</h4>
-                <p className="text-fg-muted">{s.hoy}</p>
+                <p className="text-fg-soft">{s.hoy}</p>
               </div>
             </article>
 
             {s.imagen ? (
-              <figure className="relative min-h-80 overflow-hidden rounded-2xl border border-line shadow-card dark:border-white/15">
+              <figure className="relative min-h-80 overflow-hidden rounded-2xl border border-line-card shadow-card">
                 <Image
                   src={s.imagen}
                   alt={`Imagen de ${s.nombre}`}
@@ -134,7 +134,7 @@ export default function CarismaVicenciano() {
                 />
               </figure>
             ) : (
-              <figure className="relative flex min-h-80 flex-col items-center justify-center overflow-hidden rounded-2xl border border-line bg-surface p-8 text-center shadow-card dark:border-white/15 dark:bg-jmv-ink">
+              <figure className="relative flex min-h-80 flex-col items-center justify-center overflow-hidden rounded-2xl border border-line-card bg-surface p-8 text-center shadow-card dark:bg-jmv-ink">
                 <StarsRing
                   withCircle
                   className="pointer-events-none absolute h-80 w-80 text-accent-gold/15"
@@ -166,7 +166,7 @@ export default function CarismaVicenciano() {
           {carismaHoy.map((v) => {
             const Icon = v.icon;
             return (
-              <li key={v.titulo} className="rounded-2xl border border-line bg-surface p-6 shadow-card dark:border-white/15 dark:bg-white/5">
+              <li key={v.titulo} className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card">
                 <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent-gold/10 text-accent-gold dark:bg-white/10">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>

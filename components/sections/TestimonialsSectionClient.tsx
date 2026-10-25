@@ -108,7 +108,7 @@ export default function TestimonialsSectionClient({
               role="group"
               aria-roledescription="testimonio"
               aria-label={`${currentIndex + 1} de ${total}`}
-              className="rounded-3xl border border-line bg-surface p-6 text-center shadow-card-lg dark:border-white/15 dark:bg-white/5 dark:shadow-2xl sm:p-10 md:p-12"
+              className="rounded-3xl border border-line-card bg-surface-card p-6 text-center shadow-card-lg dark:shadow-2xl sm:p-10 md:p-12"
             >
               <Quote className="mx-auto mb-6 h-10 w-10 text-accent-gold" aria-hidden />
               <blockquote className="font-display text-xl leading-relaxed text-fg sm:text-2xl md:text-3xl">

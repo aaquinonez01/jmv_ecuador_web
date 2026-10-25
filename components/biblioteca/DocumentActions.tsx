@@ -193,7 +193,7 @@ export default function DocumentActions({
         </p>
       )}
       {link.error === "red" && (
-        <p className="mt-3 text-sm text-fg-muted">
+        <p className="mt-3 text-sm text-fg-soft">
           No pudimos abrir el recurso. Revisa tu conexión y vuelve a cargar la página.
         </p>
       )}
@@ -232,7 +232,7 @@ export default function DocumentActions({
           </button>
         )}
       </div>
-      <p role="status" className="mt-3 min-h-5 text-sm text-fg-muted">
+      <p role="status" className="mt-3 min-h-5 text-sm text-fg-soft">
         {message}
       </p>
     </div>

@@ -91,7 +91,7 @@ export default async function LibraryRoutePage({ params }: Props) {
               {route.title}
             </h1>
             {route.description && (
-              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-muted sm:text-xl">{route.description}</p>
+              <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-soft sm:text-xl">{route.description}</p>
             )}
             <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg-muted">
               <span className="font-semibold text-fg">{readingsLabel(docs.length)}</span>

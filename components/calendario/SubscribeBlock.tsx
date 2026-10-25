@@ -18,7 +18,7 @@ export default function SubscribeBlock() {
           <h2 id="suscribete" className="font-display text-3xl font-semibold leading-tight text-fg sm:text-4xl">
             Suscríbete al Año Vicenciano
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-fg-muted sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-fg-soft sm:text-lg">
             Agrega todas las fechas a tu calendario con un toque. Cuando sumemos nuevas fiestas o actividades, se
             actualizan solas en tu celular.
           </p>

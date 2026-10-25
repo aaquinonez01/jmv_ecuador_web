@@ -21,14 +21,14 @@ export default function MisionVision() {
         />
 
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <article className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
+          <article className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card sm:p-8">
             <div className="mb-5 flex items-center gap-4">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-red text-white">
                 <Target className="h-6 w-6" aria-hidden />
               </span>
               <h3 className="text-2xl font-bold text-fg sm:text-3xl">Misión</h3>
             </div>
-            <p className="text-lg leading-relaxed text-fg-muted">
+            <p className="text-lg leading-relaxed text-fg-soft">
               Formar integralmente a jóvenes comprometidos con la fe católica y el
               servicio a los pobres, viviendo el carisma vicenciano bajo la
               protección maternal de María, para ser agentes de transformación en
@@ -36,14 +36,14 @@ export default function MisionVision() {
             </p>
           </article>
 
-          <article className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8 dark:border-white/15 dark:bg-white/5">
+          <article className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card sm:p-8">
             <div className="mb-5 flex items-center gap-4">
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                 <Eye className="h-6 w-6" aria-hidden />
               </span>
               <h3 className="text-2xl font-bold text-fg sm:text-3xl">Visión</h3>
             </div>
-            <p className="text-lg leading-relaxed text-fg-muted">
+            <p className="text-lg leading-relaxed text-fg-soft">
               Ser una comunidad juvenil referente en Ecuador por la vivencia
               auténtica del carisma vicenciano, que contribuye a la transformación
               social y a la evangelización de las nuevas generaciones a través del

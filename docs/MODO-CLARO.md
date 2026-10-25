@@ -38,15 +38,19 @@ Eso provoca un salto en la hidratación y un re-render. Usa tokens o `dark:`.
 | `from-section-a` / `to-section-b` | igual que arriba | igual que arriba | degradados a medida |
 | `bg-hero-plain` (degradado) | marfil → arena → azul claro | ink → `#163a68` → jmv-blue | cabecera **sin** foto |
 | `bg-surface` | `#fff` | `white/6%` | tarjeta |
+| `bg-surface-card` | blanco | `white/5%` | tarjeta que en oscuro era `bg-white/5` |
 | `bg-surface-2` | `#f3f1ec` | `white/10%` | tarjeta secundaria, hover, chip neutro |
 | `bg-surface-sunken` | `#efebe3` | `rgb(2 6 23 / .35)` | pozo, pista o input sobre tarjeta |
 | `bg-surface-raised` | `#fff` | `#1e293b` | opaco: menú, popover, barra fija |
 | `surface-card` (utilidad compuesta) | fondo blanco, borde y sombra | `white/6%` + borde `white/10%` | tarjeta estándar (añade el radio y el padding) |
 | `text-fg` | `#0f172a` (17:1) | `#fff` | texto principal y títulos |
 | `text-fg-muted` | `#334155` (10:1) | `#cbd5e1` slate-300 | texto secundario |
+| `text-fg-soft` | `#334155` (10:1) | `#e2e8f0` slate-200 | texto secundario que en oscuro era slate-200 (descripciones, párrafos largos) |
 | `text-fg-subtle` | `#475569` (7:1) | `#94a3b8` slate-400 | metadatos, notas |
 | `border-line` | `slate-900/10%` | `white/10%` | borde normal |
+| `border-line-card` | `slate-900/10%` | `white/15%` | borde de tarjeta que en oscuro era `border-white/15` |
 | `border-line-strong` | `slate-900/20%` | `white/20%` | borde marcado, separador visible |
+| `border-line-input` | `#7c8799` (3.6:1) | `white/20%` | borde de inputs, selects y otros controles de formulario |
 | `text-accent-gold` | `#8a5a00` (5.5:1) | `#f5b83d` (jmv-gold-text) | eyebrow, cifras, enlaces dorados |
 | `text-accent-blue` | `#1d4e8a` | `#93c5fd` blue-300 | enlaces y acentos azules |
 | `ring-focus` / `outline-focus` | jmv-blue | `#f5b83d` | foco a medida (el global ya lo pone) |
@@ -129,7 +133,8 @@ Eso provoca un salto en la hidratación y un re-render. Usa tokens o `dark:`.
 | `border-white/20` a `/30` | `border-line-strong` |
 | `divide-white/10`, `ring-white/10` | `divide-line`, `ring-line` |
 | `text-white` (en contenido, no sobre foto ni botón) | `text-fg` |
-| `text-slate-100`, `text-slate-200`, `text-slate-300` | `text-fg-muted` |
+| `text-slate-200` | `text-fg-soft` (conserva el slate-200 en oscuro) |
+| `text-slate-100`, `text-slate-300` | `text-fg-muted` (slate-100: añade `dark:text-slate-100`) |
 | `text-slate-400`, `text-slate-500` (sobre oscuro) | `text-fg-subtle` |
 | `text-white/80`, `text-white/70` | `text-fg/80`, `text-fg-muted` |
 | `text-jmv-gold-text` (sobre fondo que ahora cambia) | `text-accent-gold` |

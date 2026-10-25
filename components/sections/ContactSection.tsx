@@ -62,7 +62,7 @@ export default function ContactSection() {
                 <a
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="group flex min-h-11 items-start gap-4 rounded-2xl border border-line bg-surface p-5 shadow-card transition-colors hover:border-line-strong hover:bg-surface-2 dark:border-white/15 dark:bg-white/5 dark:hover:border-white/30 dark:hover:bg-white/10"
+                  className="group flex min-h-11 items-start gap-4 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card transition-colors hover:border-line-strong hover:bg-surface-2 dark:hover:border-white/30 dark:hover:bg-white/10"
                 >
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                     <Icon className="h-6 w-6" aria-hidden />
@@ -80,7 +80,7 @@ export default function ContactSection() {
             ))}
           </ul>
 
-          <div className="mt-8 rounded-2xl border border-line bg-surface p-5 shadow-card dark:border-white/15 dark:bg-white/5">
+          <div className="mt-8 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card">
             <p className="flex items-center gap-2 font-semibold">
               <MapPin className="h-5 w-5 text-accent-gold" aria-hidden />
               Sede nacional

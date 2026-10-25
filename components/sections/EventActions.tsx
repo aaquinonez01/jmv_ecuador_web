@@ -67,7 +67,7 @@ export default function EventActions({
 
       {event && (
         <div role="group" aria-label={`Agregar ${title} a mi calendario`} className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <span className="w-full text-sm font-semibold text-fg-muted sm:w-auto" aria-hidden="true">
+          <span className="w-full text-sm font-semibold text-fg-soft sm:w-auto" aria-hidden="true">
             Agregar a mi calendario:
           </span>
           <a href={googleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className={secondary}>

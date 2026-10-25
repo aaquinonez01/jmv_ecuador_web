@@ -325,7 +325,7 @@ export default function SantosClient() {
                   <h3 className="mb-1 text-2xl font-bold sm:text-3xl lg:text-4xl">{santo.nombre}</h3>
                   <p className="mb-1 text-base font-semibold text-accent-gold sm:text-lg">{santo.titulo}</p>
                   <p className="mb-3 text-sm text-fg-muted">{santo.fechas}</p>
-                  <p className="text-base leading-relaxed text-fg-muted sm:text-lg">{santo.descripcion}</p>
+                  <p className="text-base leading-relaxed text-fg-soft sm:text-lg">{santo.descripcion}</p>
                 </div>
               </div>
 
@@ -340,7 +340,7 @@ export default function SantosClient() {
                     {santo.legado.map((item) => (
                       <li key={item} className="flex items-start gap-3">
                         <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
-                        <span className="leading-relaxed text-fg-muted">{item}</span>
+                        <span className="leading-relaxed text-fg-soft">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -349,7 +349,7 @@ export default function SantosClient() {
                   <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Virtudes que nos inspiran</h4>
                   <ul className="space-y-3">
                     {santo.virtudes.map((virtud) => (
-                      <li key={virtud} className="rounded-xl border border-line bg-surface-2 p-4 leading-relaxed dark:bg-white/5 text-fg-muted">
+                      <li key={virtud} className="rounded-xl border border-line bg-surface-2 p-4 leading-relaxed dark:bg-white/5 text-fg-soft">
                         {virtud}
                       </li>
                     ))}

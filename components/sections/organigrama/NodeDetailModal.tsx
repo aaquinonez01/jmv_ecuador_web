@@ -54,7 +54,7 @@ export default function NodeDetailModal({ entidad, onClose }: NodeDetailModalPro
             destino?.scrollIntoView({ block: "start" });
             destino?.focus({ preventScroll: true });
           }}
-          className="fixed left-1/2 top-1/2 z-50 flex max-h-[90svh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-surface-raised text-fg shadow-card-lg dark:border-white/15 dark:bg-jmv-ink dark:shadow-2xl motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=open]:zoom-in-95"
+          className="fixed left-1/2 top-1/2 z-50 flex max-h-[90svh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line-card bg-surface-raised text-fg shadow-card-lg dark:bg-jmv-ink dark:shadow-2xl motion-safe:data-[state=open]:animate-in motion-safe:data-[state=open]:fade-in-0 motion-safe:data-[state=open]:zoom-in-95"
         >
           {entidad && (
             <Contenido
@@ -100,7 +100,7 @@ function Contenido({
 
       <div className="space-y-6 overflow-y-auto px-6 py-6">
         {entidad.descripcion && (
-          <Dialog.Description className="leading-relaxed text-fg-muted dark:text-slate-200">
+          <Dialog.Description className="leading-relaxed text-fg-soft">
             {entidad.descripcion}
           </Dialog.Description>
         )}
@@ -123,7 +123,7 @@ function Contenido({
             </h3>
             <ul className="flex flex-wrap gap-2">
               {entidad.provincias.map((p) => (
-                <li key={p} className="rounded-lg border border-line bg-surface-2 px-3 py-1 text-sm text-fg-muted dark:bg-white/5 dark:text-slate-200">
+                <li key={p} className="rounded-lg border border-line bg-surface-2 px-3 py-1 text-sm text-fg-soft dark:bg-white/5">
                   {p}
                 </li>
               ))}
