@@ -240,7 +240,7 @@ function VersionCard({
           aria-hidden
         >
           <FileText className="h-5 w-5" />
-          <span className="mt-0.5 text-xs font-bold">{item.versionLabel}</span>
+          <span className="mt-0.5 max-w-full truncate px-1 text-xs font-bold">{item.versionLabel}</span>
         </span>
         <div className="min-w-0">
           <h3 className="text-[15px] font-bold leading-tight text-slate-900">

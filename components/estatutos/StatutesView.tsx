@@ -52,7 +52,7 @@ export default function StatutesView({
           <BadgeCheck className="mt-0.5 h-6 w-6 shrink-0 text-jmv-gold-text" aria-hidden />
           <p className="text-sm leading-relaxed text-slate-200 sm:text-base">
             <strong className="block font-semibold text-white">
-              Aprobados el {approved} por el Director General de la Asociación
+              Aprobados el {approved}
             </strong>
             {version.approvedBy}
           </p>
