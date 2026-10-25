@@ -23,6 +23,7 @@ const routes = [
   "/jmv-en-el-mundo",
   "/pilares",
   "/quienes-somos",
+  "/quienes-somos/estatutos",
   "/quienes-somos/historia",
   "/unete",
 ];

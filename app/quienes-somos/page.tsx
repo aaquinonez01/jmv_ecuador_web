@@ -7,6 +7,7 @@ import CarismaVicenciano from "@/components/sections/CarismaVicenciano";
 import TestimoniosQuienesSomos from "@/components/sections/TestimoniosQuienesSomos";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import EstatutosTeaser from "@/components/estatutos/EstatutosTeaser";
 import { SITE, yearsSinceFoundation } from "@/lib/site";
 
 // ISR: ver app/page.tsx.
@@ -40,10 +41,11 @@ export default function QuienesSomosPage() {
       />
       <MisionVision />
       <CarismaVicenciano />
+      <EstatutosTeaser />
       <Suspense fallback={<TestimonialsSkeleton />}>
         <TestimoniosQuienesSomos />
       </Suspense>
-      <SigueExplorando items={["historia", "pilares", "estructura", "mundo", "unete"]} />
+      <SigueExplorando items={["historia", "estatutos", "pilares", "estructura", "mundo", "unete"]} />
     </>
   );
 }
