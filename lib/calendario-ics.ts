@@ -72,7 +72,8 @@ function fold(line: string) {
   return parts.join("\r\n ");
 }
 
-function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcuador>, stamp: string) {
+function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcuador>, now: Date) {
+  const stamp = utcStamp(now);
   const year = nextYear(item.month, item.day, today);
   const url = `${SITE.url}${calendarHref(item.slug)}`;
   const description = [
@@ -103,7 +104,8 @@ function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcua
   ];
   if (item.updatedAt) {
     const updated = new Date(item.updatedAt);
-    if (!Number.isNaN(updated.getTime())) lines.push(`LAST-MODIFIED:${utcStamp(updated)}`);
+    // Nunca en el futuro (si el reloj del servidor y la base no coinciden)
+    if (!Number.isNaN(updated.getTime())) lines.push(`LAST-MODIFIED:${utcStamp(updated > now ? now : updated)}`);
   }
   lines.push("END:VEVENT");
   return lines;
@@ -111,7 +113,6 @@ function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcua
 
 export function buildYearFeed(items: CalendarDateItem[], now: Date = new Date()) {
   const today = todayInEcuador(now);
-  const stamp = utcStamp(now);
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -126,7 +127,7 @@ export function buildYearFeed(items: CalendarDateItem[], now: Date = new Date())
     `URL:${SITE.url}/calendario`,
     "REFRESH-INTERVAL;VALUE=DURATION:P1D",
     "X-PUBLISHED-TTL:P1D",
-    ...items.filter((item) => item.published).flatMap((item) => eventLines(item, today, stamp)),
+    ...items.filter((item) => item.published).flatMap((item) => eventLines(item, today, now)),
     "END:VCALENDAR",
   ];
   return lines.map(fold).join("\r\n") + "\r\n";
