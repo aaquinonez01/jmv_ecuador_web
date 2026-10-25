@@ -25,7 +25,7 @@ import Button from "@/components/admin/ui/Button";
 import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import PageHeader from "@/components/admin/layout/PageHeader";
 import { useToast } from "@/lib/hooks/useToast";
-import { allArticles, parseStatutes } from "@/lib/estatutos";
+import { allArticles, countLabel, parseStatutes } from "@/lib/estatutos";
 import { formatDate } from "@/lib/format";
 import { STATUTES_PATH, statuteVersionHref } from "@/components/estatutos/content";
 import type { StatuteVersion } from "@/types/statutes";
@@ -247,8 +247,8 @@ function VersionCard({
             {item.title} <span className="font-semibold text-slate-500">· {item.versionLabel}</span>
           </h3>
           <p className="mt-1 text-xs text-slate-600">
-            Aprobados el {formatDate(item.approvedAt)} · {item.approvedBy || "sin firmante"} · {stats.articles} artículos en{" "}
-            {stats.chapters} capítulos
+            Aprobados el {formatDate(item.approvedAt)} · {item.approvedBy || "sin firmante"} · {countLabel(stats.articles, "artículo", "artículos")} en{" "}
+            {countLabel(stats.chapters, "capítulo", "capítulos")}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {item.isCurrent ? (

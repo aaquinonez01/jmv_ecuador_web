@@ -269,7 +269,7 @@ export default function StatutesReader({ doc, basePath, shareTitle }: StatutesRe
                     setQuery("");
                   }
                 }}
-                placeholder="Busca una palabra…"
+                placeholder="Buscar…"
                 aria-describedby="estatutos-buscar-estado estatutos-buscar-ayuda"
                 enterKeyHint="search"
                 autoComplete="off"

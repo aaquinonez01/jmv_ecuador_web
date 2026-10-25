@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, BookOpen, Download, TriangleAlert } from "lucide-react";
 import PageHero, { type PageHeroAction } from "@/components/ui/PageHero";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
-import { allArticles, parseStatutes } from "@/lib/estatutos";
+import { allArticles, countLabel, parseStatutes } from "@/lib/estatutos";
 import { formatDate } from "@/lib/format";
 import type { StatuteVersion, StatuteVersionSummary } from "@/types/statutes";
 import BackToTop from "./BackToTop";
@@ -94,7 +94,8 @@ export default function StatutesView({
               {doc.title || version.title}
             </h2>
             <p className="mt-2 text-slate-600">
-              Versión {version.versionLabel} · {anchors.length} artículos en {doc.chapters.length} capítulos
+              Versión {version.versionLabel} · {countLabel(anchors.length, "artículo", "artículos")} en{" "}
+              {countLabel(doc.chapters.length, "capítulo", "capítulos")}
             </p>
           </div>
           <StatutesReader doc={doc} basePath={basePath} shareTitle={`Estatutos de JMV Ecuador (${version.versionLabel})`} />
@@ -103,7 +104,7 @@ export default function StatutesView({
 
       <StatutesGlossary anchors={anchors} />
       <StatutesDownloads version={version} versions={versions} />
-      <SigueExplorando items={["quienes-somos", "estructura", "historia", "unete"]} />
+      <SigueExplorando items={["estructura", "historia", "unete"]} />
       <BackToTop targetId="page-hero-title" />
     </>
   );

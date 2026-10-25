@@ -252,6 +252,11 @@ export function parseStatutes(md: string): ParsedStatutes {
   return state.doc;
 }
 
+/** "1 artículo", "45 artículos" */
+export function countLabel(n: number, singular: string, plural: string) {
+  return `${n} ${n === 1 ? singular : plural}`;
+}
+
 /** Todos los artículos en orden */
 export function allArticles(doc: ParsedStatutes): StatuteArticle[] {
   return doc.chapters.flatMap((c) => c.articles);

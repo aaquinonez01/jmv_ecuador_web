@@ -32,7 +32,7 @@ import Button from "@/components/admin/ui/Button";
 import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import PageHeader from "@/components/admin/layout/PageHeader";
 import { useToast } from "@/lib/hooks/useToast";
-import { allArticles, parseStatutes, validateStatutes } from "@/lib/estatutos";
+import { allArticles, countLabel, parseStatutes, validateStatutes } from "@/lib/estatutos";
 import { STATUTES_PATH, statuteVersionHref } from "@/components/estatutos/content";
 import type { StatuteVersion } from "@/types/statutes";
 import FormatGuide from "./FormatGuide";
@@ -531,7 +531,8 @@ export default function StatuteEditor({ id, sourceId }: { id?: string; sourceId?
               Texto de los estatutos<span className="ml-0.5 text-red-600" aria-hidden>*</span>
             </h2>
             <p className="text-xs text-slate-600" aria-live="polite">
-              {stats.chapters} capítulos · {stats.articles} artículos · {stats.numerals} numerales
+              {countLabel(stats.chapters, "capítulo", "capítulos")} · {countLabel(stats.articles, "artículo", "artículos")} ·{" "}
+              {countLabel(stats.numerals, "numeral", "numerales")}
               {dirty ? <span className="ml-2 font-semibold text-amber-700">· Sin guardar</span> : null}
             </p>
           </div>
