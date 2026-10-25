@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  BookOpen,
   BrainCircuit,
   CalendarClock,
   Crown,
@@ -84,6 +85,12 @@ export default function AdminSidebar() {
           href: "/admin/calendario",
           icon: <Star className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/calendario"),
+        },
+        {
+          label: "Biblioteca",
+          href: "/admin/biblioteca",
+          icon: <BookOpen className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/biblioteca"),
         },
         {
           label: "Catálogos",

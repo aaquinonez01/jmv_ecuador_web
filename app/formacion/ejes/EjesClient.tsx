@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, BookOpen, Cross, Heart, Star, Users } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, BookOpen, Cross, Heart, Library, Star, Users } from "lucide-react";
 import { useTabs } from "@/components/sections/institucional/useTabs";
 
 const ejesFormativos = [
@@ -201,6 +202,23 @@ export default function EjesClient() {
                   </ol>
                 </div>
               </div>
+
+              <Link
+                href={`/biblioteca?eje=${eje.id}`}
+                className="group mt-8 flex items-center gap-4 rounded-xl border border-jmv-gold-text/40 bg-jmv-gold-text/10 p-4 transition-colors hover:bg-jmv-gold-text/15 sm:p-5"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
+                  <Library className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold text-white">Lecturas del {eje.titulo.toLowerCase()}</span>
+                  <span className="block text-sm text-slate-300">Libros y guías de la Biblioteca JMV para profundizar.</span>
+                </span>
+                <ArrowRight
+                  className="h-5 w-5 shrink-0 text-jmv-gold-text transition-transform motion-safe:group-hover:translate-x-1"
+                  aria-hidden
+                />
+              </Link>
             </article>
           );
         })}
