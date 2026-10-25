@@ -868,7 +868,8 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
 
   // Foco en el documento para que flechas y espacio funcionen desde el inicio
   useEffect(() => {
-    if (status.kind === "ready") scrollerRef.current?.focus({ preventScroll: true });
+    // focusVisible: false para no pintar el anillo al abrir; con el tabulador sí se ve
+    if (status.kind === "ready") scrollerRef.current?.focus({ preventScroll: true, focusVisible: false } as FocusOptions);
   }, [status.kind]);
 
   // ---------- Render ----------
@@ -978,7 +979,8 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
             );
           })}
         </div>
-        <div id="lector-fin-wrap" className="px-4" style={{ paddingBottom: PAD_BOTTOM + 24 }}>
+        {/* Inerte hasta llegar a las últimas páginas: el tabulador no salta al final del libro */}
+        <div id="lector-fin-wrap" className="px-4" style={{ paddingBottom: PAD_BOTTOM + 24 }} inert={to < numPages}>
           {endCard}
         </div>
       </div>
@@ -1026,12 +1028,33 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
         <ReaderSkeleton title={doc.title} backHref={backHref} progress={loadProgress} themed />
       )}
 
+      {/* Orden del tabulador: barra superior, documento, barra inferior */}
+      {showChrome && (
+        <div data-reader-bar>
+          <ReaderTopBar
+            visible={bars}
+            title={doc.title}
+            backHref={backHref}
+            current={current}
+            numPages={numPages}
+            mode={mode}
+            container={container}
+            onGoTo={(n) => goTo(n)}
+            onMode={setMode}
+            onShortcuts={() => setShortcutsOpen(true)}
+            onDownload={download}
+            onShare={share}
+            onReveal={() => setBars(true)}
+          />
+        </div>
+      )}
+
       <div
         ref={scrollerRef}
         tabIndex={showChrome ? 0 : -1}
         role={showChrome ? "region" : undefined}
         aria-label={showChrome ? `Páginas de «${doc.title}»` : undefined}
-        className="absolute inset-0 overflow-auto overscroll-none outline-none focus-visible:outline-none"
+        className="absolute inset-0 overflow-auto overscroll-none outline-none focus-visible:shadow-[inset_0_0_0_3px_var(--focus-ring)] focus-visible:outline-none"
         style={{ touchAction: "pan-x pan-y" }}
       >
         {body}
@@ -1039,23 +1062,6 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
 
       {showChrome && (
         <>
-          <div data-reader-bar>
-            <ReaderTopBar
-              visible={bars}
-              title={doc.title}
-              backHref={backHref}
-              current={current}
-              numPages={numPages}
-              mode={mode}
-              container={container}
-              onGoTo={(n) => goTo(n)}
-              onMode={setMode}
-              onShortcuts={() => setShortcutsOpen(true)}
-              onDownload={download}
-              onShare={share}
-              onReveal={() => setBars(true)}
-            />
-          </div>
           <div data-reader-bar>
             <ReaderBottomBar
               visible={bars}

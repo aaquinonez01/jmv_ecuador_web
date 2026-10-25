@@ -2,7 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import type { RenderTask, TextLayer } from "pdfjs-dist";
-import { canvasScale, type PdfJs, type PDFDocumentProxy } from "./pdfjs";
+import { canvasScale, type PdfJs, type PDFDocumentProxy, type PDFPageProxy } from "./pdfjs";
 
 type Props = {
   lib: PdfJs;
@@ -26,6 +26,7 @@ function PdfPage({ lib, pdf, pageNumber, numPages, width, aspect, active, onAspe
   const [drawn, setDrawn] = useState(false);
   const [failed, setFailed] = useState(false);
   const height = Math.round(width * aspect);
+  const loadedRef = useRef<PDFPageProxy | null>(null);
   const aspectRef = useRef(aspect);
   useEffect(() => {
     aspectRef.current = aspect;
@@ -39,11 +40,12 @@ function PdfPage({ lib, pdf, pageNumber, numPages, width, aspect, active, onAspe
     let cancelled = false;
     let renderTask: RenderTask | null = null;
     let textLayer: TextLayer | null = null;
-    let page: Awaited<ReturnType<PDFDocumentProxy["getPage"]>> | null = null;
+    let page: PDFPageProxy | null = null;
 
     (async () => {
       try {
         page = await pdf.getPage(pageNumber);
+        loadedRef.current = page;
         if (cancelled) return;
         const base = page.getViewport({ scale: 1 });
         const realAspect = base.height / base.width;
@@ -116,11 +118,23 @@ function PdfPage({ lib, pdf, pageNumber, numPages, width, aspect, active, onAspe
     });
     textRef.current?.replaceChildren();
     setDrawn(false);
-    pdf
-      .getPage(pageNumber)
-      .then((p) => p.cleanup())
-      .catch(() => {});
-  }, [active, pdf, pageNumber]);
+    // Solo si llegó a dibujarse: pedir la página aquí la descargaría sin necesidad
+    try {
+      loadedRef.current?.cleanup();
+    } catch {}
+    loadedRef.current = null;
+  }, [active]);
+
+  useEffect(
+    () => () => {
+      try {
+        loadedRef.current?.cleanup();
+      } catch {
+        // El documento ya se destruyó al salir del lector
+      }
+    },
+    [],
+  );
 
   return (
     <div

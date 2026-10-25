@@ -8,6 +8,11 @@ import type { NextReading } from "@/components/biblioteca/reader/ReaderEnd";
 
 export const revalidate = 1800;
 
+// Sin páginas previas en el build: cada lector se genera al primer visitante y queda en caché (ISR)
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

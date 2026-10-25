@@ -66,14 +66,18 @@ export function readAuthToken(): string | null {
   }
 }
 
-/** Opciones comunes de getDocument: carga por partes (Range) y sin eval */
+/**
+ * Opciones comunes de getDocument: carga por partes (Range) y sin eval.
+ * disableStream también va en true: con streaming pdf.js baja el archivo entero aunque
+ * no haga falta (probado: 1,6 MB contra ~0,8 MB al abrir en la página 300 de 720).
+ */
 export function pdfSource(url: string, token?: string | null) {
   return {
     url,
     httpHeaders: token ? { Authorization: `Bearer ${token}` } : undefined,
     rangeChunkSize: 262_144,
     disableAutoFetch: true,
-    disableStream: false,
+    disableStream: true,
     isEvalSupported: false,
   };
 }

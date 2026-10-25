@@ -116,7 +116,7 @@ export function ReaderTopBar(props: TopBarProps) {
             </IconButton>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal container={container}>
-            <DropdownMenu.Content align="end" sideOffset={6} className={cn(panel, "w-64")}>
+            <DropdownMenu.Content align="end" sideOffset={6} className={cn(panel, "w-72")}>
               <DropdownMenu.Label className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-(--r-muted)">
                 Modo de lectura
               </DropdownMenu.Label>
