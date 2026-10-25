@@ -60,7 +60,7 @@ export default function ProfileClient({ user, userPosts, postsLimit }: ProfileCl
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 pt-24 pb-12 sm:pt-28">
+    <div className="min-h-screen bg-page pt-24 pb-12 sm:pt-28 dark:bg-slate-100">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <Link
           href="/blog"
