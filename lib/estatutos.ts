@@ -382,18 +382,26 @@ export function matchRanges(text: string, query: string): [number, number][] {
   return ranges;
 }
 
-/** Texto plano de un artículo (para buscar y contar coincidencias) */
+/**
+ * Trozos de texto de un artículo, separados igual que se resaltan en
+ * StatutesBody (etiqueta, título, número del numeral y cada tramo con o sin
+ * cursiva), para que el contador coincida con los <mark> de la página.
+ */
 export function articleSearchText(article: StatuteArticle): string[] {
   const parts = [article.number ? `Artículo ${article.number}` : "", article.title];
+  const pushText = (text: string) => parts.push(...parseInline(text).map((s) => s.text));
   const walk = (items: StatuteListItem[]) => {
     for (const item of items) {
-      parts.push(plainText(item.text));
+      pushText(item.text);
       if (item.children) walk(item.children);
     }
   };
   for (const block of article.blocks) {
     if (block.type === "list") walk(block.items);
-    else parts.push(block.type === "numeral" ? `${block.label} ${plainText(block.text)}` : plainText(block.text));
+    else {
+      if (block.type === "numeral") parts.push(block.label);
+      pushText(block.text);
+    }
   }
   return parts.filter(Boolean);
 }

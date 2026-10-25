@@ -33,7 +33,8 @@ export default function StatutesBody({ doc, query, visible, articleActions, clas
                   </span>
                 ) : null}
                 <span className="mt-1 block font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl">
-                  {highlight(chapter.title || "Disposiciones", query)}
+                  {/* Sin resaltar: la búsqueda cuenta y filtra artículos, no capítulos */}
+                  {chapter.title || "Disposiciones"}
                 </span>
               </h3>
             </header>
