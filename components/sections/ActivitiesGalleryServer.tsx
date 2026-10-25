@@ -69,7 +69,12 @@ export default async function ActivitiesGalleryServer() {
                       <Camera className="h-10 w-10" aria-hidden />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#07132F] via-[#07132F]/20 to-transparent" />
+                  {/* Velo para leer las etiquetas sobre la foto; sin foto, en claro no hace falta */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t from-[#07132F] via-[#07132F]/20 to-transparent ${
+                      activity.coverImageUrl ? "" : "hidden dark:block"
+                    }`}
+                  />
                   <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
                     {activity.type?.name ? (
                       <span className="rounded-full bg-jmv-ink/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
