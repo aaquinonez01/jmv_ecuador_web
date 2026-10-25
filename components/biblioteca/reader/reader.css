@@ -1,0 +1,204 @@
+/* Lector de la Biblioteca JMV. Solo se carga en /biblioteca/[slug]/leer */
+
+.jmv-reader {
+  --r-bg: #dfe4ec;
+  --r-bar: rgb(255 255 255 / 0.95);
+  --r-fg: #0f172a;
+  --r-muted: #475569;
+  --r-accent: #1d4e8a;
+  --r-line: rgb(15 23 42 / 0.12);
+  --r-soft: rgb(15 23 42 / 0.06);
+  --r-paper: #ffffff;
+  --r-filter: none;
+  --focus-ring: var(--jmv-blue);
+  background: var(--r-bg);
+  color: var(--r-fg);
+}
+
+.jmv-reader[data-theme="sepia"] {
+  --r-bg: #e8dcc2;
+  --r-bar: rgb(250 243 228 / 0.96);
+  --r-fg: #3b2a14;
+  --r-muted: #6b5233;
+  --r-accent: #8a5a00;
+  --r-line: rgb(59 42 20 / 0.16);
+  --r-soft: rgb(59 42 20 / 0.07);
+  --r-paper: #f7efdc;
+  --r-filter: sepia(0.42) saturate(1.12) brightness(0.97);
+}
+
+.jmv-reader[data-theme="noche"] {
+  --r-bg: #070d1d;
+  --r-bar: rgb(11 18 36 / 0.95);
+  --r-fg: #e2e8f0;
+  --r-muted: #a3b1c6;
+  --r-accent: #f5b83d;
+  --r-line: rgb(226 232 240 / 0.14);
+  --r-soft: rgb(226 232 240 / 0.07);
+  --r-paper: #1a1a1a;
+  /* Blanco → gris muy oscuro y negro → gris claro; hue-rotate devuelve sus colores a las fotos */
+  --r-filter: invert(0.9) hue-rotate(180deg) contrast(0.95);
+  --focus-ring: var(--jmv-gold-text);
+}
+
+.jmv-reader-page canvas {
+  filter: var(--r-filter);
+}
+
+/* Capa de texto de pdf.js (reducida de pdfjs-dist/web/pdf_viewer.css) */
+.jmv-reader .textLayer {
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+}
+
+.jmv-reader .textLayer :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.jmv-reader .textLayer > :not(.markedContent),
+.jmv-reader .textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+}
+
+.jmv-reader .textLayer span.markedContent {
+  top: 0;
+  height: 0;
+}
+
+.jmv-reader .textLayer ::selection {
+  background: rgb(29 78 138 / 0.3);
+}
+
+.jmv-reader[data-theme="noche"] .textLayer ::selection {
+  background: rgb(245 184 61 / 0.35);
+}
+
+.jmv-reader .textLayer br::selection {
+  background: transparent;
+}
+
+.jmv-reader .textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  cursor: default;
+  user-select: none;
+}
+
+.jmv-reader .textLayer.selecting .endOfContent {
+  top: 0;
+}
+
+/* Brillo mientras la página se dibuja */
+.jmv-reader-shimmer {
+  background: linear-gradient(100deg, transparent 20%, var(--r-soft) 50%, transparent 80%);
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .jmv-reader-shimmer {
+    animation: jmv-reader-shimmer 1.6s linear infinite;
+  }
+
+  .jmv-reader-slide-next {
+    animation: jmv-reader-in-next 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .jmv-reader-slide-prev {
+    animation: jmv-reader-in-prev 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .jmv-reader-confetti i {
+    animation: jmv-reader-fall var(--d, 2.6s) cubic-bezier(0.25, 0.6, 0.4, 1) var(--delay, 0s) forwards;
+  }
+}
+
+@keyframes jmv-reader-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes jmv-reader-in-next {
+  from { opacity: 0.4; transform: translateX(48px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes jmv-reader-in-prev {
+  from { opacity: 0.4; transform: translateX(-48px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Confeti sutil: solo con movimiento permitido; si no, no se ve */
+.jmv-reader-confetti i {
+  position: absolute;
+  top: -12px;
+  left: var(--x);
+  width: var(--s, 8px);
+  height: calc(var(--s, 8px) * 0.45);
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0;
+}
+
+@keyframes jmv-reader-fall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--dx, 0px), 340px, 0) rotate(var(--r, 360deg)); }
+}
+
+/* Deslizador de página */
+.jmv-reader-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 44px;
+  cursor: pointer;
+}
+
+.jmv-reader-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--r-accent) var(--fill, 0%), var(--r-line) var(--fill, 0%));
+}
+
+.jmv-reader-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--r-accent) var(--fill, 0%), var(--r-line) var(--fill, 0%));
+}
+
+.jmv-reader-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 999px;
+  background: var(--r-accent);
+  border: 3px solid var(--r-paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+}
+
+.jmv-reader-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--r-accent);
+  border: 3px solid var(--r-paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+}
