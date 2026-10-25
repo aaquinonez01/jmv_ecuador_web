@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { BookOpen, Star } from "lucide-react";
+import { BookOpen, Library, Star } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import FormacionPilar from "@/components/sections/FormacionPilar";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import BibliotecaCta from "@/components/sections/formacion/BibliotecaCta";
 
 export const metadata: Metadata = {
   title: "Formación",
   description:
-    "La formación en JMV Ecuador: ejes formativos, santos vicencianos y el pilar de formación para crecer como persona, cristiano y vicenciano.",
+    "La formación en JMV Ecuador: ejes formativos, santos vicencianos, la biblioteca y el pilar de formación para crecer como persona, cristiano y vicenciano.",
   alternates: { canonical: "/formacion" },
 };
 
@@ -25,9 +26,11 @@ export default function FormacionPage() {
         actions={[
           { label: "Ejes formativos", href: "/formacion/ejes", icon: BookOpen },
           { label: "Santos vicencianos", href: "/formacion/santos", icon: Star },
+          { label: "Biblioteca", href: "/biblioteca", icon: Library },
         ]}
       />
       <FormacionPilar />
+      <BibliotecaCta className="bg-[#132f55] pb-16 sm:pb-20" />
       <SigueExplorando items={["ejes", "santos", "unete"]} />
     </>
   );

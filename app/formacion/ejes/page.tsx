@@ -28,7 +28,7 @@ export default function EjesFormativosPage() {
         actions={[{ label: "Comenzar el recorrido", href: "#ejes", icon: ChevronDown }]}
       />
       <EjesClient />
-      <SigueExplorando items={["santos", "pilares", "unete"]} />
+      <SigueExplorando items={["biblioteca", "santos", "unete"]} />
     </>
   );
 }
