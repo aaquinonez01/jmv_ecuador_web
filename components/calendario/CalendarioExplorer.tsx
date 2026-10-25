@@ -15,7 +15,7 @@ import {
 import AddToCalendarMenu from "./AddToCalendarMenu";
 import CategoryFilter from "./CategoryFilter";
 import DateCard from "./DateCard";
-import MobileMonths from "./MobileMonths";
+import MobileRing from "./MobileRing";
 import StarRing from "./StarRing";
 import TodaySpotlight from "./TodaySpotlight";
 import YearList from "./YearList";
@@ -182,7 +182,15 @@ export default function CalendarioExplorer({
         </div>
 
         <div className="mt-8 md:hidden">
-          <MobileMonths entries={filtered} month={month} onMonthChange={changeMonth} now={now} nextMonth={nextMonth} />
+          <MobileRing
+            entries={filtered}
+            month={month}
+            onMonthChange={changeMonth}
+            selectedKey={selected?.key ?? null}
+            onSelect={setSelectedKey}
+            now={now}
+            nextMonth={nextMonth}
+          />
         </div>
       </section>
 

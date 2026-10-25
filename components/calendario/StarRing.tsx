@@ -8,6 +8,7 @@ import {
   useMotionValue,
   useReducedMotion,
   useTransform,
+  type PanInfo,
 } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { CalendarEntry } from "@/types/calendar";
@@ -59,15 +60,15 @@ interface Dot {
 }
 
 /** Puntos por fecha; si dos caen muy juntos se apilan hacia dentro */
-function layoutDots(entries: CalendarEntry[]): Dot[] {
+function layoutDots(entries: CalendarEntry[], scale = 1): Dot[] {
   const sorted = [...entries].sort((a, b) => a.month - b.month || a.day - b.day);
   let prev = -99;
   let lane = 0;
   return sorted.map((entry) => {
     const deg = dayAngle(entry.month, entry.day);
-    lane = deg - prev < 4.5 ? Math.min(lane + 1, 2) : 0;
+    lane = deg - prev < 4.5 * scale ? Math.min(lane + 1, 2) : 0;
     prev = deg;
-    return { entry, deg, r: TRACK_R - lane * LANE };
+    return { entry, deg, r: TRACK_R - lane * LANE * scale };
   });
 }
 
@@ -77,10 +78,20 @@ export interface StarRingProps {
   onMonthChange: (month: number) => void;
   selectedKey: string | null;
   onSelect: (key: string) => void;
+  /**
+   * Móvil: el centro solo muestra el mes (la lista va debajo, en un carrusel),
+   * los puntos son más grandes y el anillo se gira deslizando el dedo.
+   */
+  compact?: boolean;
 }
 
-export default function StarRing({ entries, month, onMonthChange, selectedKey, onSelect }: StarRingProps) {
+// Grados que gira el anillo por cada píxel que se desliza el dedo
+const DEG_PER_PX = 0.32;
+
+export default function StarRing({ entries, month, onMonthChange, selectedKey, onSelect, compact = false }: StarRingProps) {
   const reduce = useReducedMotion();
+  const dotScale = compact ? 1.7 : 1;
+  const panned = useRef(false);
   const [active, setActive] = useState<string | null>(null);
   const [announce, setAnnounce] = useState("");
   const { radioProps } = useMonthRadio(month, (m) => {
@@ -107,7 +118,7 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
     return () => controls.stop();
   }, [month, reduce, rot]);
 
-  const dots = useMemo(() => layoutDots(entries), [entries]);
+  const dots = useMemo(() => layoutDots(entries, dotScale), [entries, dotScale]);
   const counts = useMemo(() => {
     const c = Array(12).fill(0) as number[];
     entries.forEach((e) => c[e.month - 1]++);
@@ -126,8 +137,44 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
     radioProps(next).onClick();
   };
 
+  // Giro con el dedo (solo en compact): el anillo sigue al dedo y al soltar se
+  // acomoda en el mes más cercano. touch-action pan-y deja el scroll vertical.
+  const onPanStart = () => {
+    panned.current = true;
+    rot.stop();
+  };
+  const onPan = (_: PointerEvent, info: PanInfo) => {
+    rot.set(target.current + info.offset.x * DEG_PER_PX);
+  };
+  const onPanEnd = (_: PointerEvent, info: PanInfo) => {
+    const projected = info.offset.x + (reduce ? 0 : info.velocity.x * 0.12);
+    const steps = Math.round((projected * DEG_PER_PX) / 30);
+    if (steps === 0) {
+      if (reduce) rot.jump(target.current);
+      else animate(rot, target.current, { type: "spring", stiffness: 120, damping: 18 });
+    } else {
+      go(month - steps);
+    }
+    // El click que llega al soltar no debe elegir una estrella
+    window.setTimeout(() => (panned.current = false), 0);
+  };
+
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[600px] select-none">
+    <motion.div
+      className={cn(
+        "relative mx-auto aspect-square w-full select-none",
+        compact ? "w-[90%] max-w-[440px] touch-pan-y" : "max-w-[600px]",
+      )}
+      onPanStart={compact ? onPanStart : undefined}
+      onPan={compact ? onPan : undefined}
+      onPanEnd={compact ? onPanEnd : undefined}
+      onClickCapture={(e) => {
+        if (panned.current) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }}
+    >
       {/* Resplandor de fondo */}
       <div
         aria-hidden="true"
@@ -201,11 +248,18 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                 }}
               >
                 {/* Área de toque generosa; el botón accesible equivalente está en el centro del anillo */}
-                <circle cx={p.x} cy={p.y} r={22} fill="transparent" />
-                <circle cx={p.x} cy={p.y} r={isActive ? 28 : 19} fill={color} opacity={isActive ? 0.4 : 0.2} className="transition-all duration-300" />
-                <circle cx={p.x} cy={p.y} r={isActive ? 13 : 9.5} fill={color} className="transition-all duration-300" />
+                <circle cx={p.x} cy={p.y} r={22 * dotScale} fill="transparent" />
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={(isActive ? 28 : 19) * dotScale}
+                  fill={color}
+                  opacity={isActive ? 0.4 : 0.2}
+                  className="transition-all duration-300"
+                />
+                <circle cx={p.x} cy={p.y} r={(isActive ? 13 : 9.5) * dotScale} fill={color} className="transition-all duration-300" />
                 {entry.key === selectedKey && (
-                  <circle cx={p.x} cy={p.y} r={17} fill="none" stroke="#fff" strokeWidth="2.5" />
+                  <circle cx={p.x} cy={p.y} r={17 * dotScale} fill="none" stroke="#fff" strokeWidth={2.5 * dotScale} />
                 )}
               </g>
             );
@@ -278,7 +332,14 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
             transition={{ duration: 0.28, ease: "easeOut" }}
             className="flex w-full flex-col items-center"
           >
-            <h3 className="font-display text-3xl font-semibold text-white lg:text-4xl">{MONTHS[month - 1]}</h3>
+            <h3
+              className={cn(
+                "font-display font-semibold text-white",
+                compact ? "text-[clamp(1.5rem,7.5vw,2.25rem)] leading-tight" : "text-3xl lg:text-4xl",
+              )}
+            >
+              {MONTHS[month - 1]}
+            </h3>
             <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-jmv-gold-text">
               {monthEntries.length === 0
                 ? "Sin fechas"
@@ -286,7 +347,28 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
                   ? "1 fecha"
                   : `${monthEntries.length} fechas`}
             </p>
-            {monthEntries.length > 0 ? (
+            {compact ? (
+              <>
+                {/* Días del mes como pequeñas medallas; la lista completa va en el carrusel de abajo */}
+                {monthEntries.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap justify-center gap-1.5" aria-hidden="true">
+                    {monthEntries.slice(0, 5).map((e) => (
+                      <span
+                        key={e.key}
+                        style={categoryStyle(e.category)}
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-full bg-(--cat-soft) font-display text-xs font-semibold text-(--cat) ring-1 ring-(--cat)/40 transition-transform",
+                          e.key === selectedKey && "scale-110 ring-2 ring-white",
+                        )}
+                      >
+                        {e.day}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p className="mt-2.5 text-[11px] leading-snug text-slate-300">Desliza para girar</p>
+              </>
+            ) : monthEntries.length > 0 ? (
               <ul
                 className={cn(
                   "mt-3 max-h-[9rem] w-full space-y-1 overflow-y-auto overscroll-contain lg:max-h-[10.25rem]",
@@ -371,6 +453,6 @@ export default function StarRing({ entries, month, onMonthChange, selectedKey, o
       <p aria-live="polite" className="sr-only">
         {announce}
       </p>
-    </div>
+    </motion.div>
   );
 }
