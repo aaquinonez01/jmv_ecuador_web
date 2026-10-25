@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { fetchCalendarDate } from "@/lib/api/calendar.server";
-import { CATEGORY_META, anniversary, dayLabel } from "@/lib/calendario";
+import { CATEGORY_META, dayLabel, todayInEcuador } from "@/lib/calendario";
+import { yearsAgo } from "@/components/calendario/shared";
 import {
   BrandBar,
   GOLD,
@@ -31,7 +32,7 @@ export default async function CalendarDateOgImage({ params }: { params: Promise<
 
   const [fonts, logo] = await Promise.all([loadOgFonts(), loadOgLogo()]);
   const color = item ? categoryColor(item) : GOLD;
-  const years = item ? anniversary(item) : null;
+  const years = item ? yearsAgo(item, todayInEcuador()) : null;
   const phrase = item ? featuredPhrase(item, 130) : null;
   const title = item ? clampText(item.title, 80) : "Año Vicenciano";
   const titleSize = title.length > 50 ? 50 : title.length > 28 ? 60 : 70;
@@ -133,7 +134,7 @@ export default async function CalendarDateOgImage({ params }: { params: Promise<
           </div>
 
           {item ? (
-            <div style={{ display: "flex", gap: 10, marginTop: 26 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 26 }}>
               <div
                 style={{
                   display: "flex",
@@ -157,6 +158,7 @@ export default async function CalendarDateOgImage({ params }: { params: Promise<
                     borderRadius: 999,
                     background: GOLD,
                     color: "#1a1206",
+                  flexShrink: 0,
                     fontSize: 18,
                     fontWeight: 700,
                   }}

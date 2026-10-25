@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { fetchCalendarDate } from "@/lib/api/calendar.server";
-import { CATEGORY_META, anniversary } from "@/lib/calendario";
+import { CATEGORY_META, todayInEcuador } from "@/lib/calendario";
+import { storyFilename, yearsAgo } from "@/components/calendario/shared";
 import {
   BrandBar,
   GOLD,
@@ -14,7 +15,6 @@ import {
   loadOgLogo,
   monthName,
 } from "@/lib/og/calendario";
-import { storyFilename } from "@/components/calendario/shared";
 
 // Imagen vertical 1080x1920 para historias de Instagram y estados de WhatsApp
 const W = 1080;
@@ -38,7 +38,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 
   const [fonts, logo] = await Promise.all([loadOgFonts(), loadOgLogo()]);
   const color = categoryColor(item);
-  const years = anniversary(item);
+  const years = yearsAgo(item, todayInEcuador());
   const phrase = featuredPhrase(item, 210);
   const title = clampText(item.title, 90);
   const titleSize = title.length > 60 ? 64 : title.length > 36 ? 76 : 88;
@@ -177,6 +177,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
                   borderRadius: 999,
                   background: GOLD,
                   color: "#1a1206",
+                  flexShrink: 0,
                   fontSize: 26,
                   fontWeight: 700,
                 }}
