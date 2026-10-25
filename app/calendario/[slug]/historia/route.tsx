@@ -39,9 +39,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const [fonts, logo] = await Promise.all([loadOgFonts(), loadOgLogo()]);
   const color = categoryColor(item);
   const years = yearsAgo(item, todayInEcuador());
-  const phrase = featuredPhrase(item, 210);
   const title = clampText(item.title, 90);
   const titleSize = title.length > 60 ? 64 : title.length > 36 ? 76 : 88;
+  // Título y frase comparten unos 650 px: cuanto más largo el título, más corta y pequeña la frase
+  const phrase = featuredPhrase(item, title.length > 60 ? 120 : title.length > 36 ? 150 : 210);
+  const phraseSize = title.length > 60 ? 32 : phrase.text.length > 100 ? 34 : 42;
   const ringSize = 820;
   const monthLabel = monthName(item.month).toUpperCase();
   // Los meses largos no deben tocar las estrellas del anillo
@@ -149,7 +151,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
             textAlign: "center",
             justifyContent: "center",
             flex: 1,
-            padding: "0 90px 250px",
+            minHeight: 0,
+            overflow: "hidden",
+            padding: "0 90px 210px",
           }}
         >
           <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
@@ -207,7 +211,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
               fontFamily: phrase.isQuote ? "Fraunces" : "Poppins",
               fontStyle: phrase.isQuote ? "italic" : "normal",
               fontWeight: 500,
-              fontSize: phrase.text.length > 150 ? 36 : 42,
+              fontSize: phraseSize,
               lineHeight: 1.38,
               marginTop: 36,
               color: "rgba(255,255,255,0.92)",
@@ -216,7 +220,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
             {phrase.isQuote ? `«${phrase.text}»` : phrase.text}
           </div>
           {phrase.author ? (
-            <div style={{ fontSize: 28, marginTop: 20, color: GOLD }}>{`— ${phrase.author}`}</div>
+            <div style={{ fontSize: 28, marginTop: 20, color: GOLD }}>{`— ${clampText(phrase.author, 60)}`}</div>
           ) : null}
         </div>
 
@@ -254,6 +258,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
     "Content-Disposition",
     `inline; filename="${storyFilename(item.slug)}"`
   );
-  headers.set("Cache-Control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800");
+  headers.set("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate=3600");
   return new Response(image.body, { status: 200, headers });
 }
