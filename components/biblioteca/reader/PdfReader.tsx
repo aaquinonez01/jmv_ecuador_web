@@ -803,6 +803,9 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
       const t = e.target as HTMLElement | null;
       if (t?.closest("input, textarea, select, [contenteditable=true], [role=dialog], [role=menu], [data-radix-popper-content-wrapper]")) return;
       const scroller = scrollerRef.current;
+      // Atajos de una letra o signo solo con el foco en el documento (WCAG 2.1.4):
+      // así no se disparan al dictar por voz ni desde las barras
+      if (e.key.length === 1 && !(scroller && t && scroller.contains(t))) return;
       const canPanX = !!scroller && scroller.scrollWidth > scroller.clientWidth + 2;
       let handled = true;
       switch (e.key) {
@@ -909,7 +912,7 @@ export default function PdfReader({ doc, next }: PdfReaderProps) {
       >
         {status.expired
           ? "Tu sesión terminó o no tiene permiso para este documento. Entra de nuevo y te traemos de vuelta aquí."
-          : "Este documento es solo para miembros de JMV Ecuador. Entra con tu cuenta y te traemos de vuelta aquí para que sigas leyendo."}
+          : "Este documento está reservado para quienes tienen cuenta en la web de JMV Ecuador. Entra con la tuya y te traemos de vuelta aquí para que sigas leyendo."}
       </ReaderMessage>
     );
   } else if (status.kind === "error") {

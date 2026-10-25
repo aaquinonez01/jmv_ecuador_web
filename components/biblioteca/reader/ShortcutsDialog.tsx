@@ -51,6 +51,9 @@ export default function ShortcutsDialog({ open, onOpenChange, container }: Props
             ))}
           </dl>
           <p className="mt-4 text-xs text-(--r-muted)">
+            Las teclas de letras y signos funcionan cuando el documento tiene el foco (tócalo o haz clic en él).
+          </p>
+          <p className="mt-2 text-xs text-(--r-muted)">
             En el celular: toca la página para mostrar u ocultar los controles, pellizca o toca dos veces para acercar y, en
             el modo una página, desliza a los lados para pasar de página.
           </p>
