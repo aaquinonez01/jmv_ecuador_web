@@ -1,4 +1,5 @@
-import { CATEGORY_META, calendarHref, todayInEcuador } from "@/lib/calendario";
+import { CATEGORY_META, calendarHref, isLeap } from "@/lib/calendario";
+import { escapeText, joinLines } from "@/lib/ics-text";
 import { SITE } from "@/lib/site";
 import type { CalendarDateItem } from "@/types/calendar";
 
@@ -7,16 +8,16 @@ import type { CalendarDateItem } from "@/types/calendar";
 
 const CAL_NAME = "Año Vicenciano · JMV Ecuador";
 
+// DTSTART fijo: si cambiara cada año, al refrescar la suscripción los clientes
+// borrarían las ocurrencias que ya pasaron.
+const BASE_YEAR = 2025;
+
 const pad = (n: number) => String(n).padStart(2, "0");
 
-function isLeap(year: number) {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-/** Año de la próxima ocurrencia (hoy incluido); el 29 de febrero espera al próximo bisiesto */
-function nextYear(month: number, day: number, today: { year: number; month: number; day: number }) {
-  let year = month < today.month || (month === today.month && day < today.day) ? today.year + 1 : today.year;
-  if (month === 2 && day === 29) while (!isLeap(year)) year++;
+/** Año del DTSTART; el 29 de febrero arranca en el bisiesto anterior al año base */
+function startYear(month: number, day: number) {
+  let year = BASE_YEAR;
+  if (month === 2 && day === 29) while (!isLeap(year)) year--;
   return year;
 }
 
@@ -37,44 +38,9 @@ function utcStamp(d: Date) {
   );
 }
 
-/** Escapa TEXT según RFC 5545 §3.3.11 */
-function escapeText(text: string) {
-  return text
-    .replace(/\r\n?/g, "\n")
-    .replace(/\\/g, "\\\\")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
-}
-
-const encoder = new TextEncoder();
-
-/** Pliega a 75 octetos (RFC 5545 §3.1) sin partir caracteres UTF-8 */
-function fold(line: string) {
-  if (encoder.encode(line).length <= 75) return line;
-  const parts: string[] = [];
-  let current = "";
-  let bytes = 0;
-  // Las líneas de continuación empiezan con un espacio, que cuenta en sus 75 octetos
-  let limit = 75;
-  for (const char of line) {
-    const size = encoder.encode(char).length;
-    if (bytes + size > limit) {
-      parts.push(current);
-      current = "";
-      bytes = 0;
-      limit = 74;
-    }
-    current += char;
-    bytes += size;
-  }
-  parts.push(current);
-  return parts.join("\r\n ");
-}
-
-function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcuador>, now: Date) {
+function eventLines(item: CalendarDateItem, now: Date) {
   const stamp = utcStamp(now);
-  const year = nextYear(item.month, item.day, today);
+  const year = startYear(item.month, item.day);
   const url = `${SITE.url}${calendarHref(item.slug)}`;
   const description = [
     item.subtitle,
@@ -112,7 +78,6 @@ function eventLines(item: CalendarDateItem, today: ReturnType<typeof todayInEcua
 }
 
 export function buildYearFeed(items: CalendarDateItem[], now: Date = new Date()) {
-  const today = todayInEcuador(now);
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -127,8 +92,8 @@ export function buildYearFeed(items: CalendarDateItem[], now: Date = new Date())
     `URL:${SITE.url}/calendario`,
     "REFRESH-INTERVAL;VALUE=DURATION:P1D",
     "X-PUBLISHED-TTL:P1D",
-    ...items.filter((item) => item.published).flatMap((item) => eventLines(item, today, now)),
+    ...items.filter((item) => item.published).flatMap((item) => eventLines(item, now)),
     "END:VCALENDAR",
   ];
-  return lines.map(fold).join("\r\n") + "\r\n";
+  return joinLines(lines);
 }

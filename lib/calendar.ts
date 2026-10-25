@@ -2,6 +2,7 @@
 
 import { SITE } from "./site";
 import { isDateOnly } from "./format";
+import { escapeText, joinLines } from "./ics-text";
 
 export interface CalendarEvent {
   title: string;
@@ -73,14 +74,6 @@ export function googleCalendarUrl(event: CalendarEvent) {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-function escapeIcs(text: string) {
-  return text
-    .replace(/\\/g, "\\\\")
-    .replace(/\n/g, "\\n")
-    .replace(/,/g, "\\,")
-    .replace(/;/g, "\\;");
-}
-
 /** Contenido de un archivo .ics con un único evento */
 export function buildIcs(event: CalendarEvent) {
   const start = toDate(event.start);
@@ -97,14 +90,14 @@ export function buildIcs(event: CalendarEvent) {
     `DTSTAMP:${utcStamp(new Date())}`,
     event.allDay ? `DTSTART;VALUE=DATE:${dateStamp(start)}` : `DTSTART:${utcStamp(start)}`,
     event.allDay ? `DTEND;VALUE=DATE:${dateStamp(end)}` : `DTEND:${utcStamp(end)}`,
-    `SUMMARY:${escapeIcs(event.title)}`,
+    `SUMMARY:${escapeText(event.title)}`,
   ];
   const body = details(event);
-  if (body) lines.push(`DESCRIPTION:${escapeIcs(body)}`);
-  if (event.location) lines.push(`LOCATION:${escapeIcs(event.location)}`);
+  if (body) lines.push(`DESCRIPTION:${escapeText(body)}`);
+  if (event.location) lines.push(`LOCATION:${escapeText(event.location)}`);
   if (event.url) lines.push(`URL:${event.url}`);
   lines.push("END:VEVENT", "END:VCALENDAR");
-  return lines.join("\r\n");
+  return joinLines(lines);
 }
 
 /** Descarga el .ics en el navegador (usar sólo en componentes cliente) */
