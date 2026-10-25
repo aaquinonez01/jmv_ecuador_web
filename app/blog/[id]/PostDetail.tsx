@@ -14,13 +14,16 @@ import type { Post } from "@/types/user";
 export default function PostDetail({ post }: { post: Post }) {
   const { showImage, viewer } = usePostViewer();
 
+  // Claro: banda marfil y fondo bg-page. Oscuro: la banda tinta translúcida y
+  // el fondo slate-100 de siempre. La tarjeta es una isla blanca fija.
   return (
-    <div className="min-h-screen overflow-x-hidden bg-slate-100">
-      <div className="bg-jmv-ink bg-gradient-jmv pt-20 sm:pt-24">
-        <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
+    <div className="min-h-screen overflow-x-hidden bg-page dark:bg-slate-100">
+      <div className="relative border-b border-line bg-hero-plain pt-20 sm:pt-24 dark:border-b-0 dark:bg-none">
+        <div className="absolute inset-0 hidden bg-gradient-jmv dark:block" aria-hidden="true" />
+        <div className="relative mx-auto max-w-3xl px-4 py-3 sm:px-6">
           <Link
             href="/blog"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-white hover:bg-white/10"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-accent-blue hover:bg-surface-2 dark:text-white dark:hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Volver a la Comunidad JMV

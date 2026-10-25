@@ -27,7 +27,7 @@ function ProfileMessage({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[70svh] bg-slate-100 px-4 pt-24 pb-12 sm:pt-28">
+    <div className="min-h-[70svh] bg-page px-4 pt-24 pb-12 sm:pt-28 dark:bg-slate-100">
       <div
         className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm"
         data-surface="light"
@@ -134,7 +134,7 @@ export default function ProfilePageClient() {
 
   if (status === "loading" || !user) {
     return (
-      <div className="flex min-h-[70svh] items-center justify-center bg-slate-100 pt-24">
+      <div className="flex min-h-[70svh] items-center justify-center bg-page pt-24 dark:bg-slate-100">
         <p role="status" className="flex items-center gap-3 text-base text-gray-700">
           <Loader2 className="h-6 w-6 text-jmv-blue motion-safe:animate-spin" aria-hidden="true" />
           Cargando tu perfil…
