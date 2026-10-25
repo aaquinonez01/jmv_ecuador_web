@@ -20,8 +20,9 @@ export const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: "system", label: "Sistema" },
 ];
 
-/** Colores de la barra del navegador (meta theme-color): el header es azul en ambos modos */
-export const THEME_COLOR = { light: "#1D4E8A", dark: "#0f172a" } as const;
+/** Color de la barra del navegador (meta theme-color): el header es azul JMV en ambos modos,
+ * así que es el mismo con cualquier tema (elegido o del sistema). */
+export const THEME_COLOR = "#1D4E8A";
 
 /**
  * El panel /admin es siempre claro (no se adaptó al tema): ahí el script fuerza "light"

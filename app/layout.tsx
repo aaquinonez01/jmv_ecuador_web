@@ -82,12 +82,9 @@ export const metadata: Metadata = {
   },
 };
 
-// Barra del navegador según el tema del sistema (el header es azul en ambos modos)
+// Barra del navegador: azul JMV como el header, igual en los dos modos
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: THEME_COLOR.light },
-    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR.dark },
-  ],
+  themeColor: THEME_COLOR,
 };
 
 export default function RootLayout({
