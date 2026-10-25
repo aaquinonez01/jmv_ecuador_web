@@ -15,8 +15,6 @@ export function pickProximaFiesta(items: FiestaCandidate[], now: Date = new Date
   let best: ProximaFiestaInfo | null = null;
   for (const item of items) {
     const iso = nextOccurrence(item.month, item.day, now);
-    // El 29 de febrero de un año no bisiesto no existe: se salta
-    if (new Date(iso).getUTCDate() !== item.day) continue;
     const days = daysUntil(iso, now);
     if (days < 0 || days > PROXIMA_FIESTA_DAYS) continue;
     if (!best || days < best.days) best = { ...item, days };

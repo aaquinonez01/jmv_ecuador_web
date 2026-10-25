@@ -50,11 +50,17 @@ export function dayIso(year: number, month: number, day: number) {
   return `${year}-${pad(month)}-${pad(day)}T00:00:00.000Z`;
 }
 
-/** Próxima vez que cae un mes/día (hoy cuenta como próxima) */
+export function isLeap(year: number) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+/** Próxima vez que cae un mes/día (hoy cuenta como próxima); el 29 de febrero espera al próximo bisiesto */
 export function nextOccurrence(month: number, day: number, now: Date = new Date()) {
   const t = todayInEcuador(now);
   const passed = month < t.month || (month === t.month && day < t.day);
-  return dayIso(passed ? t.year + 1 : t.year, month, day);
+  let year = passed ? t.year + 1 : t.year;
+  if (month === 2 && day === 29) while (!isLeap(year)) year++;
+  return dayIso(year, month, day);
 }
 
 /** Días que faltan desde hoy (Ecuador) hasta una fecha "solo día"; 0 = hoy */
