@@ -77,11 +77,16 @@ function toForm(campaign: DonationCampaign): FormState {
   };
 }
 
-/** "1.250,50" o "1250.50" → 1250.5 */
+/** "1500", "1.500", "1.250,50", "1,250.50" o "1250.50" → número; NaN si no se entiende */
 function parseAmount(value: string): number | null {
   const raw = value.trim().replace(/\s|\$/g, "");
   if (!raw) return null;
-  const normalized = raw.includes(",") ? raw.replace(/\./g, "").replace(",", ".") : raw;
+  let normalized: string;
+  if (/^\d+$/.test(raw)) normalized = raw;
+  else if (/^\d+[.,]\d{1,2}$/.test(raw)) normalized = raw.replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(raw)) normalized = raw.replace(/\./g, "").replace(",", ".");
+  else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(raw)) normalized = raw.replace(/,/g, "");
+  else return NaN;
   const n = Number(normalized);
   return Number.isFinite(n) ? Math.round(n * 100) / 100 : NaN;
 }
@@ -89,8 +94,14 @@ function parseAmount(value: string): number | null {
 function amountError(value: string) {
   const n = parseAmount(value);
   if (n === null) return undefined;
-  if (Number.isNaN(n) || n < 0) return "Escribe un monto en dólares (ej. 1500 o 1500,50).";
+  if (Number.isNaN(n) || n < 0) return "Escribe un monto en dólares (ej. 1500, 1.500 o 1500,50).";
   return undefined;
+}
+
+/** Vista previa del monto tal como se verá en /donar */
+function amountPreview(value: string) {
+  const n = parseAmount(value);
+  return n === null || Number.isNaN(n) ? null : `Se verá como ${formatMoney(n)}.`;
 }
 
 function validate(form: FormState): FormErrors {
@@ -454,7 +465,7 @@ export default function CampaignsTab() {
 
             <FormSection title="Meta y fechas">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label="Meta (USD)" error={errors.goalAmount} hint="Opcional. Sin meta no hay barra de progreso.">
+                <Field label="Meta (USD)" error={errors.goalAmount} hint={amountPreview(form.goalAmount) ?? "Opcional. Sin meta no hay barra de progreso."}>
                   {({ id, describedBy, invalid }) => (
                     <input
                       id={id}
@@ -468,7 +479,7 @@ export default function CampaignsTab() {
                     />
                   )}
                 </Field>
-                <Field label="Recaudado (USD)" error={errors.raisedAmount} hint="Lo actualiza el Tesorero/a.">
+                <Field label="Recaudado (USD)" error={errors.raisedAmount} hint={amountPreview(form.raisedAmount) ?? "Lo actualiza el Tesorero/a."}>
                   {({ id, describedBy, invalid }) => (
                     <input
                       id={id}
@@ -566,7 +577,7 @@ export default function CampaignsTab() {
         size="sm"
       >
         <form onSubmit={saveRaised} noValidate className="space-y-4 p-5">
-          <Field label="Total recaudado hasta hoy (USD)" required error={raisedError}>
+          <Field label="Total recaudado hasta hoy (USD)" required error={raisedError} hint={amountPreview(raisedValue) ?? undefined}>
             {({ id, describedBy, invalid }) => (
               <input
                 id={id}

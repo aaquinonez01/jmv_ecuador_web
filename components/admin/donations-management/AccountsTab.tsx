@@ -69,11 +69,16 @@ function toForm(account: DonationAccount): FormState {
   };
 }
 
+// Misma regla que el backend: dígitos con guiones opcionales, de 4 a 40 caracteres
+const ACCOUNT_NUMBER_PATTERN = /^\d+(?:-\d+)*$/;
+const compactAccountNumber = (value: string) => value.replace(/\s+/g, "");
+
 function validate(form: FormState): FormErrors {
   const errors: FormErrors = {};
   if (form.bankName.trim().length < 2) errors.bankName = "Escribe el nombre del banco o cooperativa.";
-  const number = form.accountNumber.replace(/[\s-]/g, "");
-  if (!/^\d{5,20}$/.test(number)) errors.accountNumber = "Solo números (entre 5 y 20 dígitos).";
+  const number = compactAccountNumber(form.accountNumber);
+  if (!ACCOUNT_NUMBER_PATTERN.test(number) || number.length < 4 || number.length > 40)
+    errors.accountNumber = "Solo números y guiones (entre 4 y 40 caracteres).";
   if (form.holderName.trim().length < 3) errors.holderName = "Escribe el nombre del titular.";
   const holderId = form.holderId.replace(/\s/g, "");
   if (holderId && !/^\d{10}(\d{3})?$/.test(holderId)) errors.holderId = "La cédula tiene 10 dígitos y el RUC 13.";
@@ -152,7 +157,7 @@ export default function AccountsTab() {
     const payload: DonationAccountPayload = {
       bankName: form.bankName.trim(),
       accountType: form.accountType,
-      accountNumber: form.accountNumber.replace(/[\s-]/g, ""),
+      accountNumber: compactAccountNumber(form.accountNumber),
       holderName: form.holderName.trim(),
       holderId: optional(form.holderId.replace(/\s/g, "")),
       holderRole: optional(form.holderRole),
@@ -366,7 +371,7 @@ export default function AccountsTab() {
                   )}
                 </Field>
               </div>
-              <Field label="Número de cuenta" required error={errors.accountNumber} hint="Solo números; los espacios se quitan al guardar.">
+              <Field label="Número de cuenta" required error={errors.accountNumber} hint="Números y guiones; los espacios se quitan al guardar.">
                 {({ id, describedBy, invalid }) => (
                   <input
                     id={id}
