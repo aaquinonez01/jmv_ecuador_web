@@ -21,6 +21,9 @@ const ATAJOS = [
   { id: "formacion", label: "Formación", text: "Hasta que Cristo sea formado en ti", icon: GraduationCap },
 ] as const satisfies readonly { id: PilarId; label: string; text: string; icon: unknown }[];
 
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
 export default async function PilaresPage() {
   const s = await fetchSlots([
     "pilares.hero",

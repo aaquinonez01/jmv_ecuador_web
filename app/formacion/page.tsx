@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion" },
 };
 
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
 export default async function FormacionPage() {
   const s = await fetchSlots(["formacion.hero", "ejes.hero", "santos.hero", "pilares.hero"] as const);
   // Cada tarjeta muestra la cabecera de su destino

@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/jmv-en-el-mundo" },
 };
 
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
 export default async function JmvEnElMundoPage() {
   const hero = await fetchSlotImages("jmv-mundo.hero");
 

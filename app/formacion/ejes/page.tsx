@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion/ejes" },
 };
 
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
 export default async function EjesFormativosPage() {
   const hero = await fetchSlotImages("ejes.hero");
 

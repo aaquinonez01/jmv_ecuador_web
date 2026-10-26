@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion/santos" },
 };
 
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
 export default async function SantosVicencianosPage() {
   const s = await fetchSlots([
     "santos.hero",
