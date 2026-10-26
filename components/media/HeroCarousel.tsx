@@ -131,7 +131,7 @@ export default function HeroCarousel({ first, rest, interval, label, sizes }: He
             key={i}
             aria-hidden={i !== index}
             className={cn(
-              "absolute inset-0 transition-opacity duration-[1400ms] ease-in-out",
+              "absolute inset-0 transition-opacity duration-[1400ms] ease-in-out motion-reduce:transition-none",
               i === index ? "opacity-100" : "opacity-0",
             )}
           >
@@ -169,7 +169,7 @@ export default function HeroCarousel({ first, rest, interval, label, sizes }: He
             <span
               aria-hidden="true"
               className={cn(
-                "block h-2 rounded-full shadow-[0_0_0_1px_rgb(15_23_42/0.35)] transition-all duration-300",
+                "block h-2 rounded-full shadow-[0_0_0_1px_rgb(15_23_42/0.35)] transition-all duration-300 motion-reduce:transition-none",
                 i === index ? "w-5 bg-jmv-gold-text" : "w-2 bg-white/75 group-hover:bg-white",
               )}
             />
