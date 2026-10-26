@@ -65,10 +65,10 @@ export default function Footer() {
           <div className="sm:col-span-2">
             <Link href="/" className="inline-block rounded-md" aria-label="JMV Ecuador, ir al inicio">
               <Image
-                src="/logo.png"
+                src="/images/logo-juventudes.png"
                 alt=""
-                width={288}
-                height={82}
+                width={800}
+                height={214}
                 sizes="240px"
                 className="h-auto w-60"
               />

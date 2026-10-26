@@ -244,7 +244,7 @@ export default function AdminSidebar() {
       <div className="relative flex h-[72px] items-center gap-3 border-b border-white/10 px-5">
         <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/95 p-1 shadow-lg ring-1 ring-white/30">
           <Image
-            src="/logo.png"
+            src="/images/escudo-jmv.png"
             alt="JMV Ecuador"
             fill
             sizes="44px"

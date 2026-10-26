@@ -37,17 +37,27 @@ export default function Header() {
       logo={
         <Link
           href="/"
-          className="flex max-w-48 shrink-0 items-center justify-center rounded-md sm:max-w-60 lg:max-w-48 xl:max-w-64 2xl:max-w-72"
+          className="flex shrink-0 items-center gap-2 rounded-md sm:gap-3"
           aria-label="JMV Ecuador, ir al inicio"
         >
+          {/* Escudo oficial de JMV Ecuador */}
           <Image
-            src="/logo.png"
+            src="/images/escudo-jmv.png"
             alt=""
-            width={288}
-            height={82}
+            width={192}
+            height={192}
             priority
-            sizes="(max-width: 640px) 192px, 288px"
-            className="h-auto w-full"
+            sizes="56px"
+            className="h-11 w-11 shrink-0 sm:h-14 sm:w-14"
+          />
+          <Image
+            src="/images/logo-juventudes.png"
+            alt=""
+            width={800}
+            height={214}
+            priority
+            sizes="(max-width: 640px) 150px, (max-width: 1280px) 180px, 240px"
+            className="h-auto w-[150px] sm:w-[190px] lg:w-[160px] xl:w-[210px] 2xl:w-[240px]"
           />
         </Link>
       }
