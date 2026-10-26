@@ -32,7 +32,8 @@ export default async function HomeGallery() {
   const extra = galeria.slice(5);
   const albums: PhotoStripItem[] = actividades.map((a) => ({
     src: a.coverImageUrl as string,
-    alt: `Portada del álbum ${a.title}`,
+    // Decorativa: el título del álbum ya va en el pie de la misma tarjeta
+    alt: "",
     caption: [a.title, a.startDate ? formatDate(a.startDate, { month: "short", year: "numeric" }) : null]
       .filter(Boolean)
       .join(" · "),

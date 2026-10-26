@@ -123,7 +123,8 @@ export default function TestimonialsSectionClient({
                   decoding="async"
                   width={128}
                   height={128}
-                  alt={`Foto de ${activeItem.name}`}
+                  // Decorativa: el nombre va justo debajo, en el pie del testimonio
+                  alt=""
                   className="mx-auto mb-6 h-28 w-28 rounded-full object-cover shadow-card ring-4 ring-accent-gold/40 sm:h-32 sm:w-32"
                 />
               ) : (
