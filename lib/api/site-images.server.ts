@@ -20,27 +20,32 @@ function isHttpsUrl(url: unknown): url is string {
 /**
  * Fotos de un espacio (ISR 30 min, tag 'site_images').
  * Devuelve las fotos subidas desde el panel, en orden y como máximo `max`.
- * Si no hay ninguna, o la API falla o no responde, devuelve las fotos locales
- * de respaldo del registro, así la página nunca se queda sin imagen.
+ * Si no hay ninguna (o en el build sin API), devuelve las fotos locales
+ * de respaldo del registro. Si la API falla en runtime, lanza (ver abajo).
  */
 export const fetchSlotImages = cache(async (slotId: SiteImageSlotId): Promise<SlotPhoto[]> => {
   const slot = SITE_IMAGE_SLOTS[slotId];
   const fallback = slot.fallback.slice(0, slot.max);
+  // ssrFetch devuelve null en el build o ante un 404 (usamos el respaldo). En
+  // runtime, si la API falla o no responde, lanza: así una regeneración ISR
+  // fallida conserva la última versión buena en vez de tapar las fotos del panel
+  // con las de respaldo.
+  const res = await ssrFetch(`/site-images/public?section=${encodeURIComponent(slotId)}`, {
+    revalidate: 1800,
+    tags: [SITE_IMAGES_TAG],
+  });
+  if (!res) return fallback;
+  let data: { items?: PublicSiteImage[] };
   try {
-    const res = await ssrFetch(`/site-images/public?section=${encodeURIComponent(slotId)}`, {
-      revalidate: 1800,
-      tags: [SITE_IMAGES_TAG],
-    });
-    if (!res) return fallback;
-    const data = (await res.json()) as { items?: PublicSiteImage[] };
-    const items = (data.items ?? [])
-      .filter((item) => isHttpsUrl(item.url))
-      .slice(0, slot.max)
-      .map((item) => ({ src: item.url, alt: item.alt?.trim() ?? "" }));
-    return items.length > 0 ? items : fallback;
+    data = (await res.json()) as { items?: PublicSiteImage[] };
   } catch {
     return fallback;
   }
+  const items = (Array.isArray(data?.items) ? data.items : [])
+    .filter((item) => isHttpsUrl(item.url))
+    .slice(0, slot.max)
+    .map((item) => ({ src: item.url, alt: item.alt?.trim() ?? "" }));
+  return items.length > 0 ? items : fallback;
 });
 
 /** Varios espacios a la vez (las peticiones van en paralelo) */
