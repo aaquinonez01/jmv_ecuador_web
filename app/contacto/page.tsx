@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import ContactSection from "@/components/sections/ContactSection";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -13,15 +14,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  const heroImages = await fetchSlotImages("contacto.hero");
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={heroImages}
         eyebrow="Contacto"
         title="Conversemos"
-        description="¿Quieres unirte, colaborar o tienes alguna pregunta sobre JMV Ecuador? Escríbenos por el canal que prefieras: te respondemos con gusto."
+        lead="¿Quieres unirte, colaborar o tienes alguna pregunta sobre JMV Ecuador?"
         breadcrumbs={[{ label: "Contacto" }]}
-        motif="hearts"
+        className="min-h-[60svh] lg:min-h-[56vh]"
         actions={[
           {
             label: "Escribir por WhatsApp",
@@ -31,7 +35,6 @@ export default function ContactoPage() {
           },
           { label: "Usar el formulario", href: "#formulario" },
         ]}
-        className="min-h-[45svh] lg:min-h-[45vh]"
       />
       <ContactSection />
     </>

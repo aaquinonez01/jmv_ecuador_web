@@ -51,25 +51,22 @@ export default function ContactSection() {
           <h2 id="contacto-canales" className="text-2xl font-bold sm:text-3xl">
             Escríbenos directamente
           </h2>
-          <p className="mt-3 text-fg-muted">
-            Elige el canal que te quede más cómodo. Te responde una persona del equipo de JMV
-            Ecuador.
-          </p>
+          <p className="mt-2 text-fg-muted">Te responde una persona del equipo de JMV Ecuador.</p>
 
-          <ul className="mt-8 space-y-4">
+          <ul className="mt-6 space-y-3 sm:mt-8 sm:space-y-4">
             {channels.map(({ icon: Icon, title, description, value, href, external }) => (
               <li key={title}>
                 <a
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  className="group flex min-h-11 items-start gap-4 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card transition-colors hover:border-line-strong hover:bg-surface-2 dark:hover:border-white/30 dark:hover:bg-white/10"
+                  className="group flex min-h-11 items-center gap-4 rounded-2xl border border-line-card bg-surface-card p-4 sm:items-start sm:p-5 shadow-card transition-colors hover:border-line-strong hover:bg-surface-2 dark:hover:border-white/30 dark:hover:bg-white/10"
                 >
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                     <Icon className="h-6 w-6" aria-hidden />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-lg font-semibold">{title}</span>
-                    <span className="block text-sm text-fg-muted">{description}</span>
+                    <span className="hidden text-sm text-fg-muted sm:block">{description}</span>
                     <span className="mt-1 block break-all font-semibold text-accent-gold underline-offset-4 group-hover:underline">
                       {value}
                     </span>
