@@ -16,7 +16,13 @@ export async function POST(req: NextRequest) {
     // ya ve el cambio. Si el backend fallara en ese momento, se sigue sirviendo
     // la versión anterior en vez de un error.
     for (const t of tags) revalidateTag(t, "max");
-    for (const p of paths) revalidatePath(p);
+    // Las rutas sí expiran al momento. Una ruta con segmento dinámico
+    // ("/quienes-somos/estatutos/[slug]") revalida todas sus páginas.
+    for (const p of paths) {
+      if (typeof p !== "string" || !p.startsWith("/")) continue;
+      if (p.includes("[")) revalidatePath(p, "page");
+      else revalidatePath(p);
+    }
     return NextResponse.json({ revalidated: true, tags, paths });
   } catch {
     return NextResponse.json({ error: "Bad Request" }, { status: 400 });
