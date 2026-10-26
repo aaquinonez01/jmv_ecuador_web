@@ -10,7 +10,9 @@ import {
   Package,
   ShieldCheck,
 } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
+import PhotoMosaic from "@/components/media/PhotoMosaic";
+import ReadMore from "@/components/media/ReadMore";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { StarDivider } from "@/components/brand";
@@ -25,6 +27,7 @@ import {
   donationContact,
 } from "@/components/donar/shared";
 import { fetchDonationsPublic } from "@/lib/api/donations.server";
+import { fetchSlots } from "@/lib/api/site-images.server";
 
 const DESCRIPTION =
   "Apoya la misión de JMV Ecuador con una donación anónima por transferencia, QR o PayPal. Tu ayuda se vuelve formación, encuentros y servicio a los más pobres.";
@@ -51,7 +54,12 @@ export const revalidate = 3600;
 const NEW_TAB = " (se abre en una pestaña nueva)";
 
 export default async function DonarPage() {
-  const { settings, accounts, purposes, campaigns } = await fetchDonationsPublic();
+  const [{ settings, accounts, purposes, campaigns }, photos] = await Promise.all([
+    fetchDonationsPublic(),
+    fetchSlots(["donar.hero", "donar.usos"] as const),
+  ]);
+  const usos = photos["donar.usos"];
+  const intro = settings?.intro?.trim() || DEFAULT_INTRO;
   const contact = donationContact(settings);
   const paypalUrl = settings?.paypalUrl?.trim() || null;
   const qrImageUrl = settings?.qrImageUrl?.trim() || null;
@@ -61,45 +69,54 @@ export default async function DonarPage() {
 
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={photos["donar.hero"]}
         eyebrow="Donar"
         title={settings?.headline?.trim() || DEFAULT_HEADLINE}
-        description={settings?.intro?.trim() || DEFAULT_INTRO}
+        lead={
+          <span className="inline-flex items-start gap-2">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-jmv-gold-text sm:mt-1" aria-hidden />
+            Tu donación es anónima: no te pedimos datos ni registro.
+          </span>
+        }
         breadcrumbs={[{ label: "Donar" }]}
-        image={{
-          src: "/images/gallery/encuentro_nacional_2025.jpg",
-          alt: "",
-          position: "center 35%",
-        }}
-        motif="hearts"
+        carouselLabel="Fotos de actividades de JMV"
         actions={[
           { label: "Cómo donar", href: "#como-donar", icon: ArrowDown },
           { label: "¿Dudas? Escríbenos", href: contact.whatsappHref, icon: MessageCircle, external: true },
         ]}
-      >
-        <p className="mt-6 flex items-center gap-2 text-sm text-fg-soft">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
-          Tu donación es anónima: no te pedimos datos ni registro.
-        </p>
-      </PageHero>
+      />
 
-      {purposes.length > 0 ? (
-        <section aria-labelledby="usos-titulo" className="bg-slate-50 py-16 sm:py-20" data-surface="light">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeading
-              id="usos-titulo"
-              tone="light"
-              eyebrow="Tu aporte en acción"
-              title="En qué se usa tu donación"
-            />
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {purposes.map((purpose) => (
-                <PurposeCard key={purpose.id} purpose={purpose} />
+      {/* El párrafo de presentación sale de la cabecera: aquí, con fotos de lo que
+          hacen posible las donaciones (las del admin o, si no hay, las de "donar.usos") */}
+      <section aria-labelledby="usos-titulo" className="bg-page-deep py-14 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-8 max-w-3xl text-center sm:mb-12">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
+              Tu aporte en acción
+            </p>
+            <h2 id="usos-titulo" className="text-3xl font-bold leading-tight text-balance text-fg sm:text-4xl md:text-5xl">
+              En qué se usa tu donación
+            </h2>
+            <ReadMore lines={4} className="mt-4">
+              <p className="text-lg text-fg-muted">{intro}</p>
+            </ReadMore>
+          </div>
+          {purposes.length > 0 ? (
+            <ul className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+              {purposes.map((purpose, i) => (
+                <PurposeCard
+                  key={purpose.id}
+                  purpose={purpose}
+                  fallbackImage={usos.length > 0 ? usos[i % usos.length] : undefined}
+                />
               ))}
             </ul>
-          </div>
-        </section>
-      ) : null}
+          ) : usos.length >= 2 ? (
+            <PhotoMosaic images={usos} label="Fotos de actividades que sostienen las donaciones" />
+          ) : null}
+        </div>
+      </section>
 
       {campaigns.length > 0 ? (
         <section aria-labelledby="campanas-titulo" className="bg-page py-16 sm:py-20">
@@ -135,7 +152,7 @@ export default async function DonarPage() {
             title={hasAnyMethod ? "Elige la forma que te quede más fácil" : "Formas de donar"}
             description={
               hasAnyMethod
-                ? "No necesitas registrarte ni dejarnos tus datos. Copia la información, haz tu aporte desde tu banco y listo."
+                ? "Copia la información, haz tu aporte desde tu banco y listo."
                 : undefined
             }
           />

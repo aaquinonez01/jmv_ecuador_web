@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, BookOpen, Download, TriangleAlert } from "lucide-react";
-import PageHero, { type PageHeroAction } from "@/components/ui/PageHero";
+import HeroMedia, { type HeroMediaAction } from "@/components/media/HeroMedia";
+import ReadMore from "@/components/media/ReadMore";
+import type { SlotPhoto } from "@/lib/site-images";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
 import { allArticles, countLabel, parseStatutes } from "@/lib/estatutos";
 import { formatDate } from "@/lib/format";
@@ -16,9 +18,12 @@ import { MILESTONES, STATUTES_PATH, statuteVersionHref } from "./content";
 export default function StatutesView({
   version,
   versions,
+  heroImages,
 }: {
   version: StatuteVersion;
   versions: StatuteVersionSummary[];
+  /** Fotos del espacio "estatutos.hero" */
+  heroImages: readonly SlotPhoto[];
 }) {
   const doc = parseStatutes(version.content);
   const anchors = allArticles(doc).map((a) => a.id);
@@ -26,45 +31,55 @@ export default function StatutesView({
   const basePath = archived ? statuteVersionHref(version.slug) : STATUTES_PATH;
   const approved = formatDate(version.approvedAt);
 
-  const actions: PageHeroAction[] = [{ label: "Leer los estatutos", href: "#texto", icon: BookOpen }];
+  const actions: HeroMediaAction[] = [{ label: "Leer los estatutos", href: "#texto", icon: BookOpen }];
   if (version.pdfUrl) {
     actions.push({ label: "Original en PDF", href: version.pdfUrl, icon: Download, external: true });
   }
 
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={heroImages}
         eyebrow={archived ? `Versión anterior · ${version.versionLabel}` : "Quiénes somos"}
         title="Estatutos Nacionales"
-        description={
-          version.summary ||
-          "Las reglas que nos dimos para vivir juntos la fe, la formación y el servicio a los pobres. Léelas, búscalas por palabras y comparte el artículo que necesites."
-        }
-        motif="monogram"
+        lead="Las reglas que nos dimos para vivir juntos la fe, la formación y el servicio a los pobres."
         breadcrumbs={[
           { label: "Quiénes somos", href: "/quienes-somos" },
           archived ? { label: "Estatutos", href: STATUTES_PATH } : { label: "Estatutos" },
           ...(archived ? [{ label: version.versionLabel }] : []),
         ]}
         actions={actions}
-      >
-        <div className="mt-8 flex max-w-xl items-start gap-3 rounded-2xl border border-accent-gold/40 bg-surface-card p-4 shadow-card dark:backdrop-blur-sm">
-          <BadgeCheck className="mt-0.5 h-6 w-6 shrink-0 text-accent-gold" aria-hidden />
-          <p className="text-sm leading-relaxed text-fg-soft sm:text-base">
-            <strong className="block font-semibold text-fg">
-              Aprobados el {approved}
-            </strong>
-            {version.approvedBy}
-          </p>
+      />
+
+      {/* Lo que antes iba en la cabecera: resumen de la versión, aprobación e hitos.
+          Como el resto de la página de lectura, es claro en ambos modos. */}
+      <section aria-label="Sobre esta versión" className="border-b border-slate-200 bg-white py-8 sm:py-10">
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-10 lg:px-8">
+          <div className="flex flex-col gap-4">
+            {version.summary ? (
+              <ReadMore lines={3} buttonClassName="text-jmv-blue">
+                <p className="text-lg leading-relaxed text-slate-700">{version.summary}</p>
+              </ReadMore>
+            ) : null}
+            <div className="flex items-start gap-3 rounded-2xl border border-jmv-gold/50 bg-amber-50/60 p-4">
+              <BadgeCheck className="mt-0.5 h-6 w-6 shrink-0 text-jmv-gold-ink" aria-hidden />
+              <ReadMore lines={3} className="min-w-0 flex-1" buttonClassName="text-jmv-blue">
+                <p className="text-sm leading-relaxed text-slate-700 sm:text-base">
+                  <strong className="block font-semibold text-slate-900">Aprobados el {approved}</strong>
+                  {version.approvedBy}
+                </p>
+              </ReadMore>
+            </div>
+          </div>
+          <ul aria-label="Hitos de la Asociación" className="flex flex-wrap gap-2 lg:justify-end">
+            {MILESTONES.map((m) => (
+              <li key={m.year} className="rounded-full border border-slate-300 px-3 py-1.5 text-sm text-slate-700">
+                {m.label} <strong className="font-semibold text-jmv-gold-ink">{m.year}</strong>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul aria-label="Hitos de la Asociación" className="mt-5 flex flex-wrap gap-2">
-          {MILESTONES.map((m) => (
-            <li key={m.year} className="rounded-full border border-line-strong bg-surface/60 px-3 py-1.5 text-sm text-fg-soft dark:bg-transparent">
-              {m.label} <strong className="font-semibold text-accent-gold">{m.year}</strong>
-            </li>
-          ))}
-        </ul>
-      </PageHero>
+      </section>
 
       {archived ? (
         <div role="note" className="border-b border-amber-200 bg-amber-50">

@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { fetchStatuteVersion, fetchStatuteVersions } from "@/lib/api/statutes.server";
 import StatutesView from "@/components/estatutos/StatutesView";
 import { STATUTES_PATH, statuteVersionHref } from "@/components/estatutos/content";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 // ISR: ver app/quienes-somos/estatutos/page.tsx
 export const revalidate = 3600;
@@ -24,8 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EstatutosVersionPage({ params }: Props) {
   const { slug } = await params;
-  const [version, versions] = await Promise.all([fetchStatuteVersion(slug), fetchStatuteVersions().catch(() => [])]);
+  const [version, versions, heroImages] = await Promise.all([
+    fetchStatuteVersion(slug),
+    fetchStatuteVersions().catch(() => []),
+    fetchSlotImages("estatutos.hero"),
+  ]);
   if (!version) notFound();
   if (version.isCurrent) redirect(STATUTES_PATH);
-  return <StatutesView version={version} versions={versions} />;
+  return <StatutesView version={version} versions={versions} heroImages={heroImages} />;
 }

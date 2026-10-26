@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Pause, Play, Quote } from "lucide-react";
 import type { TestimonialItem } from "@/types/activity-management";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import { cn } from "@/lib/utils";
+import ReadMore from "../media/ReadMore";
 import SectionHeading from "../ui/SectionHeading";
 import { buttonVariants } from "../ui/button-variants";
 
@@ -25,8 +26,11 @@ function initials(name: string) {
 // se detiene con foco o puntero encima y no arranca con "reducir movimiento".
 export default function TestimonialsSectionClient({
   testimonials,
+  showInvite = true,
 }: {
   testimonials: TestimonialItem[];
+  /** Bloque final "¿Quieres ser parte de estas historias?" (en el inicio no hace falta) */
+  showInvite?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,28 +114,34 @@ export default function TestimonialsSectionClient({
               aria-label={`${currentIndex + 1} de ${total}`}
               className="rounded-3xl border border-line-card bg-surface-card p-6 text-center shadow-card-lg dark:shadow-2xl sm:p-10 md:p-12"
             >
-              <Quote className="mx-auto mb-6 h-10 w-10 text-accent-gold" aria-hidden />
-              <blockquote className="font-display text-xl leading-relaxed text-fg sm:text-2xl md:text-3xl">
-                <p>“{activeItem.quote}”</p>
-              </blockquote>
+              {activeItem.imageUrl ? (
+                // Con foto, la foto de la persona encabeza el testimonio
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={getOptimizedUrl(activeItem.imageUrl, { w: 320 })}
+                  loading="lazy"
+                  decoding="async"
+                  width={128}
+                  height={128}
+                  // Decorativa: el nombre va justo debajo, en el pie del testimonio
+                  alt=""
+                  className="mx-auto mb-6 h-28 w-28 rounded-full object-cover shadow-card ring-4 ring-accent-gold/40 sm:h-32 sm:w-32"
+                />
+              ) : (
+                <Quote className="mx-auto mb-6 h-10 w-10 text-accent-gold" aria-hidden />
+              )}
+              <ReadMore lines={5} buttonClassName="mx-auto">
+                <blockquote className="font-display text-xl leading-relaxed text-fg sm:text-2xl md:text-3xl">
+                  <p>“{activeItem.quote}”</p>
+                </blockquote>
+              </ReadMore>
 
-              <figcaption className="mt-8 flex items-center justify-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jmv-blue text-lg font-bold text-white">
-                  {activeItem.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={getOptimizedUrl(activeItem.imageUrl, { w: 160 })}
-                      loading="lazy"
-                      decoding="async"
-                      width={56}
-                      height={56}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
+              <figcaption className="mt-6 flex items-center justify-center gap-4 sm:mt-8">
+                {!activeItem.imageUrl && (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-jmv-blue text-lg font-bold text-white">
                     <span aria-hidden>{initials(activeItem.name)}</span>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className="text-left">
                   <p className="text-lg font-semibold text-fg">{activeItem.name}</p>
                   {activeItem.role && <p className="text-sm text-fg-muted">{activeItem.role}</p>}
@@ -188,6 +198,7 @@ export default function TestimonialsSectionClient({
           )}
         </div>
 
+        {showInvite && (
         <div className="mt-14 text-center">
           <h3 className="mb-3 text-2xl font-bold text-fg">
             ¿Quieres ser parte de estas historias?
@@ -199,6 +210,7 @@ export default function TestimonialsSectionClient({
             Encuentra tu grupo
           </Link>
         </div>
+        )}
       </div>
     </section>
   );

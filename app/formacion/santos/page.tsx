@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { ChevronDown } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import { fetchSlots } from "@/lib/api/site-images.server";
 import SantosClient from "./SantosClient";
 
 export const metadata: Metadata = {
@@ -11,23 +12,43 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion/santos" },
 };
 
-export default function SantosVicencianosPage() {
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
+export default async function SantosVicencianosPage() {
+  const s = await fetchSlots([
+    "santos.hero",
+    "santos.san-vicente",
+    "santos.santa-luisa",
+    "santos.santa-catalina",
+    "santos.sor-rosalia",
+    "santos.san-justino",
+    "santos.federico-ozanam",
+  ] as const);
+  const retratos = {
+    "san-vicente": s["santos.san-vicente"][0],
+    "santa-luisa": s["santos.santa-luisa"][0],
+    "santa-catalina": s["santos.santa-catalina"][0],
+    "sor-rosalia": s["santos.sor-rosalia"][0],
+    "san-justino": s["santos.san-justino"][0],
+    "federico-ozanam": s["santos.federico-ozanam"][0],
+  };
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={s["santos.hero"]}
         eyebrow="Familia Vicenciana"
         title="Santos vicencianos"
-        motto="Los santos no son superhombres: son hombres y mujeres que dejaron actuar a Dios en sus vidas."
-        description="Conoce a quienes inspiran nuestro caminar: santos, beatos y testigos del carisma vicenciano que dieron su vida por Cristo en los pobres y por la Iglesia."
-        image={{ src: "/images/historia/catalina.jpg", alt: "", position: "center 25%" }}
-        motif="monogram"
+        lead="Hombres y mujeres que dejaron actuar a Dios en sus vidas."
+        actions={[{ label: "Conócelos", href: "#santos", icon: ChevronDown }]}
         breadcrumbs={[
           { label: "Formación", href: "/formacion" },
           { label: "Santos vicencianos" },
         ]}
-        actions={[{ label: "Comenzar el recorrido", href: "#santos", icon: ChevronDown }]}
+        carouselLabel="Imágenes de los santos vicencianos"
       />
-      <SantosClient />
+      <SantosClient retratos={retratos} />
       <SigueExplorando items={["ejes", "quienes-somos", "unete"]} />
     </>
   );

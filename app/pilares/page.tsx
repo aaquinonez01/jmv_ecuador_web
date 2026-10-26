@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { BookOpen, GraduationCap, HandHeart, Users } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
-import PilaresInteractivo from "@/components/sections/PilaresInteractivo";
+import { BookOpen, ChevronDown, GraduationCap, HandHeart, Users } from "lucide-react";
+import HeroMedia from "@/components/media/HeroMedia";
+import PhotoCard from "@/components/media/PhotoCard";
+import PilaresInteractivo, { type PilarId } from "@/components/sections/PilaresInteractivo";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import { fetchSlots } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "Los cuatro pilares",
@@ -14,41 +15,84 @@ export const metadata: Metadata = {
 
 // Mismo orden que las pestañas de PilaresInteractivo
 const ATAJOS = [
-  { id: "comunidad", label: "Comunidad", icon: Users },
-  { id: "espiritualidad", label: "Espiritualidad", icon: BookOpen },
-  { id: "apostolado", label: "Apostolado", icon: HandHeart },
-  { id: "formacion", label: "Formación", icon: GraduationCap },
-];
+  { id: "comunidad", label: "Comunidad", text: "La pedagogía del encuentro", icon: Users },
+  { id: "espiritualidad", label: "Espiritualidad", text: "Encuentro con Cristo vivo", icon: BookOpen },
+  { id: "apostolado", label: "Apostolado", text: "Servir como el buen samaritano", icon: HandHeart },
+  { id: "formacion", label: "Formación", text: "Hasta que Cristo sea formado en ti", icon: GraduationCap },
+] as const satisfies readonly { id: PilarId; label: string; text: string; icon: unknown }[];
 
-export default function PilaresPage() {
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
+export default async function PilaresPage() {
+  const s = await fetchSlots([
+    "pilares.hero",
+    "pilares.comunidad",
+    "pilares.espiritualidad",
+    "pilares.apostolado",
+    "pilares.formacion",
+  ] as const);
+  const fotos = {
+    comunidad: s["pilares.comunidad"][0],
+    espiritualidad: s["pilares.espiritualidad"][0],
+    apostolado: s["pilares.apostolado"][0],
+    formacion: s["pilares.formacion"][0],
+  } satisfies Record<PilarId, unknown>;
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={s["pilares.hero"]}
         eyebrow="Cómo vivimos JMV"
         title="Nuestros cuatro pilares"
-        motto="Las cuatro patas de la silla que sostienen a cada joven vicenciano."
-        description="Comunidad, espiritualidad, apostolado y formación no se viven por separado: juntos nos ayudan a crecer como personas, como cristianos y como servidores de los pobres."
-        image={{ src: "/images/events/evento_campamento.jpg", position: "center 60%" }}
-        motif="stars"
+        lead="Las cuatro patas de la silla que sostienen a cada joven vicenciano."
+        actions={[
+          { label: "Conoce los pilares", href: "#pilares-fotos", icon: ChevronDown },
+          { label: "Únete", href: "/unete" },
+        ]}
         breadcrumbs={[{ label: "Pilares" }]}
+        carouselLabel="Fotos de los pilares de JMV"
+      />
+
+      {/* Un vistazo con foto a cada pilar; cada tarjeta abre su pestaña más abajo */}
+      <section
+        id="pilares-fotos"
+        aria-labelledby="pilares-fotos-titulo"
+        className="scroll-mt-20 bg-page pt-12 pb-4 sm:pt-16"
       >
-        <nav aria-label="Ir a un pilar" className="mt-8">
-          <ul className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-            {ATAJOS.map(({ id, label, icon: Icon }) => (
-              <li key={id}>
-                <Link
-                  href={`#${id}`}
-                  className="flex min-h-12 items-center gap-2 rounded-xl border border-white/25 bg-jmv-ink/60 px-4 font-medium text-white hover:bg-white hover:text-jmv-blue"
-                >
-                  <Icon className="h-5 w-5 text-jmv-gold-text" aria-hidden />
-                  {label}
-                </Link>
-              </li>
-            ))}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <h2 id="pilares-fotos-titulo" className="text-2xl font-bold text-fg text-balance sm:text-3xl">
+            Cuatro pilares, una sola casa
+          </h2>
+          <p className="mt-2 max-w-2xl text-fg-muted sm:text-lg">
+            No se viven por separado: juntos nos ayudan a crecer como personas, como cristianos y como servidores
+            de los pobres.
+          </p>
+          <ul className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {ATAJOS.map(({ id, label, text, icon }) => {
+              const foto = fotos[id];
+              if (!foto) return null;
+              return (
+                <li key={id}>
+                  <PhotoCard
+                    variant="overlay"
+                    image={foto}
+                    title={label}
+                    text={text}
+                    icon={icon}
+                    href={`#${id}`}
+                    linkLabel={`Pilar ${label}: ${text}`}
+                    sizes="(min-width: 1024px) 280px, 50vw"
+                    className="p-3.5 sm:p-5 [&_h3]:text-lg sm:[&_h3]:text-xl"
+                  />
+                </li>
+              );
+            })}
           </ul>
-        </nav>
-      </PageHero>
-      <PilaresInteractivo />
+        </div>
+      </section>
+
+      <PilaresInteractivo fotos={fotos} />
       <SigueExplorando items={["formacion", "santos", "unete"]} />
     </>
   );

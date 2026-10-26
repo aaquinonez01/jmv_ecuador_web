@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, Clock3, FileText, Instagram, MapPin, Users } from "lucide-react";
 import CountdownClient from "./CountdownClient";
 import EventActions from "./EventActions";
+import ReadMore from "@/components/media/ReadMore";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { buttonVariants } from "@/components/ui/button-variants";
 import {
@@ -216,9 +217,9 @@ export default async function ProximasActividades({
                   <h3 id={`evento-${featured.id}`} className="text-2xl font-bold text-fg lg:text-3xl">
                     {featured.title}
                   </h3>
-                  <p className="mt-3 max-w-2xl leading-7 text-fg-soft">
-                    {featured.summary || featured.description}
-                  </p>
+                  <ReadMore lines={3} className="mt-3 max-w-2xl">
+                    <p className="leading-7 text-fg-soft">{featured.summary || featured.description}</p>
+                  </ReadMore>
 
                   <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <li className="flex items-center gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-fg">

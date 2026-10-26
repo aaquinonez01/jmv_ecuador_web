@@ -1,12 +1,9 @@
-import { Metadata } from "next";
-import ImagenesClient from "./ImagenesClient";
-import { mockSections } from "@/data/admin/mockSections";
+import SiteImagesManager from "@/components/admin/site-images/SiteImagesManager";
 
-export const metadata: Metadata = {
-  title: "Gestión de imágenes · Panel administrativo",
-  description: "Administra todas las imágenes del sitio web de Juventudes Marianas Vicencianas Ecuador organizadas por secciones",
+export const metadata = {
+  title: "Imágenes del sitio | Admin JMV Ecuador",
 };
 
-export default function ImagenesPage() {
-  return <ImagenesClient sections={mockSections} />;
+export default function AdminImagesPage() {
+  return <SiteImagesManager />;
 }

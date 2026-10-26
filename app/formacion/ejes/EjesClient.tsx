@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, BookOpen, Cross, Heart, Library, Star, Users } from "lucide-react";
 import { useTabs } from "@/components/sections/institucional/useTabs";
+import { useScrollActiveTab } from "@/components/sections/institucional/useScrollActiveTab";
+import ReadMore from "@/components/media/ReadMore";
 
 const ejesFormativos = [
   {
@@ -117,22 +119,29 @@ export default function EjesClient() {
   const total = ejesFormativos.length;
   const anterior = ejesFormativos[(active - 1 + total) % total];
   const siguiente = ejesFormativos[(active + 1) % total];
+  const tabListRef = useScrollActiveTab<HTMLDivElement>(active);
 
   return (
     <section
       id="ejes"
       aria-labelledby="ejes-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-12 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 id="ejes-titulo" className="sr-only">
           Los cinco ejes formativos
         </h2>
+        <p className="mx-auto mb-6 max-w-2xl text-center text-fg-muted sm:mb-8 sm:text-lg">
+          Desde lo humano hasta lo espiritual, siguiendo el carisma vicenciano: así orientamos la formación de cada
+          joven.
+        </p>
 
+        {/* En móvil, una fila deslizable; desde sm, centradas en varias filas */}
         <div
+          ref={tabListRef}
           role="tablist"
           aria-label="Ejes formativos"
-          className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-3"
+          className="scrollbar-hide relative -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mb-8 sm:flex-wrap sm:justify-center sm:gap-3 sm:overflow-visible sm:px-0"
         >
           {ejesFormativos.map((eje, index) => {
             const Icono = eje.icono;
@@ -141,7 +150,7 @@ export default function EjesClient() {
               <button
                 key={eje.id}
                 {...getTabProps(index)}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
                   selected
                     ? "border-jmv-gold bg-jmv-gold text-jmv-ink"
                     : "border-line-strong bg-surface text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15"
@@ -160,11 +169,11 @@ export default function EjesClient() {
             <article
               key={eje.id}
               {...getPanelProps(index)}
-              className="rounded-2xl border border-fg/15 bg-surface p-6 text-fg shadow-card sm:p-8 lg:p-12"
+              className="rounded-2xl border border-fg/15 bg-surface p-5 text-fg shadow-card sm:p-8 lg:p-12"
             >
-              <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-2">
-                  <Icono className="h-8 w-8 text-accent-gold" aria-hidden />
+              <div className="mb-6 flex items-start gap-4 sm:mb-8 sm:items-center sm:gap-6">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-2 sm:h-16 sm:w-16">
+                  <Icono className="h-6 w-6 text-accent-gold sm:h-8 sm:w-8" aria-hidden />
                 </span>
                 <div>
                   <h3 className="mb-2 text-2xl font-bold sm:text-3xl lg:text-4xl">{eje.titulo}</h3>
@@ -172,40 +181,42 @@ export default function EjesClient() {
                 </div>
               </div>
 
-              <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-                <div>
-                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Aspectos fundamentales</h4>
-                  <ul className="space-y-3">
-                    {eje.detalles.map((detalle) => (
-                      <li key={detalle} className="flex items-start gap-3">
-                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
-                        <span className="leading-relaxed text-fg-soft">{detalle}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <ReadMore lines={9} moreLabel="Ver aspectos y objetivos" lessLabel="Ver menos">
+                <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+                  <div>
+                    <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Aspectos fundamentales</h4>
+                    <ul className="space-y-3">
+                      {eje.detalles.map((detalle) => (
+                        <li key={detalle} className="flex items-start gap-3">
+                          <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
+                          <span className="leading-relaxed text-fg-soft">{detalle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                <div>
-                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Objetivos principales</h4>
-                  <ol className="space-y-3">
-                    {eje.objetivos.map((objetivo, n) => (
-                      <li key={objetivo} className="flex items-start gap-3 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
-                        <span
-                          aria-hidden
-                          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
-                        >
-                          {n + 1}
-                        </span>
-                        <span className="leading-relaxed text-fg-soft">{objetivo}</span>
-                      </li>
-                    ))}
-                  </ol>
+                  <div>
+                    <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Objetivos principales</h4>
+                    <ol className="space-y-3">
+                      {eje.objetivos.map((objetivo, n) => (
+                        <li key={objetivo} className="flex items-start gap-3 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
+                          <span
+                            aria-hidden
+                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
+                          >
+                            {n + 1}
+                          </span>
+                          <span className="leading-relaxed text-fg-soft">{objetivo}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
                 </div>
-              </div>
+              </ReadMore>
 
               <Link
                 href={`/biblioteca?eje=${eje.id}`}
-                className="group mt-8 flex items-center gap-4 rounded-xl border border-accent-gold/40 bg-jmv-gold/10 p-4 transition-colors hover:bg-jmv-gold/15 dark:bg-accent-gold/10 dark:hover:bg-accent-gold/15 sm:p-5"
+                className="group mt-6 flex items-center gap-4 rounded-xl border border-accent-gold/40 bg-jmv-gold/10 p-4 transition-colors hover:bg-jmv-gold/15 dark:bg-accent-gold/10 dark:hover:bg-accent-gold/15 sm:p-5"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
                   <Library className="h-5 w-5" aria-hidden />

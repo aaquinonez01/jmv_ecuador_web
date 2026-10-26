@@ -9,6 +9,7 @@ import CalendarioHero from "@/components/calendario/CalendarioHero";
 import CalendarioExplorer from "@/components/calendario/CalendarioExplorer";
 import EmptyState from "@/components/calendario/EmptyState";
 import SubscribeBlock from "@/components/calendario/SubscribeBlock";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "Año Vicenciano",
@@ -23,9 +24,10 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function CalendarioPage() {
-  const [items, activities] = await Promise.all([
+  const [items, activities, heroImages] = await Promise.all([
     fetchCalendarDates(),
     fetchPublicUpcomingActivities().catch(() => []),
+    fetchSlotImages("calendario.hero"),
   ]);
   const activityEntries = activitiesToEntries(onlyPublicUpcoming(activities));
   // Al cliente solo viaja lo que muestra el explorador (la historia completa vive en cada página)
@@ -41,7 +43,7 @@ export default async function CalendarioPage() {
 
   return (
     <div className="bg-page pb-4">
-      <CalendarioHero />
+      <CalendarioHero images={heroImages} />
       {empty ? (
         <EmptyState />
       ) : (

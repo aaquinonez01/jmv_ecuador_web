@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CalendarDays, Camera } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import ProximasActividades from "@/components/sections/ProximasActividades";
 import ActividadesAlbumsServer from "@/components/sections/ActividadesAlbumsServer";
 import GallerySkeleton from "@/components/sections/skeletons/GallerySkeleton";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "Actividades",
@@ -23,16 +24,18 @@ const sectionNav = [
   { href: "#realizadas", label: "Realizadas", icon: Camera },
 ];
 
-export default function ActividadesPage() {
+export default async function ActividadesPage() {
+  const heroImages = await fetchSlotImages("actividades.hero");
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={heroImages}
         eyebrow="Actividades"
-        title="Vivencias que transforman y construyen comunidad"
-        description="Mira lo que se viene en la agenda de JMV Ecuador y revive, en fotos, las actividades que ya compartimos en todo el país."
+        title="Vivencias que transforman"
+        lead="Mira lo que se viene y revive, en fotos, lo que ya compartimos."
         breadcrumbs={[{ label: "Actividades" }]}
-        image={{ src: "/images/gallery/asamblea_2024.jpg", position: "center 40%" }}
-        motif="stars"
+        carouselLabel="Fotos de actividades de JMV"
         actions={[
           { label: "Ver próximas actividades", href: "#proximas", icon: CalendarDays },
           { label: "Ver actividades realizadas", href: "#realizadas", icon: Camera },

@@ -3,10 +3,9 @@ import HeroSection from "@/components/sections/HeroSection";
 import HomeAnnouncementBanner from "@/components/sections/HomeAnnouncementBanner";
 import ProximaFiesta from "@/components/calendario/ProximaFiesta";
 import ProximasActividades from "@/components/sections/ProximasActividades";
-import ActivitiesGalleryServer from "@/components/sections/ActivitiesGalleryServer";
+import HomeGallery from "@/components/sections/HomeGallery";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import CTASection from "@/components/sections/CTASection";
-import GallerySkeleton from "@/components/sections/skeletons/GallerySkeleton";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
 
 // ISR: HTML cacheado; se regenera en segundo plano o al instante cuando el
@@ -33,11 +32,11 @@ export default function Home() {
       >
         <ProximasActividades />
       </Suspense>
-      <Suspense fallback={<GallerySkeleton />}>
-        <ActivitiesGalleryServer />
+      <Suspense fallback={<section aria-hidden className="min-h-[60svh] bg-page" />}>
+        <HomeGallery />
       </Suspense>
       <Suspense fallback={<TestimonialsSkeleton />}>
-        <TestimonialsSection />
+        <TestimonialsSection showInvite={false} />
       </Suspense>
       <CTASection />
     </>

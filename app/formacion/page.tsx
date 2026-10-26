@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { BookOpen, Library, Star } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import { BookOpen, Star } from "lucide-react";
+import HeroMedia from "@/components/media/HeroMedia";
 import FormacionPilar from "@/components/sections/FormacionPilar";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
 import BibliotecaCta from "@/components/sections/formacion/BibliotecaCta";
+import { fetchSlots } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "Formación",
@@ -12,24 +13,38 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion" },
 };
 
-export default function FormacionPage() {
+// ISR: las fotos son administrables (tag site_images).
+export const revalidate = 1800;
+
+export default async function FormacionPage() {
+  const s = await fetchSlots(["formacion.hero", "ejes.hero", "santos.hero", "pilares.hero"] as const);
+  // Cada tarjeta muestra la cabecera de su destino
+  const fotos = {
+    ejes: s["ejes.hero"][0],
+    santos: s["santos.hero"][0],
+    pilar: s["pilares.hero"][0],
+  };
+  // Que la cabecera no repita una foto que ya está en las tarjetas (con las fotos
+  // de respaldo comparten alguna); si todas se repiten, se usan igual.
+  const enTarjetas = new Set(Object.values(fotos).map((f) => f?.src));
+  const propias = s["formacion.hero"].filter((f) => !enTarjetas.has(f.src));
+  const hero = propias.length > 0 ? propias : s["formacion.hero"];
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={hero}
         eyebrow="Uno de los cuatro pilares"
         title="Formación"
-        motto="Hasta que Cristo sea formado en ti."
-        description="Como el barro en manos del alfarero, cada joven crece en su fe, en su humanidad y en su compromiso con los pobres. Así es el camino formativo de JMV."
-        image={{ src: "/images/gallery/asamblea_2024.jpg", position: "center 40%" }}
-        motif="monogram"
-        breadcrumbs={[{ label: "Formación" }]}
+        lead="Hasta que Cristo sea formado en ti."
         actions={[
           { label: "Ejes formativos", href: "/formacion/ejes", icon: BookOpen },
           { label: "Santos vicencianos", href: "/formacion/santos", icon: Star },
-          { label: "Biblioteca", href: "/biblioteca", icon: Library },
         ]}
+        breadcrumbs={[{ label: "Formación" }]}
+        carouselLabel="Fotos de formación"
       />
-      <FormacionPilar />
+      <FormacionPilar fotos={fotos} />
       <BibliotecaCta className="bg-section-blue pb-16 sm:pb-20" />
       <SigueExplorando items={["ejes", "santos", "unete"]} />
     </>
