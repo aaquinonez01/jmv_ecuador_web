@@ -71,7 +71,7 @@ const P = {
   aniversario: {
     src: "/images/historia/jmv_20.jpg",
     alt: "Celebración de los 30 años de JMV Ecuador",
-    position: "center 45%",
+    position: "center 30%",
   },
   grupoEcuador: {
     src: "/images/historia/jmv-fundacion.jpg",
@@ -81,7 +81,7 @@ const P = {
   catalina: {
     src: "/images/historia/catalina.jpg",
     alt: "Pintura de santa Catalina Labouré ante la Virgen, con la Medalla Milagrosa",
-    position: "center 25%",
+    position: "center 12%",
   },
   equipoInternacional: {
     src: "/images/historia/fundacion.jpg",
