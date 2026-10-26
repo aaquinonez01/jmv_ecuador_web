@@ -144,8 +144,8 @@ export const SITE_IMAGE_SLOTS = {
   },
   "quienes-somos.carisma": {
     page: "/quienes-somos",
-    label: "Carisma vicenciano",
-    description: "Acompaña el carisma mariano y vicenciano: la Virgen Milagrosa, santa Catalina, san Vicente o un momento de servicio. Vertical.",
+    label: "Retrato de Santa Catalina (Carisma)",
+    description: "Imagen de Santa Catalina Labouré que acompaña su pestaña en «El carisma vicenciano». Vertical, con el rostro en la parte de arriba.",
     aspect: "4/5",
     max: 1,
     fallback: [P.catalina],
@@ -241,7 +241,8 @@ export const SITE_IMAGE_SLOTS = {
     description: `Cabecera de «Santos y beatos de la familia vicenciana». Una imagen de santos del carisma. ${HERO_TIP}`,
     aspect: "16/9",
     max: 1,
-    fallback: [P.catalina],
+    // Distinta del retrato de santa Catalina de la misma página
+    fallback: [P.hijasHijos],
   },
   // Retrato de cada santo en su ficha. Sin foto se muestra su icono.
   "santos.san-vicente": {
