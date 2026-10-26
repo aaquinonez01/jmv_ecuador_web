@@ -5,6 +5,7 @@ import PhotoCard from "@/components/media/PhotoCard";
 import PilaresInteractivo, { type PilarId } from "@/components/sections/PilaresInteractivo";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
 import { fetchSlots } from "@/lib/api/site-images.server";
+import { fetchActivitiesByPillar } from "@/lib/api/pillar-activities.server";
 
 export const metadata: Metadata = {
   title: "Los cuatro pilares",
@@ -25,13 +26,13 @@ const ATAJOS = [
 export const revalidate = 1800;
 
 export default async function PilaresPage() {
-  const s = await fetchSlots([
+  const [s, actividades] = await Promise.all([fetchSlots([
     "pilares.hero",
     "pilares.comunidad",
     "pilares.espiritualidad",
     "pilares.apostolado",
     "pilares.formacion",
-  ] as const);
+  ] as const), fetchActivitiesByPillar()]);
   const fotos = {
     comunidad: s["pilares.comunidad"][0],
     espiritualidad: s["pilares.espiritualidad"][0],
@@ -92,7 +93,7 @@ export default async function PilaresPage() {
         </div>
       </section>
 
-      <PilaresInteractivo fotos={fotos} />
+      <PilaresInteractivo fotos={fotos} actividades={actividades} />
       <SigueExplorando items={["formacion", "santos", "unete"]} />
     </>
   );

@@ -298,6 +298,14 @@ export default function ActivitiesAlbumsClient({
     listRef.current?.querySelectorAll<HTMLButtonElement>("h3 button")[index]?.focus();
   }, [items, status]);
 
+  // /actividades?pilar=<slug o id> (enlace desde /pilares) abre los álbumes ya filtrados
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("pilar");
+    if (!wanted) return;
+    const match = pillars.find((p) => p.slug === wanted || p.id === wanted);
+    if (match) setSelectedPillar(match.id);
+  }, [pillars]);
+
   const clearFilters = () => {
     setSelectedPillar("all");
     setSelectedType("all");

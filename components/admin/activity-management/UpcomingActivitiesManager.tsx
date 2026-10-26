@@ -217,11 +217,11 @@ function UpcomingForm({
       <FormSection title="Clasificación" />
 
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <FormField label="Pilar">
-          <Select value={form.pillarId || "__none__"} onValueChange={(v) => onChange({ pillarId: v === "__none__" ? "" : v })}>
-            <SelectTrigger className={ST}><SelectValue placeholder="Sin pilar" /></SelectTrigger>
+        <FormField label="Pilar *">
+          {/* Toda actividad pertenece a uno de los cuatro pilares: se muestra en /pilares */}
+          <Select value={form.pillarId || undefined} onValueChange={(v) => onChange({ pillarId: v })}>
+            <SelectTrigger className={ST} aria-required="true"><SelectValue placeholder="Elige el pilar" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="__none__">Sin pilar</SelectItem>
               {pillars.filter((p) => p.active).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -334,6 +334,7 @@ export default function UpcomingActivitiesManager() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [search, setSearch] = useState("");
+  const [onlyWithoutPillar, setOnlyWithoutPillar] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<UpcomingActivityItem | null>(
     null
@@ -364,13 +365,15 @@ export default function UpcomingActivitiesManager() {
 
   const filteredActivities = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return activities;
-    return activities.filter((item) =>
+    const base = onlyWithoutPillar ? activities.filter((item) => !item.pillar) : activities;
+    if (!term) return base;
+    return base.filter((item) =>
       [item.title, item.description, item.location, item.pillar?.name, item.type?.name]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(term))
     );
-  }, [activities, search]);
+  }, [activities, search, onlyWithoutPillar]);
+  const withoutPillar = useMemo(() => activities.filter((item) => !item.pillar).length, [activities]);
 
   const openCreateModal = () => {
     setEditingActivity(null);
@@ -413,6 +416,10 @@ export default function UpcomingActivitiesManager() {
   const handleSubmit = async () => {
     if (!form.title.trim() || !form.description.trim()) {
       toast.error("Título y descripción son obligatorios.");
+      return;
+    }
+    if (!form.pillarId) {
+      toast.error("Elige el pilar al que pertenece la actividad.");
       return;
     }
 
@@ -502,6 +509,21 @@ export default function UpcomingActivitiesManager() {
                 className="h-9 w-56 rounded-md border border-slate-200 bg-slate-50 pl-8 pr-3 text-[13px] text-slate-900 placeholder-slate-400 transition-colors focus:border-jmv-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-jmv-blue/15"
               />
             </div>
+            {withoutPillar > 0 || onlyWithoutPillar ? (
+              <button
+                type="button"
+                aria-pressed={onlyWithoutPillar}
+                onClick={() => setOnlyWithoutPillar((v) => !v)}
+                className={`h-9 rounded-md border px-3 text-[13px] font-semibold transition-colors ${
+                  onlyWithoutPillar
+                    ? "border-amber-500 bg-amber-100 text-amber-900"
+                    : "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+                }`}
+                title="Actividades que aún no tienen pilar asignado"
+              >
+                Sin pilar ({withoutPillar})
+              </button>
+            ) : null}
             <Button
               variant="primary"
               size="md"
@@ -674,6 +696,17 @@ function UpcomingCard({
           <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-slate-500">
             {activity.summary || activity.description}
           </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {activity.pillar?.name ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-jmv-blue/10 px-1.5 py-0.5 text-[10.5px] font-semibold text-jmv-blue">
+                {activity.pillar.name}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-900">
+              Sin pilar
+            </span>
+            )}
+          </div>
         </div>
 
         {/* Meta row */}

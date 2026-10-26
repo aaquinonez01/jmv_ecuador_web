@@ -15,6 +15,9 @@ import { TwoHearts } from "@/components/brand";
 import SiteImage from "@/components/media/SiteImage";
 import ReadMore from "@/components/media/ReadMore";
 import type { SlotPhoto } from "@/lib/site-images";
+import { PILLAR_SLUGS, type PillarActivity } from "@/lib/api/pillar-activities";
+import { getOptimizedUrl, getSrcSet } from "@/lib/helpers/cloudinary";
+import { cn } from "@/lib/utils";
 import SectionHeading from "../ui/SectionHeading";
 import { buttonVariants } from "../ui/button-variants";
 import { useTabs } from "./institucional/useTabs";
@@ -211,7 +214,85 @@ function Silla({ activo, visitados }: { activo: number; visitados: Set<number> }
  * (espacios de foto pilares.<pilar>, administrables en /admin/imagenes); si falta
  * una, se muestra el motivo de los dos corazones.
  */
-export default function PilaresInteractivo({ fotos = {} }: { fotos?: Partial<Record<PilarId, SlotPhoto>> }) {
+/** Actividades del pilar (próximas y álbumes), preparadas en el servidor */
+function ActividadesDelPilar({ pilar, items }: { pilar: Pilar; items: PillarActivity[] }) {
+  const verTodas = `/actividades?pilar=${PILLAR_SLUGS[pilar.id]}#realizadas`;
+  return (
+    <section aria-labelledby={`actividades-${pilar.id}`} className="mt-8 border-t border-line pt-6">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <h4 id={`actividades-${pilar.id}`} className="text-lg font-bold text-fg">
+          Vívelo en JMV
+        </h4>
+        <Link
+          href={verTodas}
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
+        >
+          Ver todas las de {pilar.nombre.toLowerCase()}
+          <ArrowRight className="h-4 w-4" aria-hidden />
+        </Link>
+      </div>
+      {items.length === 0 ? (
+        <p className="mt-2 text-sm text-fg-muted">
+          Aún no hay actividades publicadas de este pilar. Mira lo que vivimos en{" "}
+          <Link href="/actividades" className="font-semibold text-accent-gold underline underline-offset-4">
+            Actividades
+          </Link>
+          .
+        </p>
+      ) : (
+        <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
+          {items.map((a) => (
+            <li key={a.key}>
+              <Link
+                href={a.href}
+                className="group block overflow-hidden rounded-2xl border border-line bg-surface shadow-card transition-transform motion-safe:hover:-translate-y-0.5"
+              >
+                <div className="relative aspect-[4/3] bg-surface-2">
+                  {a.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={getOptimizedUrl(a.coverUrl, { w: 400 })}
+                      srcSet={getSrcSet(a.coverUrl, [300, 600])}
+                      sizes="(min-width: 1024px) 260px, (min-width: 640px) 30vw, 45vw"
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-accent-gold">
+                      <pilar.icono className="h-8 w-8" aria-hidden />
+                    </div>
+                  )}
+                  <span
+                    className={cn(
+                      "absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide",
+                      a.kind === "proxima" ? "bg-jmv-gold text-jmv-ink" : "bg-jmv-ink/80 text-white",
+                    )}
+                  >
+                    {a.kind === "proxima" ? "Próxima" : "Realizada"}
+                  </span>
+                </div>
+                <div className="p-2.5">
+                  <p className="line-clamp-2 text-sm font-semibold leading-snug text-fg group-hover:underline">{a.title}</p>
+                  {a.dateLabel && <p className="mt-0.5 text-xs text-fg-subtle">{a.dateLabel}</p>}
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+export default function PilaresInteractivo({
+  fotos = {},
+  actividades = {},
+}: {
+  fotos?: Partial<Record<PilarId, SlotPhoto>>;
+  actividades?: Partial<Record<PilarId, PillarActivity[]>>;
+}) {
   const [visitados, setVisitados] = useState<Set<number>>(() => new Set([0]));
   const marcarVisitado = useCallback(
     (i: number) => setVisitados((prev) => (prev.has(i) ? prev : new Set(prev).add(i))),
@@ -419,6 +500,8 @@ export default function PilaresInteractivo({ fotos = {} }: { fotos?: Partial<Rec
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </Link>
                 )}
+
+                <ActividadesDelPilar pilar={pilar} items={actividades[pilar.id] ?? []} />
               </div>
             </div>
           );
