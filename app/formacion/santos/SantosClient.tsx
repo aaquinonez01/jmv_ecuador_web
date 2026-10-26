@@ -17,12 +17,24 @@ import {
   Star,
 } from "lucide-react";
 import { useTabs } from "@/components/sections/institucional/useTabs";
+import { useScrollActiveTab } from "@/components/sections/institucional/useScrollActiveTab";
+import ReadMore from "@/components/media/ReadMore";
+import SiteImage from "@/components/media/SiteImage";
+import type { SlotPhoto } from "@/lib/site-images";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { whatsappShareLink } from "@/lib/whatsapp";
 import { SITE } from "@/lib/site";
 
+export type SantoId =
+  | "san-vicente"
+  | "santa-luisa"
+  | "santa-catalina"
+  | "sor-rosalia"
+  | "san-justino"
+  | "federico-ozanam";
+
 interface Santo {
-  id: string;
+  id: SantoId;
   nombre: string;
   titulo: string;
   fechas: string;
@@ -267,27 +279,36 @@ function FraseParaCompartir({ santo }: { santo: Santo }) {
   );
 }
 
-export default function SantosClient() {
+/** Fichas de los santos. Los retratos llegan del servidor (espacios santos.<id>) */
+export default function SantosClient({ retratos = {} }: { retratos?: Partial<Record<SantoId, SlotPhoto>> }) {
   const { active, select, getTabProps, getPanelProps } = useTabs(santosVicencianos.length, "santo");
   const total = santosVicencianos.length;
   const anterior = santosVicencianos[(active - 1 + total) % total];
   const siguiente = santosVicencianos[(active + 1) % total];
+  const tabListRef = useScrollActiveTab<HTMLDivElement>(active);
 
   return (
     <section
       id="santos"
       aria-labelledby="santos-titulo"
-      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
+      className="scroll-mt-24 bg-gradient-to-b from-section-a to-section-blue py-12 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <h2 id="santos-titulo" className="sr-only">
           Santos y beatos de la Familia Vicenciana
         </h2>
 
+        <p className="mx-auto mb-6 max-w-2xl text-center text-fg-muted sm:mb-8 sm:text-lg">
+          Santos, beatos y testigos del carisma vicenciano que dieron su vida por Cristo en los pobres y por la
+          Iglesia.
+        </p>
+
+        {/* En móvil, una fila deslizable; desde sm, centradas en varias filas */}
         <div
+          ref={tabListRef}
           role="tablist"
           aria-label="Santos vicencianos"
-          className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-3"
+          className="scrollbar-hide relative -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 py-1 sm:mx-0 sm:mb-8 sm:flex-wrap sm:justify-center sm:gap-3 sm:overflow-visible sm:px-0"
         >
           {santosVicencianos.map((s, index) => {
             const Icono = s.icono;
@@ -296,7 +317,7 @@ export default function SantosClient() {
               <button
                 key={s.id}
                 {...getTabProps(index)}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors sm:px-5 ${
                   selected
                     ? "border-jmv-gold bg-jmv-gold text-jmv-ink"
                     : "border-line-strong bg-surface text-fg shadow-card hover:bg-surface-2 dark:hover:bg-white/15"
@@ -311,51 +332,77 @@ export default function SantosClient() {
 
         {santosVicencianos.map((santo, index) => {
           const Icono = santo.icono;
+          const retrato = retratos[santo.id];
           return (
             <article
               key={santo.id}
               {...getPanelProps(index)}
-              className="rounded-2xl border border-fg/15 bg-surface p-6 text-fg shadow-card sm:p-8 lg:p-12"
+              className="rounded-2xl border border-fg/15 bg-surface p-5 text-fg shadow-card sm:p-8 lg:p-12"
             >
-              <div className="mb-8 flex flex-col items-start gap-4 sm:flex-row sm:gap-6">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface-2">
-                  <Icono className="h-8 w-8 text-accent-gold" aria-hidden />
-                </span>
-                <div className="flex-1">
-                  <h3 className="mb-1 text-2xl font-bold sm:text-3xl lg:text-4xl">{santo.nombre}</h3>
-                  <p className="mb-1 text-base font-semibold text-accent-gold sm:text-lg">{santo.titulo}</p>
-                  <p className="mb-3 text-sm text-fg-muted">{santo.fechas}</p>
-                  <p className="text-base leading-relaxed text-fg-soft sm:text-lg">{santo.descripcion}</p>
+              <div
+                className={`mb-6 grid gap-5 sm:mb-8 ${retrato ? "md:grid-cols-[15rem_1fr] md:gap-8 lg:grid-cols-[18rem_1fr]" : ""}`}
+              >
+                {retrato && (
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-2 md:aspect-[4/5]">
+                    <SiteImage
+                      src={retrato.src}
+                      alt={retrato.alt}
+                      fill
+                      loading="lazy"
+                      sizes="(min-width: 1024px) 288px, (min-width: 768px) 240px, 100vw"
+                      className="object-cover"
+                      style={{ objectPosition: retrato.position ?? "center 25%" }}
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="mb-3 flex items-start gap-4 sm:gap-6">
+                    {!retrato && (
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-2 sm:h-16 sm:w-16">
+                        <Icono className="h-6 w-6 text-accent-gold sm:h-8 sm:w-8" aria-hidden />
+                      </span>
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="mb-1 text-2xl font-bold sm:text-3xl lg:text-4xl">{santo.nombre}</h3>
+                      <p className="mb-1 text-base font-semibold text-accent-gold sm:text-lg">{santo.titulo}</p>
+                      <p className="text-sm text-fg-muted">{santo.fechas}</p>
+                    </div>
+                  </div>
+                  <ReadMore lines={4}>
+                    <p className="text-base leading-relaxed text-fg-soft sm:text-lg">{santo.descripcion}</p>
+                  </ReadMore>
                 </div>
               </div>
 
-              <div className="mb-8">
+              <div className="mb-6 sm:mb-8">
                 <FraseParaCompartir santo={santo} />
               </div>
 
-              <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-                <div>
-                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Legado</h4>
-                  <ul className="space-y-3">
-                    {santo.legado.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
-                        <span className="leading-relaxed text-fg-soft">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <ReadMore lines={9} moreLabel="Ver legado y virtudes" lessLabel="Ver menos">
+                <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+                  <div>
+                    <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Legado</h4>
+                    <ul className="space-y-3">
+                      {santo.legado.map((item) => (
+                        <li key={item} className="flex items-start gap-3">
+                          <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent-gold" />
+                          <span className="leading-relaxed text-fg-soft">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Virtudes que nos inspiran</h4>
+                    <ul className="space-y-3">
+                      {santo.virtudes.map((virtud) => (
+                        <li key={virtud} className="rounded-xl border border-line bg-surface-2 p-4 leading-relaxed dark:bg-white/5 text-fg-soft">
+                          {virtud}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="mb-4 text-xl font-bold text-accent-gold sm:text-2xl">Virtudes que nos inspiran</h4>
-                  <ul className="space-y-3">
-                    {santo.virtudes.map((virtud) => (
-                      <li key={virtud} className="rounded-xl border border-line bg-surface-2 p-4 leading-relaxed dark:bg-white/5 text-fg-soft">
-                        {virtud}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              </ReadMore>
             </article>
           );
         })}
