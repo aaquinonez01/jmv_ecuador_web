@@ -12,7 +12,7 @@ const recorridos = [
     href: "/formacion/ejes",
     icon: BookOpen,
     titulo: "Ejes formativos",
-    texto: "Humano, cristocéntrico, mariano, vicenciano y eclesial: cinco dimensiones para crecer.",
+    texto: "Humano, cristocéntrico, mariano, vicenciano y eclesial.",
   },
   {
     id: "santos",
@@ -26,7 +26,7 @@ const recorridos = [
     href: "/pilares#formacion",
     icon: GraduationCap,
     titulo: "La formación como pilar",
-    texto: "Una de las cuatro patas de la silla, con la comunidad, la espiritualidad y el apostolado.",
+    texto: "Una de las cuatro patas de la silla que sostiene a JMV.",
   },
 ] as const satisfies readonly { id: RecorridoId; href: string; icon: LucideIcon; titulo: string; texto: string }[];
 
