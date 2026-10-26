@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { Mail, ScrollText } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
+import type { SlotPhoto } from "@/lib/site-images";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { SITE, mailtoHref } from "@/lib/site";
 
 // Sin versión vigente publicada (o el backend no respondió durante el build).
-export default function StatutesEmpty() {
+export default function StatutesEmpty({ heroImages }: { heroImages: readonly SlotPhoto[] }) {
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={heroImages}
         eyebrow="Quiénes somos"
         title="Estatutos Nacionales"
-        description="Las reglas que nos dimos para vivir juntos la fe, la formación y el servicio a los pobres."
-        motif="monogram"
+        lead="Las reglas que nos dimos para vivir juntos la fe, la formación y el servicio a los pobres."
         breadcrumbs={[{ label: "Quiénes somos", href: "/quienes-somos" }, { label: "Estatutos" }]}
       />
       <section className="bg-white py-20">

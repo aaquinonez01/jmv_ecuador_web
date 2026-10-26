@@ -24,12 +24,20 @@ export default function StatutesSummary({ anchors }: { anchors: Set<string> }) {
           title="Nuestros estatutos en 2 minutos"
           description="Lo esencial, en palabras sencillas. Cada tarjeta te lleva al artículo original."
         />
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* En móvil, franja deslizable (una tarjeta y asoma la siguiente) en vez de
+            seis tarjetas apiladas; desde sm, la rejilla de siempre */}
+        <div
+          role="region"
+          aria-label="Resumen de los estatutos en tarjetas"
+          tabIndex={0}
+          className="scrollbar-hide -mx-4 snap-x snap-mandatory scroll-px-4 overflow-x-auto overscroll-x-contain rounded-xl px-4 pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 sm:mx-0 sm:overflow-visible sm:px-0 sm:pb-0"
+        >
+        <ul className="flex gap-4 sm:grid sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {SUMMARY_CARDS.map((card) => {
             const Icon = ICONS[card.icon];
             const refs = card.refs.filter((r) => anchors.has(articleAnchor(r.article)));
             return (
-              <li key={card.key} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <li key={card.key} className="flex w-[84%] shrink-0 snap-start flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:w-auto">
                 <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-jmv-blue/10 text-jmv-blue">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
@@ -60,7 +68,7 @@ export default function StatutesSummary({ anchors }: { anchors: Set<string> }) {
               </li>
             );
           })}
-          <li className="flex flex-col justify-center rounded-2xl bg-jmv-ink p-6 text-white">
+          <li className="flex w-[84%] shrink-0 snap-start flex-col justify-center rounded-2xl bg-jmv-ink p-6 text-white sm:w-auto">
             <p className="font-display text-2xl font-semibold leading-snug">¿Quieres el detalle?</p>
             <p className="mt-2 text-slate-300">Abajo está el texto completo: búscalo por palabras, salta por capítulos y comparte cualquier artículo.</p>
             <a
@@ -72,6 +80,7 @@ export default function StatutesSummary({ anchors }: { anchors: Set<string> }) {
             </a>
           </li>
         </ul>
+        </div>
       </div>
     </section>
   );
