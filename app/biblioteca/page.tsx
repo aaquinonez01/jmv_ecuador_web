@@ -12,6 +12,7 @@ import LibraryHero from "@/components/biblioteca/LibraryHero";
 import Shelf from "@/components/biblioteca/Shelf";
 import { TYPE_ORDER, toCardDoc } from "@/components/biblioteca/shared";
 import { filtersHref } from "@/components/biblioteca/filters";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "Biblioteca JMV",
@@ -25,7 +26,11 @@ export const metadata: Metadata = {
 export const revalidate = 1800;
 
 export default async function BibliotecaPage() {
-  const [all, collections] = await Promise.all([fetchLibraryDocuments(), fetchLibraryCollections().catch(() => [])]);
+  const [all, collections, heroImages] = await Promise.all([
+    fetchLibraryDocuments(),
+    fetchLibraryCollections().catch(() => []),
+    fetchSlotImages("biblioteca.hero"),
+  ]);
   const docs = all.filter((d) => d.published !== false).map(toCardDoc);
   const now = new Date();
   const newIds = docs.filter((d) => isNew(d, now)).map((d) => d.id);
@@ -33,7 +38,7 @@ export default async function BibliotecaPage() {
   if (docs.length === 0) {
     return (
       <div className="bg-page pb-16">
-        <LibraryHero covers={[]} total={0} routes={0} types={[]} />
+        <LibraryHero images={heroImages} covers={[]} total={0} routes={0} types={[]} />
         <EmptyLibrary />
       </div>
     );
@@ -59,7 +64,7 @@ export default async function BibliotecaPage() {
 
   return (
     <div className="bg-page pb-24">
-      <LibraryHero covers={heroCovers} total={docs.length} routes={routes.length} types={types} />
+      <LibraryHero images={heroImages} covers={heroCovers} total={docs.length} routes={routes.length} types={types} />
 
       <div className="relative -mt-6 space-y-16 sm:space-y-20">
         <BrowseOnly>
