@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import ActivityGalleryModal from "./ActivityGalleryModal";
+import ActivityPhotosGrid from "./ActivityPhotosGrid";
 import { getOptimizedUrl, getSrcSet } from "@/lib/helpers/cloudinary";
 import { createApi } from "@/config/axios.config";
 import { formatDate, toIsoString } from "@/lib/format";
@@ -19,7 +20,7 @@ import type {
   ActivityItem,
   PaginatedResponse,
 } from "@/types/activity-management";
-import { CalendarDays, Camera, Filter, Layers3, MapPin, RefreshCw, Shapes, Users, X } from "lucide-react";
+import { CalendarDays, Camera, Filter, Grid3x3, Images, Layers3, MapPin, RefreshCw, Shapes, Users, X } from "lucide-react";
 
 const ActivityLightbox = dynamic(() => import("./ActivityLightbox"), {
   ssr: false,
@@ -248,6 +249,9 @@ export default function ActivitiesAlbumsClient({
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxRoot, setLightboxRoot] = useState<HTMLElement | null>(null);
+  // Vista de la sección: álbumes (una tarjeta por actividad) o todas las fotos en cuadrícula
+  const [view, setView] = useState<"albums" | "photos">("albums");
+  const [gridPhoto, setGridPhoto] = useState<{ activity: ActivityItem; index: number } | null>(null);
   const requestId = useRef(0);
   const firstNewRef = useRef<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -298,6 +302,21 @@ export default function ActivitiesAlbumsClient({
     listRef.current?.querySelectorAll<HTMLButtonElement>("h3 button")[index]?.focus();
   }, [items, status]);
 
+  // ?vista=fotos abre directamente la cuadrícula (y se mantiene al compartir el enlace)
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("vista") === "fotos") setView("photos");
+  }, []);
+
+  const changeView = (next: "albums" | "photos") => {
+    setView(next);
+    const url = new URL(window.location.href);
+    if (next === "photos") url.searchParams.set("vista", "fotos");
+    else url.searchParams.delete("vista");
+    window.history.replaceState(null, "", url);
+  };
+
+  const totalPhotos = items.reduce((n, a) => n + buildSlides(a).length, 0);
+
   // /actividades?pilar=<slug o id> (enlace desde /pilares) abre los álbumes ya filtrados
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get("pilar");
@@ -333,8 +352,27 @@ export default function ActivitiesAlbumsClient({
               Actividades realizadas
             </h2>
             <p className="mt-2 text-lg text-fg-soft">
-              Abre un álbum para ver las fotos.
+              {view === "albums" ? "Abre un álbum para ver las fotos." : "Toca una foto para verla en grande."}
             </p>
+            <div role="group" aria-label="Cómo ver las actividades" className="mt-4 inline-flex rounded-xl border border-line-card bg-surface p-1 shadow-card dark:bg-white/[0.07]">
+              {([
+                { id: "albums", label: "Álbumes", icon: Images },
+                { id: "photos", label: totalPhotos ? `Todas las fotos (${totalPhotos})` : "Todas las fotos", icon: Grid3x3 },
+              ] as const).map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={view === id}
+                  onClick={() => changeView(id)}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors ${
+                    view === id ? "bg-jmv-blue text-white shadow-sm" : "text-fg-muted hover:bg-surface-2 hover:text-fg"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" aria-hidden />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div
@@ -433,6 +471,16 @@ export default function ActivitiesAlbumsClient({
           </div>
         ) : (
           <>
+            {view === "photos" ? (
+              <div aria-busy={status === "loading" || undefined} className={status === "loading" ? "opacity-60" : ""}>
+                <ActivityPhotosGrid
+                  items={items}
+                  slidesFor={buildSlides}
+                  onOpenPhoto={(activity, index) => setGridPhoto({ activity, index })}
+                  onOpenAlbum={(activity) => setOpenActivity(activity)}
+                />
+              </div>
+            ) : (
             <ul
               ref={listRef}
               aria-busy={status === "loading" || undefined}
@@ -449,6 +497,7 @@ export default function ActivitiesAlbumsClient({
                 />
               ))}
             </ul>
+            )}
 
             {status === "error" && (
               <p role="alert" className="mt-6 text-center text-fg-muted dark:text-slate-100">
@@ -496,6 +545,16 @@ export default function ActivitiesAlbumsClient({
           setLightboxOpen(true);
         }}
       />
+
+      {/* Foto abierta desde la cuadrícula: el visor recorre el álbum de esa foto */}
+      {gridPhoto ? (
+        <ActivityLightbox
+          open
+          close={() => setGridPhoto(null)}
+          index={gridPhoto.index}
+          slides={buildSlides(gridPhoto.activity)}
+        />
+      ) : null}
 
       {openActivity && slides.length && lightboxRoot ? (
         <ActivityLightbox
