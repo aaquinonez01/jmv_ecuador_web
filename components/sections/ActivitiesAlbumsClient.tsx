@@ -48,84 +48,127 @@ function cardDate(value?: string | null) {
   return formatDate(value, { day: "numeric", month: "short", year: "numeric" });
 }
 
-function ActivityCard({ activity, onOpen }: { activity: ActivityItem; onOpen: () => void }) {
+/**
+ * Álbum con portada grande: la foto ocupa toda la tarjeta y encima van el título,
+ * una línea de resumen y los datos clave (isla oscura en ambos modos). Con un solo
+ * álbum, la tarjeta se ensancha y muestra algunas fotos más del álbum.
+ */
+function ActivityCard({
+  activity,
+  onOpen,
+  wide = false,
+}: {
+  activity: ActivityItem;
+  onOpen: () => void;
+  wide?: boolean;
+}) {
   const date = cardDate(activity.startDate);
   const photos = activity.gallery.length;
+  const cover = activity.coverImageUrl || activity.gallery[0]?.url || null;
+  const extra = wide ? activity.gallery.filter((g) => g.url !== cover).slice(0, 3) : [];
   return (
-    <li>
-      <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line-card bg-surface text-left shadow-card transition-colors hover:bg-surface-2 dark:shadow-xl dark:hover:bg-white/[0.09] has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid">
-        <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
-          {activity.coverImageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={getOptimizedUrl(activity.coverImageUrl, { w: 800 })}
-              srcSet={getSrcSet(activity.coverImageUrl, [400, 800, 1200])}
-              sizes="(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"
-              loading="lazy"
-              decoding="async"
-              alt=""
-              className="h-full w-full object-cover transition duration-500 motion-safe:group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-fg-subtle">
-              <Camera className="h-10 w-10" aria-hidden />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-transparent dark:from-[#07132F] dark:via-[#07132F]/25" />
-          <div className="absolute right-4 bottom-4 left-4 flex flex-wrap gap-2">
-            {activity.type?.name ? (
-              <span className="rounded-full bg-jmv-ink/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
-                {activity.type.name}
-              </span>
-            ) : null}
-            {activity.pillar?.name ? (
-              <span className="rounded-full bg-jmv-gold px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-jmv-ink">
-                {activity.pillar.name}
-              </span>
-            ) : null}
+    <li className={wide ? "md:col-span-2 xl:col-span-3" : undefined}>
+      <article
+        data-tone="dark"
+        className={`group relative isolate flex h-full flex-col justify-end overflow-hidden rounded-[1.75rem] bg-jmv-ink text-left text-white shadow-card-lg dark:shadow-xl has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-(color:--focus-ring) has-[:focus-visible]:outline-solid ${
+          wide ? "aspect-[4/5] sm:aspect-[16/10] lg:aspect-[21/9]" : "aspect-[4/5]"
+        }`}
+      >
+        {cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={getOptimizedUrl(cover, { w: 800 })}
+            srcSet={getSrcSet(cover, wide ? [400, 800, 1200, 1600] : [400, 800, 1200])}
+            sizes={wide ? "(min-width: 1280px) 1200px, 100vw" : "(min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"}
+            loading="lazy"
+            decoding="async"
+            alt=""
+            className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 motion-safe:group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 -z-20 flex items-center justify-center bg-[linear-gradient(135deg,#0C2D69,#0F4A8A)] text-slate-300">
+            <Camera className="h-12 w-12" aria-hidden />
           </div>
+        )}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-gradient-to-t from-hero-veil via-hero-veil/65 via-35% to-hero-veil/0 to-65%"
+        />
+
+        <div className="absolute top-4 right-4 left-4 flex flex-wrap gap-2">
+          {activity.type?.name ? (
+            <span className="rounded-full bg-jmv-ink/75 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+              {activity.type.name}
+            </span>
+          ) : null}
+          {activity.pillar?.name ? (
+            <span className="rounded-full bg-jmv-gold px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-jmv-ink">
+              {activity.pillar.name}
+            </span>
+          ) : null}
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-jmv-ink/75 px-3 py-1 text-xs font-semibold text-white" aria-hidden="true">
+            <Camera className="h-3.5 w-3.5" />
+            {photos} {photos === 1 ? "foto" : "fotos"}
+          </span>
         </div>
 
-        <div className="flex flex-1 flex-col gap-4 p-6 text-fg">
-          <h3 className="text-2xl font-semibold">
-            {/* Botón "estirado": toda la tarjeta abre el álbum, sin anidar contenido de bloque en el botón */}
-            <button
-              type="button"
-              onClick={onOpen}
-              className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
-            >
-              {activity.title}
-              <span className="sr-only">. Ver álbum{photos ? ` de ${photos} fotos` : ""}</span>
-            </button>
-          </h3>
-          <p className="line-clamp-3 text-sm leading-6 text-fg-soft">
-            {activity.summary || activity.description}
-          </p>
+        <div className="flex flex-col gap-2 p-5 sm:p-6 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+          <div className="min-w-0 lg:max-w-2xl">
+            <h3 className={`font-bold leading-tight text-balance [text-shadow:0_1px_10px_rgb(15_23_42/0.5)] ${wide ? "text-2xl sm:text-3xl" : "text-2xl"}`}>
+              {/* Botón "estirado": toda la tarjeta abre el álbum, sin anidar contenido de bloque en el botón */}
+              <button
+                type="button"
+                onClick={onOpen}
+                className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+              >
+                {activity.title}
+                <span className="sr-only">. Ver álbum{photos ? ` de ${photos} fotos` : ""}</span>
+              </button>
+            </h3>
+            {activity.summary || activity.description ? (
+              <p className="mt-1 line-clamp-2 text-sm leading-snug text-slate-100">
+                {activity.summary || activity.description}
+              </p>
+            ) : null}
+            <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-100">
+              {date && (
+                <li className="flex items-center gap-1.5">
+                  <CalendarDays className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <time dateTime={toIsoString(activity.startDate!)}>{date}</time>
+                </li>
+              )}
+              {activity.location && (
+                <li className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  {activity.location}
+                </li>
+              )}
+              {activity.participantsLabel && (
+                <li className="flex items-center gap-1.5">
+                  <Users className="h-4 w-4 shrink-0 text-jmv-gold-text" aria-hidden />
+                  <span className="sr-only">Participantes: </span>
+                  {activity.participantsLabel}
+                </li>
+              )}
+            </ul>
+          </div>
 
-          <ul className="mt-auto grid grid-cols-1 gap-3 text-sm text-fg-muted dark:text-slate-100 sm:grid-cols-2">
-            {date && (
-              <li className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
-                <time dateTime={toIsoString(activity.startDate!)}>{date}</time>
-              </li>
-            )}
-            {activity.location && (
-              <li className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
-                {activity.location}
-              </li>
-            )}
-            {activity.participantsLabel && (
-              <li className="flex items-center gap-2">
-                <Users className="h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
-                {activity.participantsLabel}
-              </li>
-            )}
-            <li className="flex items-center gap-2" aria-hidden="true">
-              <Camera className="h-4 w-4 shrink-0 text-accent-gold" />
-              {photos} {photos === 1 ? "foto" : "fotos"}
-            </li>
-          </ul>
+          {extra.length > 0 && (
+            <ul aria-hidden="true" className="mt-3 hidden shrink-0 gap-2 sm:flex lg:mt-0">
+              {extra.map((image) => (
+                <li key={image.id} className="h-20 w-24 overflow-hidden rounded-xl ring-2 ring-white/70 lg:h-24 lg:w-32">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={getOptimizedUrl(image.url, { w: 300 })}
+                    loading="lazy"
+                    decoding="async"
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </article>
     </li>
@@ -273,7 +316,7 @@ export default function ActivitiesAlbumsClient({
       <div className="absolute inset-0 bg-[linear-gradient(180deg,var(--section-a)_0%,var(--section-b)_100%)] dark:bg-[linear-gradient(180deg,#07132F_0%,#0C2D69_55%,#0F4A8A_100%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-8 flex flex-col gap-5 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-accent-gold">
               Memoria visual JMV
@@ -281,17 +324,17 @@ export default function ActivitiesAlbumsClient({
             <h2 id="realizadas-titulo" className="mt-3 text-3xl font-bold text-fg sm:text-4xl">
               Actividades realizadas
             </h2>
-            <p className="mt-3 text-lg text-fg-soft">
-              Retiros, encuentros, misiones y asambleas que ya vivimos. Abre un álbum para ver las fotos.
+            <p className="mt-2 text-lg text-fg-soft">
+              Abre un álbum para ver las fotos.
             </p>
           </div>
 
           <div
             role="search"
             aria-label="Filtrar actividades realizadas"
-            className="rounded-[1.5rem] border border-line-card bg-surface p-5 shadow-card-lg lg:min-w-[26rem] dark:bg-white/[0.07] dark:shadow-2xl"
+            className="rounded-[1.5rem] border border-line-card bg-surface p-4 shadow-card-lg sm:p-5 lg:min-w-[26rem] dark:bg-white/[0.07] dark:shadow-2xl"
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-3 flex min-h-11 items-center justify-between sm:mb-4">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-fg-soft">
                 <Filter className="h-4 w-4 text-accent-gold" strokeWidth={2.4} aria-hidden />
                 Filtros
@@ -308,7 +351,7 @@ export default function ActivitiesAlbumsClient({
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <CatalogSelect
                 id="filtro-pilar"
                 label="Pilar"
@@ -390,7 +433,12 @@ export default function ActivitiesAlbumsClient({
               }`}
             >
               {items.map((activity) => (
-                <ActivityCard key={activity.id} activity={activity} onOpen={() => setOpenActivity(activity)} />
+                <ActivityCard
+                  key={activity.id}
+                  activity={activity}
+                  wide={items.length === 1}
+                  onOpen={() => setOpenActivity(activity)}
+                />
               ))}
             </ul>
 
