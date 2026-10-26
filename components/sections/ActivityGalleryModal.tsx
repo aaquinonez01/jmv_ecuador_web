@@ -5,7 +5,7 @@ import { Dialog } from "radix-ui";
 import { useReducedMotion } from "framer-motion";
 import { Calendar, Camera, ChevronLeft, ChevronRight, Heart, MapPin, Maximize2, X } from "lucide-react";
 import type { ActivityItem } from "@/types/activity-management";
-import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { getOptimizedUrl, viewerUrl } from "@/lib/helpers/cloudinary";
 import { formatDate } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button-variants";
 import type { AlbumSlide } from "./ActivitiesAlbumsClient";
@@ -175,7 +175,7 @@ export default function ActivityGalleryModal({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       key={currentSlide.src}
-                      src={getOptimizedUrl(currentSlide.src, { w: 1600 })}
+                      src={viewerUrl(currentSlide.src)}
                       alt={currentSlide.alt}
                       decoding="async"
                       className="h-full w-full object-contain motion-safe:animate-in motion-safe:fade-in-0"

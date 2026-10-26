@@ -2,7 +2,7 @@
 
 import { Images } from "lucide-react";
 import type { ActivityItem } from "@/types/activity-management";
-import { getOptimizedUrl, getSrcSet } from "@/lib/helpers/cloudinary";
+import { getOptimizedUrl, getSrcSet, preloadViewerImage } from "@/lib/helpers/cloudinary";
 import { formatDate, toIsoString } from "@/lib/format";
 import type { AlbumSlide } from "./ActivitiesAlbumsClient";
 
@@ -72,6 +72,8 @@ export default function ActivityPhotosGrid({
                   <button
                     type="button"
                     onClick={() => onOpenPhoto(activity, index)}
+                    // Al apoyar el dedo ya empieza a bajar la versión grande
+                    onPointerDown={() => preloadViewerImage(slide.src)}
                     aria-label={`Ver en grande: ${slide.alt} (${index + 1} de ${slides.length})`}
                     className="group relative block aspect-square w-full overflow-hidden rounded-lg bg-surface-2 sm:rounded-xl"
                   >

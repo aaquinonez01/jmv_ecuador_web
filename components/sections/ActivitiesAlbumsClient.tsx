@@ -302,6 +302,17 @@ export default function ActivitiesAlbumsClient({
     listRef.current?.querySelectorAll<HTMLButtonElement>("h3 button")[index]?.focus();
   }, [items, status]);
 
+  // El visor se descarga en segundo plano: la primera foto que se abre no espera a ese código
+  useEffect(() => {
+    const load = () => void import("./ActivityLightbox");
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(load, { timeout: 3000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const t = setTimeout(load, 1500);
+    return () => clearTimeout(t);
+  }, []);
+
   // ?vista=fotos abre directamente la cuadrícula (y se mantiene al compartir el enlace)
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("vista") === "fotos") setView("photos");
@@ -563,6 +574,7 @@ export default function ActivitiesAlbumsClient({
           index={lightboxIndex}
           slides={slides}
           portalRoot={lightboxRoot}
+          thumbWidth={200}
         />
       ) : null}
     </section>
