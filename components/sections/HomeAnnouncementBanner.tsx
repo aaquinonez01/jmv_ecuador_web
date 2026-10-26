@@ -6,6 +6,7 @@ import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import { buttonVariants } from "@/components/ui/button-variants";
 import StarsRing from "@/components/brand/StarsRing";
 import MarianMonogram from "@/components/brand/MarianMonogram";
+import ReadMore from "@/components/media/ReadMore";
 
 function pickPrimary(items: HomeAnnouncement[]): HomeAnnouncement | null {
   if (!items.length) return null
@@ -61,9 +62,9 @@ export default async function HomeAnnouncementBanner() {
                 </p>
               )}
 
-              <p className="mb-6 leading-relaxed text-fg-soft">
-                {primary.mensaje}
-              </p>
+              <ReadMore lines={4} className="mb-6">
+                <p className="leading-relaxed text-fg-soft">{primary.mensaje}</p>
+              </ReadMore>
 
               {primary.ctaUrl && primary.ctaLabel && (
                 isExternal(primary.ctaUrl) ? (

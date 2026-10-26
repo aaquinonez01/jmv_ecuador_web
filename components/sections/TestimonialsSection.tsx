@@ -5,7 +5,8 @@ import type {
   TestimonialItem,
 } from "@/types/activity-management";
 
-export default async function TestimonialsSection() {
+// showInvite=false en el inicio: justo debajo va la invitación final con foto.
+export default async function TestimonialsSection({ showInvite = true }: { showInvite?: boolean } = {}) {
   let items: TestimonialItem[] = [];
 
   const res = await ssrFetch("/testimonials/public?limit=6", {
@@ -21,5 +22,5 @@ export default async function TestimonialsSection() {
     }
   }
 
-  return <TestimonialsSectionClient testimonials={items} />;
+  return <TestimonialsSectionClient testimonials={items} showInvite={showInvite} />;
 }
