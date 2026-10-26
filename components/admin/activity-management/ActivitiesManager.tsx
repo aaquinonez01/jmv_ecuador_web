@@ -176,7 +176,14 @@ function ActivityForm({
         </FormField>
         <FormField label="Pilar *">
           {/* Toda actividad pertenece a uno de los cuatro pilares: se muestra en /pilares */}
-          <Select value={form.pillarId || undefined} onValueChange={(v) => onChange({ pillarId: v })}>
+          <Select
+            value={form.pillarId || undefined}
+            onValueChange={(v) => {
+              // Si el tipo elegido es de otro pilar, se quita
+              const t = types.find((x) => x.id === form.typeId);
+              onChange({ pillarId: v, ...(t?.pillarId && t.pillarId !== v ? { typeId: "" } : {}) });
+            }}
+          >
             <SelectTrigger className={ST} aria-required="true"><SelectValue placeholder="Elige el pilar" /></SelectTrigger>
             <SelectContent>
               {pillars.filter((p) => p.active).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
@@ -184,11 +191,20 @@ function ActivityForm({
           </Select>
         </FormField>
         <FormField label="Tipo de actividad">
-          <Select value={form.typeId || "__none__"} onValueChange={(v) => onChange({ typeId: v === "__none__" ? "" : v })}>
+          <Select
+            value={form.typeId || "__none__"}
+            onValueChange={(v) => {
+              // Elegir un tipo fija también su pilar
+              const t = types.find((x) => x.id === v);
+              onChange(v === "__none__" ? { typeId: "" } : { typeId: v, ...(t?.pillarId ? { pillarId: t.pillarId } : {}) });
+            }}
+          >
             <SelectTrigger className={ST}><SelectValue placeholder="Sin tipo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="__none__">Sin tipo</SelectItem>
-              {types.filter((t) => t.active).map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+              {types
+                .filter((t) => t.active && (!form.pillarId || !t.pillarId || t.pillarId === form.pillarId))
+                .map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </FormField>

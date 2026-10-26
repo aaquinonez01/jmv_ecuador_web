@@ -415,7 +415,12 @@ export default function ActivitiesAlbumsClient({
                 icon={Layers3}
                 allLabel="Todos los pilares"
                 value={selectedPillar}
-                onChange={setSelectedPillar}
+                onChange={(id) => {
+                  setSelectedPillar(id);
+                  // El tipo elegido deja de valer si es de otro pilar
+                  const t = types.find((x) => x.id === selectedType);
+                  if (id !== "all" && t?.pillarId && t.pillarId !== id) setSelectedType("all");
+                }}
                 options={pillars}
               />
               <CatalogSelect
@@ -425,7 +430,11 @@ export default function ActivitiesAlbumsClient({
                 allLabel="Todos los tipos"
                 value={selectedType}
                 onChange={setSelectedType}
-                options={types}
+                options={
+                  selectedPillar === "all"
+                    ? types
+                    : types.filter((t) => !t.pillarId || t.pillarId === selectedPillar)
+                }
               />
             </div>
 

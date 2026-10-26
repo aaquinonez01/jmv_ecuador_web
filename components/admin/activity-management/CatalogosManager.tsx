@@ -42,6 +42,8 @@ interface CatalogFormState {
   color: string;
   icon: string;
   active: boolean;
+  /** Solo tipos: pilar al que pertenece */
+  pillarId: string;
 }
 
 const emptyForm = (): CatalogFormState => ({
@@ -51,6 +53,7 @@ const emptyForm = (): CatalogFormState => ({
   color: "",
   icon: "",
   active: true,
+  pillarId: "",
 });
 
 function slugify(value: string) {
@@ -64,7 +67,7 @@ function slugify(value: string) {
     .replace(/-+/g, "-");
 }
 
-function toPayload(form: CatalogFormState): ActivityCatalogPayload {
+function toPayload(form: CatalogFormState, kind: CatalogKind): ActivityCatalogPayload {
   return {
     name: form.name.trim(),
     slug: form.slug.trim() || slugify(form.name),
@@ -72,6 +75,7 @@ function toPayload(form: CatalogFormState): ActivityCatalogPayload {
     color: form.color.trim() || undefined,
     icon: form.icon.trim() || undefined,
     active: form.active,
+    ...(kind === "type" && form.pillarId ? { pillarId: form.pillarId } : {}),
   };
 }
 
@@ -84,6 +88,7 @@ function CatalogSection({
   onEdit,
   onToggle,
   onDelete,
+  showPillar = false,
 }: {
   title: string;
   description: string;
@@ -93,6 +98,8 @@ function CatalogSection({
   onEdit: (item: ActivityCatalogItem) => void;
   onToggle: (item: ActivityCatalogItem) => Promise<void>;
   onDelete: (item: ActivityCatalogItem) => Promise<void>;
+  /** Muestra la columna del pilar (tipos de actividad) */
+  showPillar?: boolean;
 }) {
   const activeCount = items.filter((i) => i.active).length;
 
@@ -147,6 +154,7 @@ function CatalogSection({
             <thead className="sticky top-0 bg-slate-50">
               <tr className="text-[10px] uppercase tracking-wider text-slate-500">
                 <th className="px-3 py-2 text-left font-bold">Nombre</th>
+                {showPillar ? <th className="px-3 py-2 text-left font-bold">Pilar</th> : null}
                 <th className="px-3 py-2 text-left font-bold">Slug</th>
                 <th className="px-3 py-2 text-left font-bold">Estado</th>
                 <th className="px-3 py-2 text-right font-bold">Acciones</th>
@@ -178,6 +186,19 @@ function CatalogSection({
                       </div>
                     </div>
                   </td>
+                  {showPillar ? (
+                    <td className="px-3 py-2">
+                      {item.pillar?.name ? (
+                        <span className="rounded-md bg-jmv-blue/10 px-1.5 py-0.5 text-[10.5px] font-semibold text-jmv-blue">
+                          {item.pillar.name}
+                        </span>
+                      ) : (
+                        <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-900">
+                          Sin pilar
+                        </span>
+                      )}
+                    </td>
+                  ) : null}
                   <td className="px-3 py-2 font-mono text-[11px] text-slate-600">
                     {item.slug}
                   </td>
@@ -292,6 +313,7 @@ export default function CatalogosManager() {
         color: item.color || "",
         icon: item.icon || "",
         active: item.active,
+        pillarId: item.pillarId || item.pillar?.id || "",
       },
     });
   };
@@ -337,10 +359,14 @@ export default function CatalogosManager() {
       toast.error("El nombre es obligatorio.");
       return;
     }
+    if (editorState.kind === "type" && !editorState.form.pillarId) {
+      toast.error("Elige el pilar al que pertenece este tipo.");
+      return;
+    }
 
     try {
       setSubmitting(true);
-      const payload = toPayload(editorState.form);
+      const payload = toPayload(editorState.form, editorState.kind);
       if (editorState.item) {
         if (editorState.kind === "pillar") {
           await updateActivityPillarAPI(editorState.item.id, payload);
@@ -358,12 +384,22 @@ export default function CatalogosManager() {
       }
       closeEditor();
       await loadAll();
-    } catch {
-      toast.error("No se pudo guardar el registro.");
+    } catch (error) {
+      const message = (error as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      toast.error(Array.isArray(message) ? message[0] : message || "No se pudo guardar el registro.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Tipos agrupados por el orden de su pilar; los que no tienen pilar, al final
+  const typesByPillar = useMemo(() => {
+    const rank = (t: ActivityCatalogItem) => {
+      const i = pillars.findIndex((p) => p.id === (t.pillarId || t.pillar?.id));
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    return [...types].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+  }, [types, pillars]);
 
   const editorTitle = useMemo(() => {
     if (!editorState) return "";
@@ -404,9 +440,10 @@ export default function CatalogosManager() {
 
           <CatalogSection
             title="Tipos de actividad"
-            description="Misión, encuentro, retiro, visita, apostolado y otros."
+            description="Cada tipo pertenece a un pilar: retiro, misiones, encuentro…"
             icon={<Shapes className="h-[18px] w-[18px]" strokeWidth={2} />}
-            items={types}
+            items={typesByPillar}
+            showPillar
             onCreate={() => openCreate("type")}
             onEdit={(item) => openEdit("type", item)}
             onToggle={(item) => handleToggle("type", item)}
@@ -443,6 +480,36 @@ export default function CatalogosManager() {
       >
         {editorState ? (
           <div className="space-y-3.5 px-5 py-4">
+            {editorState.kind === "type" ? (
+              <label className="block">
+                <span className="mb-1 block text-[13px] font-semibold text-slate-700">
+                  Pilar <span className="text-red-600">*</span>
+                </span>
+                <select
+                  required
+                  value={editorState.form.pillarId}
+                  onChange={(event) =>
+                    setEditorState((current) =>
+                      current ? { ...current, form: { ...current.form, pillarId: event.target.value } } : current
+                    )
+                  }
+                  className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-jmv-blue focus:outline-none focus:ring-2 focus:ring-jmv-blue/15"
+                >
+                  <option value="" disabled>
+                    Elige el pilar
+                  </option>
+                  {pillars.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                      {p.active ? "" : " (inactivo)"}
+                    </option>
+                  ))}
+                </select>
+                <span className="mt-1 block text-[11.5px] text-slate-500">
+                  Un pilar tiene muchos tipos. Ej.: Retiro → Espiritualidad, Misiones → Apostolado.
+                </span>
+              </label>
+            ) : null}
             <div className="grid grid-cols-2 gap-3">
               <InputField
                 label="Nombre"

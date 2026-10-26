@@ -7,6 +7,9 @@ export interface ActivityCatalogItem {
   icon?: string | null;
   active: boolean;
   order: number;
+  /** Solo en tipos de actividad: el pilar al que pertenece (un pilar tiene muchos tipos) */
+  pillarId?: string | null;
+  pillar?: ActivityRelation | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -119,6 +122,8 @@ export interface ActivityCatalogPayload {
   color?: string;
   icon?: string;
   active?: boolean;
+  /** Obligatorio al crear un tipo de actividad */
+  pillarId?: string;
 }
 
 export interface ActivityPayload {
