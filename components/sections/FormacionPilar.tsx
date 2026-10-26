@@ -1,36 +1,34 @@
-import Link from "next/link";
-import { ArrowRight, BookOpen, Compass, GraduationCap, Star, Users } from "lucide-react";
+import { BookOpen, Compass, GraduationCap, Star, Users, type LucideIcon } from "lucide-react";
+import PhotoCard from "@/components/media/PhotoCard";
+import ReadMore from "@/components/media/ReadMore";
+import type { SlotPhoto } from "@/lib/site-images";
 import SectionHeading from "../ui/SectionHeading";
 
-const EJES = ["Humano", "Cristocéntrico", "Mariano", "Vicenciano", "Eclesial"];
+export type RecorridoId = "ejes" | "santos" | "pilar";
 
 const recorridos = [
   {
+    id: "ejes",
     href: "/formacion/ejes",
     icon: BookOpen,
     titulo: "Ejes formativos",
-    texto:
-      "Cinco dimensiones que orientan la formación de cada joven: humana, cristocéntrica, mariana, vicenciana y eclesial.",
-    chips: EJES,
-    cta: "Explorar los ejes",
+    texto: "Humano, cristocéntrico, mariano, vicenciano y eclesial.",
   },
   {
+    id: "santos",
     href: "/formacion/santos",
     icon: Star,
     titulo: "Santos vicencianos",
-    texto:
-      "San Vicente, Santa Luisa, Santa Catalina y otros testigos que dieron su vida por Cristo en los pobres. Con frases para compartir.",
-    cta: "Conocer a los santos",
+    texto: "San Vicente, Santa Luisa, Santa Catalina y otros testigos. Con frases para compartir.",
   },
   {
+    id: "pilar",
     href: "/pilares#formacion",
     icon: GraduationCap,
     titulo: "La formación como pilar",
-    texto:
-      "La formación es una de las cuatro patas de la silla, junto con la comunidad, la espiritualidad y el apostolado.",
-    cta: "Ver los cuatro pilares",
+    texto: "Una de las cuatro patas de la silla que sostiene a JMV.",
   },
-];
+] as const satisfies readonly { id: RecorridoId; href: string; icon: LucideIcon; titulo: string; texto: string }[];
 
 const espacios = [
   {
@@ -51,55 +49,47 @@ const espacios = [
 ];
 
 // Índice de formación: conecta los ejes, los santos y el pilar de formación.
-export default function FormacionPilar() {
+// Las fotos de las tarjetas son las cabeceras de cada destino (espacios de foto).
+export default function FormacionPilar({ fotos }: { fotos: Partial<Record<RecorridoId, SlotPhoto>> }) {
   return (
     <>
       <section
+        id="recorridos"
         aria-labelledby="formacion-recorridos"
-        className="bg-gradient-to-b from-section-a to-section-blue py-16 sm:py-20"
+        className="scroll-mt-20 bg-gradient-to-b from-section-a to-section-blue py-14 sm:py-20"
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             id="formacion-recorridos"
             eyebrow="Itinerario formativo"
             title="Crecer como persona, cristiano y vicenciano"
-            description="En las Juventudes Marianas Vicencianas la formación no es un curso aislado: es un camino para madurar en Cristo (Ef 4, 13) y transformar el mundo desde el servicio a los pobres."
+            className="mb-3 sm:mb-5"
           />
+          <ReadMore lines={3} className="mx-auto mb-8 max-w-3xl text-center sm:mb-12" buttonClassName="mx-auto flex">
+            <p className="text-lg leading-relaxed text-fg-muted">
+              Como el barro en manos del alfarero, cada joven crece en su fe, en su humanidad y en su compromiso con
+              los pobres. En las Juventudes Marianas Vicencianas la formación no es un curso aislado: es un camino
+              para madurar en Cristo (Ef 4, 13) y transformar el mundo desde el servicio a los pobres.
+            </p>
+          </ReadMore>
 
-          <ul className="grid gap-5 md:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {recorridos.map((r) => {
-              const Icon = r.icon;
+              const foto = fotos[r.id];
+              if (!foto) return null;
               return (
-                <li key={r.href}>
-                  <Link
+                <li key={r.href} className="last:sm:col-span-2 last:lg:col-span-1">
+                  <PhotoCard
+                    variant="overlay"
+                    aspect="3/2"
+                    image={foto}
+                    title={r.titulo}
+                    text={r.texto}
+                    icon={r.icon}
                     href={r.href}
-                    className="group flex h-full flex-col rounded-2xl border border-fg/15 bg-surface p-6 shadow-card transition-colors hover:border-accent-gold/60 hover:bg-surface-2"
-                  >
-                    <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
-                      <Icon className="h-6 w-6" aria-hidden />
-                    </span>
-                    <h3 className="text-xl font-bold text-fg">{r.titulo}</h3>
-                    <p className="mt-2 leading-relaxed text-fg-muted">{r.texto}</p>
-                    {r.chips && (
-                      <span className="mt-4 flex flex-wrap gap-1.5">
-                        {r.chips.map((c) => (
-                          <span
-                            key={c}
-                            className="rounded-full border border-line-strong px-2.5 py-0.5 text-xs font-medium text-fg-soft"
-                          >
-                            {c}
-                          </span>
-                        ))}
-                      </span>
-                    )}
-                    <span className="mt-auto inline-flex items-center gap-2 pt-5 font-semibold text-accent-gold">
-                      {r.cta}
-                      <ArrowRight
-                        className="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1"
-                        aria-hidden
-                      />
-                    </span>
-                  </Link>
+                    sizes="(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"
+                    className="h-full sm:aspect-[4/3] lg:aspect-[4/5]"
+                  />
                 </li>
               );
             })}
@@ -107,19 +97,26 @@ export default function FormacionPilar() {
         </div>
       </section>
 
-      <section aria-labelledby="formacion-espacios" className="bg-section-blue pb-16 sm:pb-20">
+      <section aria-labelledby="formacion-espacios" className="bg-section-blue pb-14 sm:pb-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <h2 id="formacion-espacios" className="mb-6 text-2xl font-bold text-fg sm:text-3xl">
+          <h2 id="formacion-espacios" className="mb-5 text-2xl font-bold text-fg sm:mb-6 sm:text-3xl">
             ¿Dónde y cómo nos formamos?
           </h2>
-          <ul className="grid gap-5 md:grid-cols-3">
+          <ul className="grid gap-3 sm:gap-5 md:grid-cols-3">
             {espacios.map((e) => {
               const Icon = e.icon;
               return (
-                <li key={e.titulo} className="rounded-2xl border border-fg/15 bg-surface p-6 shadow-card dark:bg-jmv-ink/50">
-                  <Icon className="mb-3 h-6 w-6 text-accent-gold" aria-hidden />
-                  <h3 className="text-lg font-bold text-fg">{e.titulo}</h3>
-                  <p className="mt-2 leading-relaxed text-fg-muted">{e.texto}</p>
+                <li
+                  key={e.titulo}
+                  className="flex gap-4 rounded-2xl border border-fg/15 bg-surface p-4 shadow-card dark:bg-jmv-ink/50 sm:block sm:p-6"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 sm:mb-3 sm:h-auto sm:w-auto sm:justify-start sm:bg-transparent">
+                    <Icon className="h-6 w-6 text-accent-gold" aria-hidden />
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-bold text-fg">{e.titulo}</h3>
+                    <p className="mt-1 leading-relaxed text-fg-muted sm:mt-2">{e.texto}</p>
+                  </div>
                 </li>
               );
             })}

@@ -461,6 +461,8 @@ function SlotCard({
               </li>
             ))}
           </ol>
+        ) : slot.fallback.length === 0 ? (
+          <p className="text-xs text-slate-500">Aún no hay foto: la página muestra un icono en su lugar.</p>
         ) : (
           <div>
             <ul className="flex gap-2 overflow-x-auto pb-1" aria-label="Fotos de respaldo">

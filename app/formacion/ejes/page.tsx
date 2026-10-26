@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { ChevronDown } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 import EjesClient from "./EjesClient";
 
 export const metadata: Metadata = {
@@ -11,21 +12,24 @@ export const metadata: Metadata = {
   alternates: { canonical: "/formacion/ejes" },
 };
 
-export default function EjesFormativosPage() {
+export default async function EjesFormativosPage() {
+  const hero = await fetchSlotImages("ejes.hero");
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={hero}
         eyebrow="Formación integral"
         title="Cinco ejes formativos"
-        motto="Cinco dimensiones para crecer en todas las áreas de la vida."
-        description="Desde lo humano hasta lo espiritual, siguiendo el carisma vicenciano: así orientamos la formación de cada joven dentro del pilar de formación."
-        image={{ src: "/images/gallery/adoracion_santisimo.jpeg" }}
-        motif="stars"
+        lead="Cinco dimensiones para crecer en todas las áreas de la vida."
+        actions={[
+          { label: "Comenzar el recorrido", href: "#ejes", icon: ChevronDown },
+        ]}
         breadcrumbs={[
           { label: "Formación", href: "/formacion" },
           { label: "Ejes formativos" },
         ]}
-        actions={[{ label: "Comenzar el recorrido", href: "#ejes", icon: ChevronDown }]}
+        carouselLabel="Fotos de los ejes formativos"
       />
       <EjesClient />
       <SigueExplorando items={["biblioteca", "santos", "unete"]} />
