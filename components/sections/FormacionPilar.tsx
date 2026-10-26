@@ -74,9 +74,11 @@ export default function FormacionPilar({ fotos }: { fotos: Partial<Record<Recorr
           </ReadMore>
 
           <ul className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-            {recorridos.map((r) => {
+            {recorridos.map((r, i, all) => {
               const foto = fotos[r.id];
               if (!foto) return null;
+              // La última tarjeta ocupa las 2 columnas en tablet (last:sm:col-span-2)
+              const isLast = all.slice(i + 1).every((next) => !fotos[next.id]);
               return (
                 <li key={r.href} className="last:sm:col-span-2 last:lg:col-span-1">
                   <PhotoCard
@@ -87,7 +89,7 @@ export default function FormacionPilar({ fotos }: { fotos: Partial<Record<Recorr
                     text={r.texto}
                     icon={r.icon}
                     href={r.href}
-                    sizes="(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"
+                    sizes={isLast ? "(min-width: 1024px) 370px, 100vw" : "(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"}
                     className="h-full sm:aspect-[4/3] lg:aspect-[4/5]"
                   />
                 </li>
