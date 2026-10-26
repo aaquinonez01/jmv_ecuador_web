@@ -46,7 +46,7 @@ export default async function JmvMundoRegiones() {
                 {c.consejera}
               </p>
               <p className="mt-1 text-sm text-fg-muted">{c.pais}</p>
-              <p className="mt-2 hidden text-xs uppercase tracking-wide text-fg-muted sm:block">Consejera continental</p>
+              <p className="mt-2 text-xs uppercase tracking-wide text-fg-muted">Consejera continental</p>
             </li>
           ))}
         </ul>

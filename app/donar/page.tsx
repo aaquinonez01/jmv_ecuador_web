@@ -125,7 +125,7 @@ export default async function DonarPage() {
               id="campanas-titulo"
               eyebrow="Campañas"
               title={campaigns.length === 1 ? "Campaña en curso" : "Campañas en curso"}
-              description="Metas concretas que estamos reuniendo entre todos."
+              description="Metas concretas que estamos reuniendo entre todos. El Tesorero/a Nacional actualiza el avance."
             />
             <ul className={`grid grid-cols-1 gap-6 ${campaigns.length > 1 ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
               {campaigns.map((campaign) => (

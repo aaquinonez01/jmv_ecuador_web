@@ -248,7 +248,8 @@ export default async function UnetePage() {
               description="Alguien del equipo nacional te contactará por WhatsApp."
               className="mb-6 sm:mb-8"
             />
-            <ul className="flex flex-wrap gap-x-6 gap-y-1">
+            <p className="text-fg-soft">También puedes escribirnos directamente:</p>
+            <ul className="mt-1 flex flex-wrap gap-x-6 gap-y-1">
               <li>
                 <a
                   href={WHATSAPP_UNETE}
