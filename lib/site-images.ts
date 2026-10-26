@@ -156,7 +156,8 @@ export const SITE_IMAGE_SLOTS = {
     description: `Cabecera de «Nuestra historia». Fotos antiguas o de aniversarios de JMV Ecuador. ${HERO_TIP}`,
     aspect: "16/9",
     max: 3,
-    fallback: [P.grupoEcuador, P.hijasHijos],
+    // Sin repetir las fotos de la línea de tiempo de la misma página
+    fallback: [P.grupoEcuador, P.encuentro],
   },
   "estatutos.hero": {
     page: "/quienes-somos/estatutos",

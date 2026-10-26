@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, ScrollText } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
+import ReadMore from "@/components/media/ReadMore";
 import { STATUTES_PATH } from "./content";
 
 // Bloque "Nuestros estatutos" para la página Quiénes somos.
 export default function EstatutosTeaser() {
   return (
-    <section aria-labelledby="estatutos-teaser" className="bg-white py-16 sm:py-20">
+    <section aria-labelledby="estatutos-teaser" className="bg-page py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Tarjeta de marca: azul JMV en claro y tinta→azul en oscuro; data-tone="dark" mantiene el foco dorado */}
         <div
@@ -19,10 +20,12 @@ export default function EstatutosTeaser() {
             <h2 id="estatutos-teaser" className="font-display text-3xl font-semibold leading-tight text-balance sm:text-4xl">
               Las reglas que nos dimos para caminar juntos
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-slate-200">
-              Quiénes somos, para qué existimos, cómo elegimos a nuestro Consejo y cómo cuidamos lo que tenemos. Léelos en
-              2 minutos o artículo por artículo, con buscador y glosario.
-            </p>
+            <ReadMore lines={3} className="mt-4" buttonClassName="text-jmv-gold-text">
+              <p className="text-lg leading-relaxed text-slate-200">
+                Quiénes somos, para qué existimos, cómo elegimos a nuestro Consejo y cómo cuidamos lo que tenemos.
+                Léelos en 2 minutos o artículo por artículo, con buscador y glosario.
+              </p>
+            </ReadMore>
             <p className="mt-5 flex items-center gap-2 text-sm text-slate-200">
               <BadgeCheck className="h-5 w-5 shrink-0 text-jmv-gold-text" aria-hidden />
               Aprobados por el Director General de la Asociación

@@ -133,7 +133,7 @@ export default function HeroMedia({
               <Breadcrumbs items={breadcrumbs} tone="auto" className="mb-4 hidden sm:flex" />
             )}
             {eyebrow && (
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text sm:text-sm">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text [text-shadow:0_1px_8px_rgb(15_23_42/0.85)] sm:text-sm">
                 {eyebrow}
               </p>
             )}

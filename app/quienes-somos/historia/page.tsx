@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import HistoriaTimeline from "@/components/sections/HistoriaTimeline";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
-import { SITE, yearsSinceFoundation } from "@/lib/site";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
+import { yearsSinceFoundation } from "@/lib/site";
 
 // ISR: ver app/page.tsx.
 export const revalidate = 3600;
@@ -16,17 +17,19 @@ export const metadata: Metadata = {
   alternates: { canonical: "/quienes-somos/historia" },
 };
 
-export default function HistoriaPage() {
+export default async function HistoriaPage() {
   const anios = yearsSinceFoundation();
+  const fotos = await fetchSlotImages("historia.hero");
   return (
     <>
-      <PageHero
+      {/* El recorrido de 1830 a hoy, que antes era un párrafo aquí, lo cuenta la
+          línea de tiempo justo debajo */}
+      <HeroMedia
+        images={fotos}
+        carouselLabel="Fotos de la historia de JMV Ecuador"
         eyebrow="Nuestro legado"
         title="Historia de JMV Ecuador"
-        motto={`${anios} años sembrando esperanza en el corazón del Ecuador.`}
-        description={`Desde las apariciones de la Medalla Milagrosa a Santa Catalina Labouré en París (1830) hasta la fundación de JMV Ecuador en ${SITE.foundedYear} con Sor Noemí Miño, conoce los hitos que han marcado nuestro caminar.`}
-        image={{ src: "/images/historia/jmv-fundacion.jpg", position: "center top" }}
-        motif="monogram"
+        lead={`${anios} años sembrando esperanza en el corazón del Ecuador.`}
         breadcrumbs={[
           { label: "Quiénes somos", href: "/quienes-somos" },
           { label: "Historia" },

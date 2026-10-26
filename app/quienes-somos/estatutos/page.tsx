@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { fetchCurrentStatutes, fetchStatuteVersions } from "@/lib/api/statutes.server";
 import StatutesView from "@/components/estatutos/StatutesView";
 import StatutesEmpty from "@/components/estatutos/StatutesEmpty";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 // ISR: el backend invalida el tag "statutes" al publicar o cambiar la versión vigente.
 export const revalidate = 3600;
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default async function EstatutosPage() {
-  const [version, versions] = await Promise.all([fetchCurrentStatutes(), fetchStatuteVersions().catch(() => [])]);
-  if (!version) return <StatutesEmpty />;
-  return <StatutesView version={version} versions={versions} />;
+  const [version, versions, heroImages] = await Promise.all([
+    fetchCurrentStatutes(),
+    fetchStatuteVersions().catch(() => []),
+    fetchSlotImages("estatutos.hero"),
+  ]);
+  if (!version) return <StatutesEmpty heroImages={heroImages} />;
+  return <StatutesView version={version} versions={versions} heroImages={heroImages} />;
 }

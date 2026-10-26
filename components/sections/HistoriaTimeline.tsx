@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import SectionHeading from "../ui/SectionHeading";
+import ReadMore from "../media/ReadMore";
 import { MarianMonogram, StarsRing } from "../brand";
 import { SITE, yearsSinceFoundation } from "@/lib/site";
 
@@ -102,7 +103,7 @@ export default function HistoriaTimeline() {
                 aria-hidden="true"
                 className="absolute -left-[2.05rem] top-1.5 h-4 w-4 rounded-full border-4 border-page bg-accent-gold sm:-left-[3.05rem]"
               />
-              <article className="grid overflow-hidden rounded-2xl border border-line-card bg-surface-card shadow-card md:grid-cols-[1fr_16rem]">
+              <article className="grid overflow-hidden rounded-2xl border border-line-card bg-surface-card shadow-card md:grid-cols-[1fr_18rem]">
                 <div className="p-5 sm:p-6">
                   <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span className="text-2xl font-bold text-accent-gold">{hito.year}</span>
@@ -114,25 +115,33 @@ export default function HistoriaTimeline() {
                     )}
                   </p>
                   <h3 className="mt-2 text-xl font-bold text-fg">{hito.title}</h3>
-                  <p className="mt-3 leading-relaxed text-fg-muted">{hito.description}</p>
+                  {/* En móvil, resumen de 3 líneas y "Leer más"; en escritorio, entero */}
+                  <ReadMore lines={3} className="mt-3">
+                    <p className="leading-relaxed text-fg-muted">{hito.description}</p>
+                  </ReadMore>
                 </div>
-                <div className="relative order-first aspect-[16/9] bg-surface-sunken dark:bg-jmv-ink md:order-none md:aspect-auto md:min-h-56">
+                {/* Foto protagonista en móvil: arriba y más alta (4:3) */}
+                <div
+                  className={`relative order-first bg-surface-sunken dark:bg-jmv-ink md:order-none md:aspect-auto md:min-h-60 ${
+                    hito.image ? "aspect-[4/3]" : "aspect-[3/1]"
+                  }`}
+                >
                   {hito.image ? (
                     <Image
                       src={hito.image.src}
                       alt={hito.image.alt}
                       fill
                       loading="lazy"
-                      sizes="(max-width: 768px) 100vw, 256px"
-                      className="object-cover"
+                      sizes="(max-width: 768px) 92vw, 288px"
+                      className="object-cover object-top"
                     />
                   ) : (
                     <div
                       aria-hidden="true"
                       className="absolute inset-0 flex items-center justify-center text-accent-gold/40"
                     >
-                      <StarsRing className="absolute h-44 w-44" />
-                      <MarianMonogram className="h-20 w-16" strokeWidth={4} />
+                      <StarsRing className="absolute h-32 w-32 md:h-44 md:w-44" />
+                      <MarianMonogram className="h-14 w-11 md:h-20 md:w-16" strokeWidth={4} />
                     </div>
                   )}
                 </div>
