@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { ArrowRight, Network } from "lucide-react";
-import PageHero from "@/components/ui/PageHero";
+import HeroMedia from "@/components/media/HeroMedia";
 import JmvMundoCarisma from "@/components/sections/jmv-mundo/JmvMundoCarisma";
 import JmvMundoGobierno from "@/components/sections/jmv-mundo/JmvMundoGobierno";
 import JmvMundoRegiones from "@/components/sections/jmv-mundo/JmvMundoRegiones";
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
+import { fetchSlotImages } from "@/lib/api/site-images.server";
 
 export const metadata: Metadata = {
   title: "JMV en el mundo",
@@ -13,21 +14,22 @@ export const metadata: Metadata = {
   alternates: { canonical: "/jmv-en-el-mundo" },
 };
 
-export default function JmvEnElMundoPage() {
+export default async function JmvEnElMundoPage() {
+  const hero = await fetchSlotImages("jmv-mundo.hero");
+
   return (
     <>
-      <PageHero
+      <HeroMedia
+        images={hero}
         eyebrow="Una familia internacional"
         title="JMV en el mundo"
-        motto="Comprometidos con los jóvenes, el mundo, la Iglesia y los pobres."
-        description="Las Juventudes Marianas Vicencianas son una asociación internacional de la Familia de San Vicente de Paúl. Nacieron de las apariciones de la Virgen de la Medalla Milagrosa en 1830 y hoy están presentes en los cinco continentes. JMV Ecuador es parte de esta gran familia."
-        image={{ src: "/images/gallery/secretariado.jpg", position: "center 30%" }}
-        motif="stars"
-        breadcrumbs={[{ label: "JMV en el mundo" }]}
+        lead="Comprometidos con los jóvenes, el mundo, la Iglesia y los pobres."
         actions={[
           { label: "Conoce su gobierno", href: "#gobierno-internacional", icon: ArrowRight },
           { label: "Estructura en Ecuador", href: "/estructura", icon: Network },
         ]}
+        breadcrumbs={[{ label: "JMV en el mundo" }]}
+        carouselLabel="Fotos de JMV en el mundo"
       />
       <JmvMundoCarisma />
       <JmvMundoGobierno />

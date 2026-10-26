@@ -299,6 +299,22 @@ export const SITE_IMAGE_SLOTS = {
     max: 3,
     fallback: [P.internacional, P.equipoInternacional],
   },
+  "jmv-mundo.carisma": {
+    page: "/jmv-en-el-mundo",
+    label: "¿Qué vive la JMV?",
+    description: "Acompaña el carisma que la JMV comparte en todo el mundo: oración, amor a María o servicio a los pobres. Horizontal.",
+    aspect: "3/2",
+    max: 1,
+    fallback: [P.adoracion],
+  },
+  "jmv-mundo.encuentros": {
+    page: "/jmv-en-el-mundo",
+    label: "Encuentros (JMV en el mundo)",
+    description: "Franja ancha con la frase «Los encuentros unen a los jóvenes vicencianos». Un encuentro grande con banderas. Horizontal; abajo va el texto.",
+    aspect: "16/9",
+    max: 1,
+    fallback: [P.encuentro],
+  },
 
   // PARTICIPAR
   "actividades.hero": {

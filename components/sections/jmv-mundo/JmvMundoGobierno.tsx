@@ -9,6 +9,13 @@ import {
   Languages,
 } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
+import ReadMore from "@/components/media/ReadMore";
+
+// En móvil, las tarjetas van en una fila deslizable (scroll-snap, sin JS) en vez
+// de apilarse: se ve una y asoma la siguiente.
+const FILA_MOVIL =
+  "scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 md:pb-0";
+const ITEM_MOVIL = "w-[80%] shrink-0 snap-start sm:w-[45%] md:w-auto";
 
 const CONSEJO = [
   {
@@ -70,21 +77,22 @@ export default function JmvMundoGobierno() {
     <section
       id="gobierno-internacional"
       aria-labelledby="gobierno-titulo"
-      className="scroll-mt-24 bg-section-blue py-16 sm:py-20"
+      className="scroll-mt-24 bg-section-blue py-14 sm:py-20"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="gobierno-titulo"
           eyebrow="Gobierno internacional"
           title="Consejo y Secretariado"
-          description="Para su dinamismo y dirección, la JMV cuenta con un Director General, una Asamblea General, un Consejo Internacional y un Secretariado Internacional."
+          description="Cuatro órganos dan dinamismo y dirección a la JMV en todo el mundo."
+          className="mb-8 sm:mb-12"
         />
 
-        <ul className="mb-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <ul aria-label="Órganos de gobierno" tabIndex={0} className={`mb-12 md:mb-14 md:grid-cols-2 lg:grid-cols-4 ${FILA_MOVIL}`}>
           {ORGANOS.map((org) => {
             const Icon = org.icon;
             return (
-              <li key={org.titulo} className="h-full rounded-2xl border border-fg/15 bg-surface p-6 shadow-card">
+              <li key={org.titulo} className={`rounded-2xl border border-fg/15 bg-surface p-5 shadow-card sm:p-6 ${ITEM_MOVIL}`}>
                 <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
                   <Icon className="h-6 w-6" aria-hidden />
                 </span>
@@ -98,11 +106,11 @@ export default function JmvMundoGobierno() {
         <h3 className="mb-6 text-center text-2xl font-bold text-fg md:text-3xl">
           Liderazgo del Consejo Internacional
         </h3>
-        <ul className="mb-14 grid gap-5 md:grid-cols-3">
+        <ul aria-label="Liderazgo del Consejo Internacional" tabIndex={0} className={`mb-12 md:mb-14 md:grid-cols-3 ${FILA_MOVIL}`}>
           {CONSEJO.map((m) => (
             <li
               key={m.nombre}
-              className="flex h-full flex-col items-center rounded-2xl border border-fg/15 bg-surface p-6 shadow-card text-center"
+              className={`flex flex-col items-center rounded-2xl border border-fg/15 bg-surface p-5 text-center shadow-card sm:p-6 ${ITEM_MOVIL}`}
             >
               <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-jmv-gold text-jmv-ink">
                 <Crown className="h-7 w-7" aria-hidden />
@@ -114,20 +122,22 @@ export default function JmvMundoGobierno() {
           ))}
         </ul>
 
-        <div className="rounded-2xl border border-fg/15 bg-surface p-6 shadow-card sm:p-8">
-          <h3 className="mb-6 flex items-center text-2xl font-bold text-fg">
+        <div className="rounded-2xl border border-fg/15 bg-surface p-5 shadow-card sm:p-8">
+          <h3 className="mb-4 flex items-center text-2xl font-bold text-fg sm:mb-6">
             <Building2 className="mr-3 h-7 w-7 text-accent-gold" aria-hidden />
             Secretariado Internacional
           </h3>
 
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <p className="mb-6 leading-relaxed text-fg-soft">
-                Su misión es centralizar la información de la asociación y
-                promover la comunicación entre los países miembros. Lo integran
-                el Subdirector General, la Delegada Internacional y un equipo de
-                jóvenes voluntarios, uno por cada idioma oficial de la JMV.
-              </p>
+              <ReadMore lines={3} className="mb-6">
+                <p className="leading-relaxed text-fg-soft">
+                  Su misión es centralizar la información de la asociación y
+                  promover la comunicación entre los países miembros. Lo integran
+                  el Subdirector General, la Delegada Internacional y un equipo de
+                  jóvenes voluntarios, uno por cada idioma oficial de la JMV.
+                </p>
+              </ReadMore>
               <figure className="mb-6 flex items-center gap-4 rounded-xl border border-line bg-surface-2 p-4 dark:bg-white/5">
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-line-strong">
                   <Image
@@ -171,7 +181,7 @@ export default function JmvMundoGobierno() {
               </ul>
             </div>
 
-            <div className="rounded-xl border border-line bg-surface-sunken p-6 dark:bg-jmv-ink/50">
+            <div className="rounded-xl border border-line bg-surface-sunken p-4 dark:bg-jmv-ink/50 sm:p-6">
               <h4 className="mb-4 text-lg font-semibold text-fg">Equipo del Secretariado</h4>
               <ul className="space-y-3 text-sm">
                 <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-card px-3 py-2">
