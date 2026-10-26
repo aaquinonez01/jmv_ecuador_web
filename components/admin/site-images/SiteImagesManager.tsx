@@ -40,6 +40,12 @@ const linkButton =
   "inline-flex min-h-11 items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-jmv-blue/40 sm:min-h-9";
 
 const GROUPS = slotsByPage();
+const KNOWN_SLOTS = new Set<string>(GROUPS.flatMap((g) => g.slots.map((s) => s.id)));
+
+/** Filas antiguas que no pertenecen a ningún espacio del registro (no se muestran en la web) */
+function isOrphan(img: AdminSiteImage): boolean {
+  return Boolean(img.subsection) || !KNOWN_SLOTS.has(img.section);
+}
 
 export default function SiteImagesManager() {
   const toast = useToast();
@@ -77,7 +83,7 @@ export default function SiteImagesManager() {
   const bySlot = useMemo(() => {
     const map = new Map<string, AdminSiteImage[]>();
     for (const img of images) {
-      if (img.subsection) continue;
+      if (isOrphan(img)) continue;
       const list = map.get(img.section) ?? [];
       list.push(img);
       map.set(img.section, list);
@@ -89,6 +95,7 @@ export default function SiteImagesManager() {
   const totalSlots = GROUPS.reduce((n, g) => n + g.slots.length, 0);
   const withOwn = GROUPS.reduce((n, g) => n + g.slots.filter(({ id }) => (bySlot.get(id)?.length ?? 0) > 0).length, 0);
   const visibleGroups = filter === "all" ? GROUPS : GROUPS.filter((g) => g.page === filter);
+  const orphans = useMemo(() => images.filter(isOrphan), [images]);
 
   const move = async (slotId: string, index: number, direction: -1 | 1) => {
     const list = bySlot.get(slotId) ?? [];
@@ -165,7 +172,7 @@ export default function SiteImagesManager() {
   };
 
   const uploadSlot = uploadFor ? GROUPS.flatMap((g) => g.slots).find((s) => s.id === uploadFor) : null;
-  const deleteWillFallback = toDelete ? (bySlot.get(toDelete.section)?.length ?? 0) === 1 : false;
+  const deleteWillFallback = toDelete && !isOrphan(toDelete) ? (bySlot.get(toDelete.section)?.length ?? 0) === 1 : false;
 
   return (
     <>
@@ -212,6 +219,42 @@ export default function SiteImagesManager() {
           </div>
 
           <div className="space-y-8">
+            {filter === "all" && orphans.length > 0 && (
+              <section aria-labelledby="grp-sin-espacio" className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+                <h2 id="grp-sin-espacio" className="text-base font-bold text-slate-900">
+                  Sin espacio asignado ({orphans.length})
+                </h2>
+                <p className="mt-1 text-[13px] text-slate-700">
+                  Fotos de una versión anterior del panel. No se muestran en la web; puedes eliminarlas.
+                </p>
+                <ul className="mt-3 grid grid-cols-1 gap-2 lg:grid-cols-2">
+                  {orphans.map((img) => (
+                    <li key={img.id} className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-2">
+                      <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md bg-slate-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element -- miniatura de Cloudinary ya redimensionada */}
+                        <img src={getOptimizedUrl(img.url, { w: 160 })} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-mono text-[11px] text-slate-500">
+                          {img.section}
+                          {img.subsection ? ` / ${img.subsection}` : ""}
+                        </p>
+                        <p className="line-clamp-2 text-[13px] text-slate-800">{img.alt || img.filename || "Sin descripción"}</p>
+                      </div>
+                      <button
+                        type="button"
+                        className={`${iconButton} shrink-0 hover:bg-red-50 hover:text-red-700`}
+                        onClick={() => setToDelete(img)}
+                        aria-label={`Eliminar la foto ${img.alt || img.filename || img.section}`}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="h-4 w-4" aria-hidden />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
             {visibleGroups.map((group) => (
               <section key={group.page} aria-labelledby={`grp-${group.page}`}>
                 <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200 pb-2">
