@@ -1,11 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, HandHeart, Lightbulb, Quote, Star, Users } from "lucide-react";
 import SectionHeading from "../ui/SectionHeading";
 import { StarsRing } from "../brand";
 import { useTabs } from "./institucional/useTabs";
+import SiteImage from "../media/SiteImage";
+import ReadMore from "../media/ReadMore";
+import type { SlotPhoto } from "@/lib/site-images";
 
 const santos = [
   {
@@ -21,7 +23,7 @@ const santos = [
       "La humildad es la base de toda virtud",
     ],
     hoy: "Su ejemplo nos inspira a ver en cada persona necesitada el rostro de Cristo y a servir con entrega generosa.",
-    imagen: null as string | null,
+    imagen: false,
   },
   {
     id: "catalina",
@@ -36,7 +38,8 @@ const santos = [
       "La sencillez abre el corazón a Dios",
     ],
     hoy: "Su devoción mariana nos enseña a vivir bajo la protección de María y a fortalecer nuestro compromiso con los más necesitados.",
-    imagen: "/images/historia/catalina.jpg" as string | null,
+    // Foto del espacio "quienes-somos.carisma" (administrable desde /admin/imagenes)
+    imagen: true,
   },
 ];
 
@@ -61,7 +64,7 @@ const carismaHoy = [
   },
 ];
 
-export default function CarismaVicenciano() {
+export default function CarismaVicenciano({ catalinaPhoto }: { catalinaPhoto?: SlotPhoto }) {
   const { active, getTabProps, getPanelProps } = useTabs(santos.length, "carisma");
 
   return (
@@ -74,7 +77,7 @@ export default function CarismaVicenciano() {
           id="carisma-titulo"
           eyebrow="Nuestras raíces"
           title="Carisma vicenciano"
-          description="Dos santos están en el origen de nuestra manera de vivir el Evangelio: San Vicente de Paúl y Santa Catalina Labouré."
+          description="Dos santos están en el origen de nuestra manera de vivir el Evangelio."
         />
 
         <div
@@ -98,13 +101,14 @@ export default function CarismaVicenciano() {
         </div>
 
         {santos.map((s, i) => (
-          <div key={s.id} {...getPanelProps(i)} className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-            <article className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card sm:p-8">
+          <div key={s.id} {...getPanelProps(i)} className="grid gap-5 lg:grid-cols-2 lg:gap-8">
+            <article className="order-2 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card sm:p-8 lg:order-1">
               <h3 className="text-2xl font-bold text-fg">{s.nombre}</h3>
               <p className="font-medium text-accent-gold">{s.subtitulo}</p>
               <p className="text-sm text-fg-subtle dark:text-slate-300">{s.anios}</p>
 
-              <p className="mt-5 text-lg leading-relaxed text-fg-soft">{s.descripcion}</p>
+              <ReadMore lines={4} className="mt-4">
+              <p className="leading-relaxed text-fg-soft sm:text-lg">{s.descripcion}</p>
 
               <h4 className="mt-6 mb-3 text-lg font-bold text-fg">Enseñanzas principales</h4>
               <ul className="space-y-2">
@@ -120,21 +124,23 @@ export default function CarismaVicenciano() {
                 <h4 className="mb-1 font-semibold text-accent-gold">Para nuestra vida hoy</h4>
                 <p className="text-fg-soft">{s.hoy}</p>
               </div>
+              </ReadMore>
             </article>
 
-            {s.imagen ? (
-              <figure className="relative min-h-80 overflow-hidden rounded-2xl border border-line-card shadow-card">
-                <Image
-                  src={s.imagen}
-                  alt={`Imagen de ${s.nombre}`}
+            {s.imagen && catalinaPhoto ? (
+              <figure className="relative order-1 aspect-[4/3] overflow-hidden rounded-2xl border border-line-card bg-surface-2 shadow-card sm:aspect-[16/9] lg:order-2 lg:aspect-auto lg:min-h-80">
+                <SiteImage
+                  src={catalinaPhoto.src}
+                  alt={catalinaPhoto.alt}
                   fill
                   loading="lazy"
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover object-top"
+                  className="object-cover"
+                  style={{ objectPosition: catalinaPhoto.position ?? "top" }}
                 />
               </figure>
             ) : (
-              <figure className="relative flex min-h-80 flex-col items-center justify-center overflow-hidden rounded-2xl border border-line-card bg-surface p-8 text-center shadow-card dark:bg-jmv-ink">
+              <figure className="relative order-1 hidden min-h-56 flex-col lg:order-2 lg:flex lg:min-h-80 items-center justify-center overflow-hidden rounded-2xl border border-line-card bg-surface p-8 text-center shadow-card dark:bg-jmv-ink">
                 <StarsRing
                   withCircle
                   className="pointer-events-none absolute h-80 w-80 text-accent-gold/15"
@@ -159,19 +165,24 @@ export default function CarismaVicenciano() {
           </Link>
         </div>
 
-        <h3 className="mt-16 mb-6 text-center text-2xl font-bold text-fg sm:text-3xl">
+        <h3 className="mt-14 mb-5 text-center text-2xl font-bold text-fg sm:mt-16 sm:mb-6 sm:text-3xl">
           Así vivimos el carisma hoy
         </h3>
         <ul className="grid gap-5 md:grid-cols-3">
           {carismaHoy.map((v) => {
             const Icon = v.icon;
             return (
-              <li key={v.titulo} className="rounded-2xl border border-line-card bg-surface-card p-6 shadow-card">
-                <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent-gold/10 text-accent-gold dark:bg-white/10">
+              <li
+                key={v.titulo}
+                className="flex gap-4 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card md:flex-col md:gap-0 md:p-6"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-gold/10 text-accent-gold md:mb-4 dark:bg-white/10">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
-                <h4 className="mb-2 text-lg font-bold text-fg">{v.titulo}</h4>
-                <p className="leading-relaxed text-fg-muted">{v.descripcion}</p>
+                <div>
+                  <h4 className="mb-1 text-lg font-bold text-fg md:mb-2">{v.titulo}</h4>
+                  <p className="leading-relaxed text-fg-muted">{v.descripcion}</p>
+                </div>
               </li>
             );
           })}
