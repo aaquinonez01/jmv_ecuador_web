@@ -17,11 +17,14 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { createPost } from "@/actions/posts";
 import { mapApiUser, type PostsPage } from "@/lib/blog/posts";
 import type { BlogCategory } from "@/types/user";
+import type { SlotPhoto } from "@/lib/site-images";
 
 interface BlogClientProps {
   initialPage: PostsPage | null;
   initialScopes: BlogCategory[];
   initialActivityTypes: BlogCategory[];
+  /** Foto de la cabecera (espacio "blog.hero") */
+  heroImages?: readonly SlotPhoto[];
 }
 
 function FeedSkeleton() {
@@ -69,6 +72,7 @@ export default function BlogClient({
   initialPage,
   initialScopes,
   initialActivityTypes,
+  heroImages,
 }: BlogClientProps) {
   const { user: authUser } = useAuth();
   const currentUser = useMemo(() => (authUser ? mapApiUser(authUser) : undefined), [authUser]);
@@ -162,6 +166,7 @@ export default function BlogClient({
 
   return (
     <BlogLayout
+      heroImages={heroImages}
       action={createButton}
       aside={
         currentUser ? (
