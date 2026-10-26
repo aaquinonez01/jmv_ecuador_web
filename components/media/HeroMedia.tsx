@@ -61,10 +61,11 @@ export function HeroBackdrop({
       ) : (
         <div className="absolute inset-0 -z-20">{first}</div>
       )}
-      {/* Velo: oscuro abajo para leer el texto */}
+      {/* Velo: oscuro abajo para leer el texto. En móvil sube un poco más porque
+          etiqueta, título, línea y botones ocupan la mitad inferior. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-hero-veil from-5% via-hero-veil/60 via-40% to-hero-veil/0 to-70%"
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-hero-veil from-10% via-hero-veil/70 via-45% to-hero-veil/0 to-80% md:from-5% md:via-hero-veil/60 md:via-40% md:to-70%"
       />
       {/* En pantallas anchas el texto va a la izquierda: un velo lateral suave */}
       <div
@@ -133,7 +134,8 @@ export default function HeroMedia({
               <Breadcrumbs items={breadcrumbs} tone="auto" className="mb-4 hidden sm:flex" />
             )}
             {eyebrow && (
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text [text-shadow:0_1px_8px_rgb(15_23_42/0.85)] sm:text-sm">
+              // Pastilla oscura: la etiqueta es pequeña y a veces cae sobre zonas claras de la foto
+              <p className="mb-3 inline-flex rounded-full bg-hero-veil/65 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-jmv-gold-text backdrop-blur-sm sm:text-sm">
                 {eyebrow}
               </p>
             )}
