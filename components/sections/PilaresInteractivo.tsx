@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,17 +12,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { TwoHearts } from "@/components/brand";
+import SiteImage from "@/components/media/SiteImage";
+import ReadMore from "@/components/media/ReadMore";
+import type { SlotPhoto } from "@/lib/site-images";
 import SectionHeading from "../ui/SectionHeading";
 import { buttonVariants } from "../ui/button-variants";
 import { useTabs } from "./institucional/useTabs";
 
+export type PilarId = "comunidad" | "espiritualidad" | "apostolado" | "formacion";
+
 interface Pilar {
-  id: string;
+  id: PilarId;
   nombre: string;
   subtitulo: string;
   icono: LucideIcon;
-  /** Foto real del archivo; sin ella se muestra el motivo de los dos corazones */
-  imagen?: string;
   cita: { texto: string; fuente: string };
   descripcion: string[];
   puntos: { titulo: string; desc: string }[];
@@ -38,7 +40,6 @@ const pilares: Pilar[] = [
     nombre: "Comunidad juvenil",
     subtitulo: "La pedagogía del encuentro",
     icono: Users,
-    imagen: "/images/gallery/encuentro_nacional_2025.jpg",
     cita: {
       texto:
         "La multitud de los creyentes no tenía sino un solo corazón y una sola alma. No había entre ellos ningún necesitado.",
@@ -74,7 +75,6 @@ const pilares: Pilar[] = [
     nombre: "Espiritualidad",
     subtitulo: "Encuentro con Cristo vivo",
     icono: BookOpen,
-    imagen: "/images/gallery/adoracion_santisimo.jpeg",
     cita: {
       texto: "Donde están dos o tres reunidos en mi nombre, allí estoy yo en medio de ellos.",
       fuente: "Mateo 18, 20",
@@ -100,7 +100,6 @@ const pilares: Pilar[] = [
     nombre: "Apostolado",
     subtitulo: "Servir como el buen samaritano",
     icono: HandHeart,
-    // Sin foto real de servicio todavía: se usa el motivo gráfico, no una foto de banco
     cita: {
       texto: "Servir a los pobres es servir a Jesucristo. El amor es infinitamente inventivo.",
       fuente: "San Vicente de Paúl",
@@ -126,7 +125,6 @@ const pilares: Pilar[] = [
     nombre: "Formación",
     subtitulo: "Hasta que Cristo sea formado en ti",
     icono: GraduationCap,
-    imagen: "/images/gallery/asamblea_2024.jpg",
     cita: {
       texto: "Formar es engendrar a Jesús en los otros, o más bien engendrar a los otros para Cristo.",
       fuente: "San Bernardo",
@@ -208,7 +206,12 @@ function Silla({ activo, visitados }: { activo: number; visitados: Set<number> }
   );
 }
 
-export default function PilaresInteractivo() {
+/**
+ * Pestañas de los cuatro pilares con la silla. Las fotos llegan del servidor
+ * (espacios de foto pilares.<pilar>, administrables en /admin/imagenes); si falta
+ * una, se muestra el motivo de los dos corazones.
+ */
+export default function PilaresInteractivo({ fotos = {} }: { fotos?: Partial<Record<PilarId, SlotPhoto>> }) {
   const [visitados, setVisitados] = useState<Set<number>>(() => new Set([0]));
   const marcarVisitado = useCallback(
     (i: number) => setVisitados((prev) => (prev.has(i) ? prev : new Set(prev).add(i))),
@@ -243,8 +246,14 @@ export default function PilaresInteractivo() {
           id="pilares-titulo"
           eyebrow="Fundamentos"
           title="Las cuatro patas de la silla"
-          description="JMV es un hogar grande. Como una silla necesita sus cuatro patas para mantenerse firme, nuestra casa se sostiene sobre estos pilares. «Nadie puede poner otro cimiento que el ya puesto: Jesucristo» (1 Cor 3, 11)."
+          className="mb-3 sm:mb-5"
         />
+        <ReadMore lines={3} className="mx-auto mb-8 max-w-3xl text-center sm:mb-10" buttonClassName="mx-auto flex">
+          <p className="text-lg leading-relaxed text-fg-muted">
+            JMV es un hogar grande. Como una silla necesita sus cuatro patas para mantenerse firme, nuestra casa se
+            sostiene sobre estos pilares. «Nadie puede poner otro cimiento que el ya puesto: Jesucristo» (1 Cor 3, 11).
+          </p>
+        </ReadMore>
 
         <div className="mb-8 grid items-center gap-6 md:grid-cols-[14rem_1fr]">
           <figure className="mx-auto w-48 md:w-full">
@@ -297,62 +306,77 @@ export default function PilaresInteractivo() {
 
         {pilares.map((pilar, i) => {
           const Icon = pilar.icono;
+          const foto = fotos[pilar.id];
+          const chips = (
+            <>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-fg-muted dark:text-slate-200">
+                {pilar.destacados.titulo}
+              </p>
+              <ul className="flex flex-wrap gap-1.5">
+                {pilar.destacados.chips.map((chip) => (
+                  <li
+                    key={chip}
+                    className="rounded-full border border-accent-gold/50 bg-surface-2 px-2.5 py-0.5 text-xs font-semibold text-accent-gold dark:bg-jmv-ink/70"
+                  >
+                    {chip}
+                  </li>
+                ))}
+              </ul>
+            </>
+          );
           return (
             <div
               key={pilar.id}
               {...getPanelProps(i)}
               className="grid grid-cols-1 gap-6 overflow-hidden rounded-3xl border border-fg/15 bg-surface p-5 shadow-card motion-safe:animate-in motion-safe:fade-in-0 sm:p-6 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:p-8"
             >
-              <div data-tone="dark" className="relative min-h-72 overflow-hidden rounded-2xl lg:min-h-[480px]">
-                {pilar.imagen ? (
-                  <Image
-                    src={pilar.imagen}
-                    alt=""
+              <div
+                data-tone="dark"
+                className="relative isolate aspect-[4/3] overflow-hidden rounded-2xl sm:aspect-[16/9] lg:aspect-auto lg:min-h-[480px]"
+              >
+                {foto ? (
+                  <SiteImage
+                    src={foto.src}
+                    alt={foto.alt}
                     fill
                     loading="lazy"
-                    sizes="(max-width: 1024px) 100vw, 560px"
+                    sizes="(min-width: 1024px) 560px, 100vw"
                     className="object-cover"
+                    style={{ objectPosition: foto.position ?? "center" }}
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-jmv" aria-hidden="true">
                     <TwoHearts className="absolute top-8 left-1/2 w-3/4 max-w-sm -translate-x-1/2 text-jmv-gold-text/40" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-hero-veil via-hero-veil/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink shadow-lg">
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-gradient-to-t from-hero-veil via-hero-veil/50 via-40% to-transparent to-75%"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                  <span className="hidden h-12 w-12 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink shadow-lg sm:flex">
                     <Icon className="h-6 w-6" aria-hidden />
                   </span>
-                  <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-jmv-gold-text">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-jmv-gold-text sm:mt-3">
                     Pilar {i + 1}
                   </p>
                   <h3 className="text-2xl font-bold text-white sm:text-3xl">{pilar.nombre}</h3>
                   <p className="text-slate-100">{pilar.subtitulo}</p>
-
-                  <p className="mt-4 mb-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-                    {pilar.destacados.titulo}
-                  </p>
-                  <ul className="flex flex-wrap gap-1.5">
-                    {pilar.destacados.chips.map((chip) => (
-                      <li
-                        key={chip}
-                        className="rounded-full border border-jmv-gold-text/50 bg-jmv-ink/70 px-2.5 py-0.5 text-xs font-semibold text-jmv-gold-text"
-                      >
-                        {chip}
-                      </li>
-                    ))}
-                  </ul>
+                  {/* En escritorio los chips van sobre la foto; en móvil, bajo el texto */}
+                  <div className="mt-4 hidden lg:block">{chips}</div>
                 </div>
               </div>
 
               <div className="flex flex-col">
-                {pilar.descripcion.map((parrafo, j) => (
-                  <p key={j} className={`text-base leading-7 text-fg-soft sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
-                    {parrafo}
-                  </p>
-                ))}
+                <ReadMore lines={4}>
+                  {pilar.descripcion.map((parrafo, j) => (
+                    <p key={j} className={`text-base leading-7 text-fg-soft sm:text-lg sm:leading-8 ${j > 0 ? "mt-3" : ""}`}>
+                      {parrafo}
+                    </p>
+                  ))}
+                </ReadMore>
 
-                <figure className="mt-5 rounded-xl border border-accent-gold/25 bg-surface-sunken p-4">
+                <figure className="mt-4 rounded-xl border border-accent-gold/25 bg-surface-sunken p-4">
                   <Quote className="mb-2 h-5 w-5 text-accent-gold" aria-hidden />
                   <blockquote className="italic leading-6 text-fg/90">
                     <p>“{pilar.cita.texto}”</p>
@@ -362,22 +386,29 @@ export default function PilaresInteractivo() {
                   </figcaption>
                 </figure>
 
-                <ol className="mt-5 space-y-2.5">
-                  {pilar.puntos.map((punto, n) => (
-                    <li key={punto.titulo} className="flex gap-3 rounded-xl bg-surface-2 p-3 dark:bg-white/5">
-                      <span
-                        aria-hidden
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
-                      >
-                        {n + 1}
-                      </span>
-                      <div>
-                        <h4 className="text-sm font-bold text-fg">{punto.titulo}</h4>
-                        <p className="text-sm leading-6 text-fg-muted">{punto.desc}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+                <h4 className="mt-5 mb-2.5 text-sm font-bold uppercase tracking-wider text-fg-muted">
+                  Claves para vivirlo
+                </h4>
+                <ReadMore lines={8} moreLabel={`Ver las ${pilar.puntos.length} claves`} lessLabel="Ver menos">
+                  <ol className="space-y-2.5">
+                    {pilar.puntos.map((punto, n) => (
+                      <li key={punto.titulo} className="flex gap-3 rounded-xl bg-surface-2 p-3 dark:bg-white/5">
+                        <span
+                          aria-hidden
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-accent-gold ring-1 ring-line dark:bg-white/10 dark:ring-0"
+                        >
+                          {n + 1}
+                        </span>
+                        <div>
+                          <h5 className="text-sm font-bold text-fg">{punto.titulo}</h5>
+                          <p className="text-sm leading-6 text-fg-muted">{punto.desc}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </ReadMore>
+
+                <div className="mt-5 lg:hidden">{chips}</div>
 
                 {pilar.enlace && (
                   <Link
