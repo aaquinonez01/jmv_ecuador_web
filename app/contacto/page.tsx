@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   },
 };
 
+// ISR: la foto de la cabecera es administrable (tag site_images).
+export const revalidate = 3600;
+
 export default async function ContactoPage() {
   const heroImages = await fetchSlotImages("contacto.hero");
 
