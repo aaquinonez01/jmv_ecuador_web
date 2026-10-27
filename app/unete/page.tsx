@@ -98,7 +98,7 @@ export default async function UnetePage() {
             id="encuentra-titulo"
             eyebrow="Paso 1"
             title="Encuentra tu comunidad"
-            description="Si tienes entre 15 y 30 años, elige tu ciudad o usa tu ubicación y escríbele por WhatsApp."
+            description="Si tienes entre 15 y 30 años, búscala en el mapa y escríbele por WhatsApp."
             className="mb-8 sm:mb-10"
           />
           <Suspense fallback={<FinderSkeleton />}>

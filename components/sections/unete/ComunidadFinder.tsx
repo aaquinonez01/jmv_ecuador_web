@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useInView } from "react-intersection-observer";
-import { LocateFixed, Mail, MapPin, MessageCircle, Phone, RefreshCw } from "lucide-react";
+import { ChevronDown, Mail, MapPin, MessageCircle, Phone, RefreshCw } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { getComunidadesAPI } from "@/actions/comunidades";
-import { comunidadWhatsappLink, distanceKm, hasCoords } from "@/lib/comunidades";
+import { comunidadWhatsappLink, hasCoords } from "@/lib/comunidades";
 import { whatsappLink } from "@/lib/whatsapp";
 import { LOCALE } from "@/lib/format";
 import type { ComunidadItem } from "@/types/territory-management";
@@ -38,9 +38,6 @@ function LazyMap({ comunidades }: { comunidades: ComunidadItem[] }) {
 }
 
 const km = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
-
-type Coords = { latitude: number; longitude: number };
-type GeoState = "idle" | "loading" | "ok" | "denied" | "unavailable";
 
 const GENERAL_WHATSAPP = whatsappLink("Hola, vi la web de JMV y quiero encontrar una comunidad cerca de mí.");
 
@@ -105,9 +102,6 @@ function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; dist
 export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] | null }) {
   const [comunidades, setComunidades] = useState<ComunidadItem[]>(initial ?? []);
   const [status, setStatus] = useState<"ready" | "loading" | "error">(initial?.length ? "ready" : "loading");
-  const [ciudad, setCiudad] = useState("");
-  const [coords, setCoords] = useState<Coords | null>(null);
-  const [geo, setGeo] = useState<GeoState>("idle");
 
   const load = () => {
     setStatus("loading");
@@ -126,125 +120,33 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const ciudadesPorZona = useMemo(() => {
-    const groups = new Map<string, Set<string>>();
-    for (const c of comunidades) {
-      if (!c.ciudad) continue;
-      const zona = c.zona?.nombre || "Otras";
-      if (!groups.has(zona)) groups.set(zona, new Set());
-      groups.get(zona)!.add(c.ciudad);
-    }
-    return [...groups.entries()]
-      .sort(([a], [b]) => a.localeCompare(b, LOCALE))
-      .map(([zona, set]) => ({ zona, ciudades: [...set].sort((a, b) => a.localeCompare(b, LOCALE)) }));
-  }, [comunidades]);
+  const sorted = useMemo(
+    () => [...comunidades].sort((a, b) => a.nombre.localeCompare(b.nombre, LOCALE)),
+    [comunidades],
+  );
+  const onMap = comunidades.filter(hasCoords).length;
+  const canShowMap = onMap > 0;
+  const missing = comunidades.length - onMap;
 
-  const canLocate = comunidades.some(hasCoords);
-
-  const results = useMemo(() => {
-    let list = ciudad ? comunidades.filter((c) => c.ciudad === ciudad) : comunidades;
-    if (coords) {
-      const withDistance = list.map((c) => ({
-        comunidad: c,
-        distance: hasCoords(c)
-          ? distanceKm(coords, { latitude: c.latitud, longitude: c.longitud })
-          : undefined,
-      }));
-      return withDistance.sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
-    }
-    list = [...list].sort((a, b) => a.nombre.localeCompare(b.nombre, LOCALE));
-    return list.map((comunidad) => ({ comunidad, distance: undefined as number | undefined }));
-  }, [comunidades, ciudad, coords]);
-
-  const locate = () => {
-    if (!("geolocation" in navigator)) {
-      setGeo("unavailable");
-      return;
-    }
-    setGeo("loading");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCoords({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
-        setCiudad("");
-        setGeo("ok");
-      },
-      (err) => setGeo(err.code === err.PERMISSION_DENIED ? "denied" : "unavailable"),
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
-    );
-  };
-
-  const summary =
-    status !== "ready"
-      ? ""
-      : results.length === 0
-        ? "No encontramos comunidades con ese filtro."
-        : coords
-          ? `${results.length} ${results.length === 1 ? "comunidad" : "comunidades"}, de la más cercana a la más lejana.`
-          : ciudad
-            ? `${results.length} ${results.length === 1 ? "comunidad" : "comunidades"} en ${ciudad}.`
-            : `${results.length} ${results.length === 1 ? "comunidad" : "comunidades"} en todo el Ecuador.`;
+  const list = (
+    <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {sorted.map((comunidad) => (
+        <ComunidadCard key={comunidad.id} comunidad={comunidad} />
+      ))}
+    </ul>
+  );
 
   return (
     <div>
-      <div className="flex flex-col gap-4 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-5 sm:flex-row sm:items-end">
-        <div className="flex-1">
-          <label htmlFor="buscar-ciudad" className="mb-2 block text-sm font-semibold text-fg">
-            ¿En qué ciudad vives?
-          </label>
-          <select
-            id="buscar-ciudad"
-            value={ciudad}
-            onChange={(e) => {
-              setCiudad(e.target.value);
-              setCoords(null);
-              setGeo("idle");
-            }}
-            disabled={status !== "ready" || comunidades.length === 0}
-            className="block min-h-12 w-full rounded-xl border-2 border-slate-500 bg-surface px-4 text-base text-fg disabled:opacity-60 dark:border-white/30 dark:bg-jmv-ink"
-          >
-            <option value="">Todas las ciudades</option>
-            {ciudadesPorZona.map((group) => (
-              <optgroup key={group.zona} label={group.zona}>
-                {group.ciudades.map((c) => (
-                  <option key={`${group.zona}-${c}`} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
-        {canLocate && (
-          <button
-            type="button"
-            onClick={locate}
-            disabled={geo === "loading"}
-            className={buttonVariants({ variant: "outlineAuto", size: "md" })}
-          >
-            <LocateFixed className="mr-2 h-5 w-5" aria-hidden />
-            {geo === "loading" ? "Buscando tu ubicación…" : "Usar mi ubicación"}
-          </button>
-        )}
-      </div>
-
-      <div aria-live="polite" className="mt-4 min-h-6 text-sm text-fg-soft">
-        {geo === "denied" && <p>No pudimos acceder a tu ubicación. Elige tu ciudad en la lista.</p>}
-        {geo === "unavailable" && <p>Tu ubicación no está disponible ahora. Elige tu ciudad en la lista.</p>}
-        {geo === "ok" && (
-          <p className="sr-only">Ordenamos las comunidades según tu ubicación. Solo se usa en tu dispositivo.</p>
-        )}
-        <p>{summary}</p>
-      </div>
-
       {status === "loading" && (
-        <p className="mt-6 text-fg-soft" role="status">
+        <p className="text-fg-soft" role="status">
           Cargando comunidades…
         </p>
       )}
 
       {status === "error" && (
-        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg" role="alert">
-          <p className="font-semibold">No pudimos cargar la lista de comunidades.</p>
+        <div className="rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg" role="alert">
+          <p className="font-semibold">No pudimos cargar las comunidades.</p>
           <p className="mt-1 text-fg-soft">
             Escríbenos por WhatsApp y te ponemos en contacto con la más cercana.
           </p>
@@ -267,7 +169,7 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       )}
 
       {status === "ready" && comunidades.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
+        <div className="rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07] p-6 text-fg">
           <p className="font-semibold">Pronto publicaremos aquí las comunidades JMV.</p>
           <p className="mt-1 text-fg-soft">Mientras tanto, escríbenos y te ponemos en contacto.</p>
           <a
@@ -282,23 +184,34 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
         </div>
       )}
 
-      {status === "ready" && results.length > 0 && (
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map(({ comunidad, distance }) => (
-            <ComunidadCard key={comunidad.id} comunidad={comunidad} distance={distance} />
-          ))}
-        </ul>
-      )}
-
-      {status === "ready" && canLocate && (
-        <div className="mt-12">
-          <h3 className="text-xl font-semibold text-fg">También puedes verlas en el mapa</h3>
-          <p className="mt-1 mb-4 text-fg-muted">
-            Toca un marcador para ver los datos de contacto. En el celular, usa dos dedos para mover el mapa.
+      {status === "ready" && comunidades.length > 0 && canShowMap && (
+        <>
+          <p className="mb-4 flex items-start gap-2 text-sm text-fg-muted">
+            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
+            Toca un marcador para ver la comunidad y escribirle por WhatsApp. En el celular, usa dos dedos para mover el mapa.
           </p>
           <LazyMap comunidades={comunidades} />
-        </div>
+
+          {/* Alternativa al mapa (teclado, lector de pantalla o comunidades sin ubicación): plegada para no ocupar espacio */}
+          <details className="group mt-4 rounded-2xl border border-line-card bg-surface shadow-card dark:bg-white/[0.07]">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 font-semibold text-fg [&::-webkit-details-marker]:hidden">
+              <span>
+                Ver lista de comunidades ({comunidades.length})
+                {missing > 0 && (
+                  <span className="ml-2 text-sm font-normal text-fg-soft">
+                    · {missing === 1 ? "1 aún no aparece" : `${missing} aún no aparecen`} en el mapa
+                  </span>
+                )}
+              </span>
+              <ChevronDown className="h-5 w-5 shrink-0 text-fg-soft transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <div className="px-5 pb-5">{list}</div>
+          </details>
+        </>
       )}
+
+      {/* Sin ubicaciones cargadas no hay mapa posible: se muestra la lista directamente */}
+      {status === "ready" && comunidades.length > 0 && !canShowMap && list}
     </div>
   );
 }
