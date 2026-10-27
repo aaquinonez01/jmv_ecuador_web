@@ -104,7 +104,7 @@ function ComunidadCard({ comunidad, distance }: { comunidad: ComunidadItem; dist
 
 export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] | null }) {
   const [comunidades, setComunidades] = useState<ComunidadItem[]>(initial ?? []);
-  const [status, setStatus] = useState<"ready" | "loading" | "error">(initial ? "ready" : "loading");
+  const [status, setStatus] = useState<"ready" | "loading" | "error">(initial?.length ? "ready" : "loading");
   const [ciudad, setCiudad] = useState("");
   const [coords, setCoords] = useState<Coords | null>(null);
   const [geo, setGeo] = useState<GeoState>("idle");
@@ -119,9 +119,10 @@ export default function ComunidadFinder({ initial }: { initial: ComunidadItem[] 
       .catch(() => setStatus("error"));
   };
 
-  // Si el servidor no pudo traer las comunidades, se reintenta desde el navegador
+  // Si el servidor no pudo traer las comunidades (o la página quedó en caché con la
+  // lista vacía), se piden de nuevo desde el navegador
   useEffect(() => {
-    if (!initial) load();
+    if (!initial || initial.length === 0) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
