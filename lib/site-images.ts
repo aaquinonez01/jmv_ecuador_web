@@ -136,8 +136,8 @@ export const SITE_IMAGE_SLOTS = {
   },
   "quienes-somos.mision": {
     page: "/quienes-somos",
-    label: "Misión",
-    description: "Acompaña el texto de la misión. Jóvenes reunidos, formándose o compartiendo. Vertical.",
+    label: "Fines de la Asociación",
+    description: "Acompaña los fines de la Asociación. Jóvenes reunidos, formándose o compartiendo. Vertical.",
     aspect: "4/5",
     max: 1,
     fallback: [P.asamblea],

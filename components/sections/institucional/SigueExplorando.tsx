@@ -21,7 +21,7 @@ const DESTINOS = {
   "quienes-somos": {
     href: "/quienes-somos",
     label: "Quiénes somos",
-    description: "Misión, visión y el carisma que nos une.",
+    description: "Nuestros fines y el carisma que nos une.",
     icon: Heart,
   },
   historia: {

@@ -73,7 +73,7 @@ export default async function CTASection() {
           <div>
             <ReadMore lines={3}>
               <p className="text-lg leading-relaxed text-fg-soft sm:text-xl">
-                En JMV Ecuador creemos que cada joven puede ser agente de cambio. Únete a nuestra misión de servir a
+                En JMV Ecuador creemos que cada joven puede ser agente de cambio. Únete para servir a
                 los más necesitados y vivir el carisma vicenciano con alegría y esperanza.
               </p>
             </ReadMore>

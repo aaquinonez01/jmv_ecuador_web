@@ -9,7 +9,7 @@ import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSk
 import SigueExplorando from "@/components/sections/institucional/SigueExplorando";
 import EstatutosTeaser from "@/components/estatutos/EstatutosTeaser";
 import { fetchSlots } from "@/lib/api/site-images.server";
-import { SITE, yearsSinceFoundation } from "@/lib/site";
+import { SITE } from "@/lib/site";
 
 // ISR: ver app/page.tsx.
 export const revalidate = 3600;
@@ -34,13 +34,12 @@ export default async function QuienesSomosPage() {
         lead="Una familia de jóvenes que vive el carisma vicenciano al servicio de los más pobres."
         breadcrumbs={[{ label: "Quiénes somos" }]}
         actions={[
-          { label: "Misión y visión", href: "#mision", icon: Target },
+          { label: "Nuestros fines", href: "#fines", icon: Target },
           { label: "Nuestra historia", href: "/quienes-somos/historia", icon: History },
         ]}
       />
       <MisionVision
         photo={fotos["quienes-somos.mision"][0]}
-        intro={`Desde ${SITE.foundedYear}, hace ${yearsSinceFoundation()} años, acompañamos a jóvenes de todo el Ecuador a seguir a Jesús al estilo de San Vicente de Paúl, de la mano de María.`}
       />
       <CarismaVicenciano catalinaPhoto={fotos["quienes-somos.carisma"][0]} />
       <EstatutosTeaser />

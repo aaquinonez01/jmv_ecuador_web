@@ -1,26 +1,45 @@
 import Link from "next/link";
-import { ArrowRight, Eye, Target } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import SectionHeading from "../ui/SectionHeading";
 import { StarDivider } from "../brand";
 import SiteImage from "../media/SiteImage";
 import ReadMore from "../media/ReadMore";
 import type { SlotPhoto } from "@/lib/site-images";
 
-// Misión, visión y una cita de San Vicente, con la foto del espacio
-// "quienes-somos.mision". Los valores se desarrollan en /pilares para no
-// repetirlos aquí. En móvil los textos largos se pliegan con "Leer más".
-export default function MisionVision({ photo, intro }: { photo?: SlotPhoto; intro?: string }) {
+// Texto literal del Art. 5 de los Estatutos Nacionales (2010). Los estatutos no
+// definen "misión" ni "visión": no añadir aquí nada que no esté en el documento.
+const FINES = [
+  {
+    numeral: "5.1",
+    texto:
+      "Formar a sus miembros para que vivan la vocación cristiana tomando como modelo a la Virgen María. De ella toman el fiarse en Dios y su modelo de orar.",
+  },
+  {
+    numeral: "5.2",
+    texto:
+      "A ejemplo de María al servicio de su prima Isabel, suscitar, animar y mantener, en la Asociación: prontitud y disponibilidad en el espíritu misionero y el apostolado a favor de los pobres, principalmente de los jóvenes víctimas de la pobreza espiritual y material. Les servirá el ejemplo misionero de San Vicente de Paúl, protector de la Asociación para el apostolado mediante el testimonio de vida y el servicio a los pobres.",
+  },
+  {
+    numeral: "5.3",
+    texto:
+      "Procurar la promoción de sus miembros, personal y colectivamente, para colaborar en el seno de la Iglesia y de la sociedad, con toda clase de medios pastorales, culturales y creativos, con los demás agentes de Pastoral, según las orientaciones de la Jerarquía de la Iglesia universal y local.",
+  },
+];
+
+// Fines de la Asociación y una cita de San Vicente, con la foto del espacio
+// "quienes-somos.mision".
+export default function MisionVision({ photo }: { photo?: SlotPhoto }) {
   return (
     <section
-      id="mision"
-      aria-labelledby="mision-titulo"
+      id="fines"
+      aria-labelledby="fines-titulo"
       className="scroll-mt-24 bg-gradient-to-b from-page via-section-blue to-section-blue py-14 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          id="mision-titulo"
-          eyebrow="Nuestra identidad"
-          title="Misión y visión"
+          id="fines-titulo"
+          eyebrow="Estatutos Nacionales"
+          title="Fines de la Asociación"
           className="mb-8 sm:mb-12"
         />
 
@@ -40,54 +59,34 @@ export default function MisionVision({ photo, intro }: { photo?: SlotPhoto; intr
           )}
 
           <div className="flex flex-col gap-5">
-            {intro && (
-              <ReadMore lines={3}>
-                <p className="text-lg leading-relaxed text-fg-soft">{intro}</p>
-              </ReadMore>
-            )}
+            <p className="text-lg leading-relaxed text-fg-soft">
+              Constituyen fines y objetivos de la Asociación los siguientes:
+            </p>
 
-            <article className="rounded-2xl border border-line-card bg-surface-card p-5 shadow-card sm:p-7">
-              <div className="mb-3 flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-jmv-red text-white">
-                  <Target className="h-5 w-5" aria-hidden />
-                </span>
-                <h3 className="text-2xl font-bold text-fg">Misión</h3>
-              </div>
-              <ReadMore lines={4}>
-                <p className="leading-relaxed text-fg-soft sm:text-lg">
-                  Formar integralmente a jóvenes comprometidos con la fe católica y el servicio a los pobres, viviendo
-                  el carisma vicenciano bajo la protección maternal de María, para ser agentes de transformación en la
-                  sociedad ecuatoriana.
-                </p>
-              </ReadMore>
-            </article>
-
-            <article className="rounded-2xl border border-line-card bg-surface-card p-5 shadow-card sm:p-7">
-              <div className="mb-3 flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-jmv-gold text-jmv-ink">
-                  <Eye className="h-5 w-5" aria-hidden />
-                </span>
-                <h3 className="text-2xl font-bold text-fg">Visión</h3>
-              </div>
-              <ReadMore lines={4}>
-                <p className="leading-relaxed text-fg-soft sm:text-lg">
-                  Ser una comunidad juvenil referente en Ecuador por la vivencia auténtica del carisma vicenciano, que
-                  contribuye a la transformación social y a la evangelización de las nuevas generaciones a través del
-                  testimonio y el servicio.
-                </p>
-              </ReadMore>
-            </article>
+            <ol className="flex flex-col gap-4">
+              {FINES.map((fin) => (
+                <li
+                  key={fin.numeral}
+                  className="flex gap-4 rounded-2xl border border-line-card bg-surface-card p-5 shadow-card sm:p-6"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-jmv-gold font-display font-semibold text-jmv-ink">
+                    {fin.numeral}
+                  </span>
+                  <ReadMore lines={5} className="min-w-0 flex-1">
+                    <p className="leading-relaxed text-fg-soft">{fin.texto}</p>
+                  </ReadMore>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
 
-        <p className="mt-8 text-center text-fg-muted">
-          Esta misión se sostiene en cuatro pilares: comunidad, espiritualidad,
-          apostolado y formación.{" "}
+        <p className="mt-8 text-center">
           <Link
-            href="/pilares"
+            href="/quienes-somos/estatutos#articulo-5"
             className="inline-flex min-h-11 items-center gap-1 font-semibold text-accent-gold underline underline-offset-4 hover:text-fg"
           >
-            Conoce los pilares
+            Leer en los Estatutos Nacionales (Art. 5)
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </p>
