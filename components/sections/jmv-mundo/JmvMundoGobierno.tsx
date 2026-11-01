@@ -17,6 +17,8 @@ const FILA_MOVIL =
   "scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 md:pb-0";
 const ITEM_MOVIL = "w-[80%] shrink-0 snap-start sm:w-[45%] md:w-auto";
 
+// Presidente y consejeros elegidos en la VI Asamblea General (Salamanca, España).
+// Las fotos están en /public/images/jmv-mundo/consejo/.
 const CONSEJO = [
   {
     nombre: "P. Tomaž Mavrič, CM",
@@ -25,15 +27,23 @@ const CONSEJO = [
       "Superior General de la Congregación de la Misión y de las Hijas de la Caridad; máxima referencia de la asociación.",
   },
   {
-    nombre: "Patricia Roppa",
-    cargo: "Presidenta Internacional",
-    detalle: "Laica, elegida por la Asamblea General (Perú).",
+    nombre: "Daniel Kuenzel",
+    cargo: "Presidente Internacional (2026-2031)",
+    detalle: "Laico, elegido en la VI Asamblea General (Salamanca, España).",
+    img: "/images/jmv-mundo/consejo/daniel-kuenzel.webp",
   },
   {
     nombre: "Sor Anna Wiwiek, DC",
     cargo: "Consejera General de las Hijas de la Caridad",
     detalle: "Representa a las Hijas de la Caridad en el Consejo (Indonesia).",
   },
+] as { nombre: string; cargo: string; detalle: string; img?: string }[];
+
+const CONSEJEROS = [
+  { nombre: "Harving Vélez", region: "América", img: "/images/jmv-mundo/consejo/harving-velez.webp" },
+  { nombre: "Paulina Berdel", region: "Europa", img: "/images/jmv-mundo/consejo/paulina-berdel.webp" },
+  { nombre: "Joseph Nguyen", region: "Asia - Oceanía", img: "/images/jmv-mundo/consejo/joseph-nguyen.webp" },
+  { nombre: "Raymonda Philippe", region: "África", img: "/images/jmv-mundo/consejo/raymonda-philippe.webp" },
 ];
 
 // Voluntarios del Secretariado (uno por idioma oficial). Para mostrar su foto,
@@ -62,7 +72,7 @@ const ORGANOS = [
     icon: Users,
     titulo: "Consejo Internacional",
     texto:
-      "Lo forman el Director General, el Subdirector, una Consejera de las Hijas de la Caridad, la Presidenta laica y los consejeros continentales.",
+      "Lo forman el Director General, el Subdirector, una Consejera de las Hijas de la Caridad, el Presidente laico y los consejeros continentales.",
   },
   {
     icon: Building2,
@@ -112,12 +122,35 @@ export default function JmvMundoGobierno() {
               key={m.nombre}
               className={`flex flex-col items-center rounded-2xl border border-fg/15 bg-surface p-5 text-center shadow-card sm:p-6 ${ITEM_MOVIL}`}
             >
-              <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-jmv-gold text-jmv-ink">
-                <Crown className="h-7 w-7" aria-hidden />
-              </span>
+              {m.img ? (
+                <span className="relative mb-4 block h-28 w-28 overflow-hidden rounded-full ring-4 ring-accent-gold/50">
+                  <Image src={m.img} alt={m.nombre} fill loading="lazy" sizes="112px" className="object-cover" />
+                </span>
+              ) : (
+                <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-jmv-gold text-jmv-ink">
+                  <Crown className="h-7 w-7" aria-hidden />
+                </span>
+              )}
               <h4 className="text-lg font-bold text-fg">{m.nombre}</h4>
               <p className="mb-2 font-medium text-accent-gold">{m.cargo}</p>
               <p className="text-sm text-fg-muted">{m.detalle}</p>
+            </li>
+          ))}
+        </ul>
+
+        <h3 className="mb-2 text-center text-2xl font-bold text-fg md:text-3xl">Consejeros continentales</h3>
+        <p className="mb-6 text-center text-fg-muted">Elegidos en la VI Asamblea General, en Salamanca (España).</p>
+        <ul aria-label="Consejeros continentales" tabIndex={0} className={`mb-12 md:mb-14 md:grid-cols-4 ${FILA_MOVIL}`}>
+          {CONSEJEROS.map((c) => (
+            <li
+              key={c.nombre}
+              className={`flex flex-col items-center rounded-2xl border border-fg/15 bg-surface p-5 text-center shadow-card sm:p-6 ${ITEM_MOVIL}`}
+            >
+              <span className="relative mb-4 block h-24 w-24 overflow-hidden rounded-full ring-4 ring-accent-gold/40">
+                <Image src={c.img} alt={c.nombre} fill loading="lazy" sizes="96px" className="object-cover" />
+              </span>
+              <h4 className="text-lg font-bold text-fg">{c.nombre}</h4>
+              <p className="font-medium text-accent-gold">Consejero/a para {c.region}</p>
             </li>
           ))}
         </ul>
