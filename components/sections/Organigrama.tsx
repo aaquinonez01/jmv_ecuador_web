@@ -14,9 +14,9 @@ export default function Organigrama({ nodos }: { nodos: OrgEntidad[] }) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           id="organigrama-titulo"
-          eyebrow="Zonas y grupos"
+          eyebrow="Cómo nos organizamos"
           title="Organigrama de JMV Ecuador"
-          description="Del Consejo Nacional a los grupos locales: así nos organizamos en el país. Abre una zona para ver sus grupos y cómo contactarlos."
+          description="Del Consejo Nacional a los grupos locales: así nos organizamos en el país."
         />
       </div>
 

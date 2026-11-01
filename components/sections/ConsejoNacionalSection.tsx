@@ -1,26 +1,10 @@
 import { MapPin, Quote, Star, User } from "lucide-react";
-import type { Asesor, ConsejoMember, ConsejoPeriod } from "@/types/consejo";
+import type { Asesor, ConsejoPeriod } from "@/types/consejo";
+import { sortMembers } from "@/lib/data/organigrama";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import { formatDate } from "@/lib/format";
 import SectionHeading from "../ui/SectionHeading";
 import ContactoLinks from "./organigrama/contacto";
-
-const ORDEN_CARGOS: Record<string, number> = {
-  coordinador: 1,
-  vicecoordinador: 2,
-  secretario: 3,
-  tesorero: 4,
-  vocal: 5,
-};
-
-export function sortMembers(members: ConsejoMember[]): ConsejoMember[] {
-  return [...members].sort((a, b) => {
-    const orderA = ORDEN_CARGOS[a.tipoCargo] ?? 99;
-    const orderB = ORDEN_CARGOS[b.tipoCargo] ?? 99;
-    if (orderA !== orderB) return orderA - orderB;
-    return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
-  });
-}
 
 interface Props {
   consejo: ConsejoPeriod | null;

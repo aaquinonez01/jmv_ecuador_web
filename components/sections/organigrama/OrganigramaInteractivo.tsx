@@ -85,7 +85,7 @@ export default function OrganigramaInteractivo({ nodos, lista }: Props) {
       {mostrarDiagrama ? (
         // Colores del lienzo de React Flow (aristas y puntos) como variables del tema
         <div
-          className="relative h-[75vh] min-h-[560px] w-full border-y border-line bg-page [--org-dots:rgb(15_23_42/0.14)] [--org-edge:rgb(138_90_0/0.55)] dark:[--org-dots:rgb(255_255_255/0.12)] dark:[--org-edge:rgb(245_184_61/0.7)]">
+          className="relative h-[85vh] min-h-[720px] w-full border-y border-line bg-page [--org-dots:rgb(15_23_42/0.14)] [--org-edge:rgb(138_90_0/0.55)] dark:[--org-dots:rgb(255_255_255/0.12)] dark:[--org-edge:rgb(245_184_61/0.7)]">
           <OrganigramaFlow nodos={nodos} onSelect={onSelect} />
         </div>
       ) : (

@@ -1,7 +1,43 @@
-import { Building, ChevronDown, MapPin, Users } from "lucide-react";
-import type { OrgEntidad } from "@/lib/data/organigrama";
+import { Building, ChevronDown, MapPin, User, Users } from "lucide-react";
+import type { OrgEntidad, OrgPersona } from "@/lib/data/organigrama";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import { gruposDe } from "./layout";
 import ContactoLinks from "./contacto";
+
+function Personas({ titulo, personas }: { titulo: string; personas?: OrgPersona[] }) {
+  if (!personas?.length) return null;
+  return (
+    <>
+      <h4 className="mt-4 mb-2 text-sm font-semibold text-jmv-gold-text">{titulo}</h4>
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {personas.map((p) => (
+          <li key={p.id} className="flex items-center gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/30 bg-white/10">
+              {p.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={getOptimizedUrl(p.imageUrl, { w: 120 })}
+                  loading="lazy"
+                  decoding="async"
+                  width={48}
+                  height={48}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User className="h-5 w-5 text-jmv-gold-text" aria-hidden />
+              )}
+            </span>
+            <span className="min-w-0">
+              <span className="block font-semibold leading-tight text-white">{p.nombre}</span>
+              <span className="block text-sm leading-tight text-slate-100">{p.cargo}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
 
 // Organigrama como acordeón HTML (Consejo → Zonas → Grupos). Es la vista en
 // móvil y la alternativa "Ver como lista" en escritorio. Funciona sin JS.
@@ -13,8 +49,8 @@ export default function OrganigramaLista({ nodos }: { nodos: OrgEntidad[] }) {
     <div className="space-y-4">
       {/* Tarjeta azul JMV en ambos modos: data-tone="dark" para el foco dorado */}
       {nacional && (
-        <div data-tone="dark" className="flex items-start gap-4 rounded-2xl border-2 border-jmv-gold-text/60 bg-jmv-blue p-5">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/15 text-jmv-gold-text">
+        <div data-tone="dark" className="rounded-2xl border-2 border-jmv-gold-text/60 bg-jmv-blue p-5">
+          <span className="float-left mr-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-jmv-gold-text">
             <Building className="h-5 w-5" aria-hidden />
           </span>
           <div className="min-w-0">
@@ -23,11 +59,15 @@ export default function OrganigramaLista({ nodos }: { nodos: OrgEntidad[] }) {
             {nacional.descripcion && (
               <p className="mt-1 text-sm text-slate-100">{nacional.descripcion}</p>
             )}
+            <div className="clear-left">
+              <Personas titulo="Miembros" personas={nacional.miembros} />
+              <Personas titulo="Asesores nacionales" personas={nacional.asesores} />
+            </div>
             <a
               href="#consejo-nacional"
               className="mt-2 inline-flex min-h-11 items-center font-semibold text-jmv-gold-text underline underline-offset-4 hover:text-white"
             >
-              Ver miembros y asesores
+              Ver los perfiles completos
             </a>
           </div>
         </div>

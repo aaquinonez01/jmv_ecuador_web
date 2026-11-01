@@ -10,9 +10,12 @@ import {
   Users,
   MapPin,
   ArrowDown,
+  Quote,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 import type { OrgEntidad, OrgNivel } from "@/lib/data/organigrama";
+import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import ContactoLinks from "./contacto";
 
 const NIVEL_ICON: Record<OrgNivel, LucideIcon> = {
@@ -79,14 +82,28 @@ function Contenido({
   onIrAlConsejo: () => void;
 }) {
   const Icon = NIVEL_ICON[entidad.nivel];
+  const persona = entidad.persona;
   return (
     <>
       <div className="flex items-start gap-4 border-b border-line px-6 py-5">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
-          <Icon className="h-6 w-6" aria-hidden />
-        </span>
+        {persona?.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={getOptimizedUrl(persona.imageUrl, { w: 240 })}
+            width={80}
+            height={80}
+            alt=""
+            className="h-20 w-20 shrink-0 rounded-full border border-line-strong object-cover"
+          />
+        ) : (
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-gold">
+            <Icon className="h-6 w-6" aria-hidden />
+          </span>
+        )}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-accent-gold">{NIVEL_LABEL[entidad.nivel]}</p>
+          <p className="text-sm font-medium text-accent-gold">
+            {persona ? "Consejo Nacional" : NIVEL_LABEL[entidad.nivel]}
+          </p>
           <Dialog.Title className="text-2xl font-bold text-fg">{entidad.nombre}</Dialog.Title>
           {entidad.subtitulo && <p className="text-sm text-fg-muted">{entidad.subtitulo}</p>}
         </div>
@@ -103,6 +120,33 @@ function Contenido({
           <Dialog.Description className="leading-relaxed text-fg-soft">
             {entidad.descripcion}
           </Dialog.Description>
+        )}
+
+        {persona?.comunidad && (
+          <p className="flex items-start gap-3">
+            <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
+            <span>
+              <span className="block text-sm text-fg-muted">Comunidad</span>
+              <span className="font-medium">{persona.comunidad}</span>
+            </span>
+          </p>
+        )}
+
+        {persona?.santoFavorito && (
+          <p className="flex items-start gap-3">
+            <Star className="mt-0.5 h-5 w-5 shrink-0 text-accent-gold" aria-hidden />
+            <span>
+              <span className="block text-sm text-fg-muted">Santo favorito</span>
+              <span className="font-medium">{persona.santoFavorito}</span>
+            </span>
+          </p>
+        )}
+
+        {persona?.citaBiblica && (
+          <blockquote className="flex items-start gap-2 rounded-lg border border-line bg-surface-2 p-3 dark:bg-white/5">
+            <Quote className="mt-0.5 h-4 w-4 shrink-0 text-accent-gold" aria-hidden />
+            <p className="text-sm italic leading-relaxed text-fg-soft">{persona.citaBiblica}</p>
+          </blockquote>
         )}
 
         {entidad.coordinador && (
@@ -143,7 +187,7 @@ function Contenido({
           </div>
         )}
 
-        {entidad.nivel === "nacional" && (
+        {entidad.nivel === "nacional" && !persona && (
           <a
             href="#consejo-nacional"
             onClick={(e) => {

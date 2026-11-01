@@ -28,7 +28,7 @@ export default async function EstructuraPage() {
     fetchSlotImages("estructura.hero"),
   ]);
 
-  const nodos = buildOrganigrama({ consejo, zonas });
+  const nodos = buildOrganigrama({ consejo, asesores, zonas });
 
   // Cifras calculadas con los datos publicados; si no hay datos, no se muestran.
   const cifras = [

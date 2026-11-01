@@ -14,8 +14,9 @@ import "@xyflow/react/dist/style.css";
 import type { OrgEntidad } from "@/lib/data/organigrama";
 import { computeLayout } from "./layout";
 import OrgNode, { type OrgNodeData } from "./OrgNode";
+import ConsejoNode from "./ConsejoNode";
 
-const nodeTypes: NodeTypes = { org: OrgNode };
+const nodeTypes: NodeTypes = { org: OrgNode, consejo: ConsejoNode };
 // Los colores salen de variables CSS del contenedor (OrganigramaInteractivo): cambian con el tema sin re-render
 const EDGE_STYLE = { stroke: "var(--org-edge)", strokeWidth: 2 };
 const PRO_OPTIONS = { hideAttribution: true };
@@ -36,7 +37,7 @@ export default function OrganigramaFlow({ nodos, onSelect }: OrganigramaFlowProp
     const positions = computeLayout(nodos);
     const rfNodes: Node<OrgNodeData>[] = nodos.map((entidad) => ({
       id: entidad.id,
-      type: "org",
+      type: entidad.nivel === "nacional" ? "consejo" : "org",
       position: positions[entidad.id],
       data: { entidad, onSelect },
     }));
