@@ -81,6 +81,8 @@ export interface HeroMediaProps extends HeroBackdropProps {
   title?: ReactNode;
   /** Etiqueta corta sobre el título */
   eyebrow?: ReactNode;
+  /** Destacado entre el título y la línea (p. ej. el lema en la portada) */
+  tagline?: ReactNode;
   /** UNA línea bajo el título (máx. ~90 caracteres). Nada de párrafos en la cabecera */
   lead?: ReactNode;
   /** 1 o 2 botones */
@@ -103,6 +105,7 @@ export interface HeroMediaProps extends HeroBackdropProps {
 export default function HeroMedia({
   title,
   eyebrow,
+  tagline,
   lead,
   actions = [],
   breadcrumbs,
@@ -148,6 +151,7 @@ export default function HeroMedia({
             >
               {title}
             </h1>
+            {tagline}
             {lead && (
               <p className="mt-3 max-w-2xl text-base leading-snug text-slate-100 [text-shadow:0_1px_10px_rgb(15_23_42/0.6)] sm:mt-4 sm:text-xl">
                 {lead}

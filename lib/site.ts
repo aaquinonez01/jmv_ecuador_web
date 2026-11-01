@@ -6,7 +6,9 @@ export const SITE = {
   fullName: "Juventudes Marianas Vicencianas Ecuador",
   shortDescription:
     "Comunidad católica de jóvenes de 15 a 30 años que viven la fe, la formación y el servicio a los más pobres en todo Ecuador.",
-  tagline: "Formando jóvenes comprometidos con el servicio, la fe y la transformación social",
+  /** Lema de JMV Ecuador */
+  motto: "Contemplar, vivir y servir",
+  mottoWords: ["Contemplar", "Vivir", "Servir"],
   url: "https://jmvecuador.org",
   locale: "es_EC",
   /** Año de fundación de JMV en Ecuador (18 de julio de 1995, ver HistoriaTimeline) */

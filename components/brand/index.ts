@@ -1,3 +1,4 @@
+export { default as Motto } from "./Motto";
 export { default as StarsRing } from "./StarsRing";
 export { default as MarianMonogram } from "./MarianMonogram";
 export { default as TwoHearts } from "./TwoHearts";

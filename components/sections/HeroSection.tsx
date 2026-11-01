@@ -1,11 +1,12 @@
 import { ArrowRight } from "lucide-react";
+import { Motto } from "@/components/brand";
 import HeroMedia from "@/components/media/HeroMedia";
 import { fetchSlotImages } from "@/lib/api/site-images.server";
 import { SITE, yearsSinceFoundation } from "@/lib/site";
 
 // Portada del inicio (Server Component): la foto es la protagonista. Con 2 o más
 // fotos en el espacio "home.hero" pasan solas por fundido. Encima solo van la
-// etiqueta, el título, una línea y los dos botones; el resto baja a las secciones.
+// etiqueta, el título, el lema, una línea y los dos botones; el resto baja a las secciones.
 export default async function HeroSection() {
   const images = await fetchSlotImages("home.hero");
 
@@ -23,15 +24,14 @@ export default async function HeroSection() {
         </span>
       }
       title="Juventudes Marianas Vicencianas"
+      tagline={
+        <Motto className="mt-3 text-jmv-gold-text [text-shadow:0_2px_14px_rgb(15_23_42/0.75)] sm:mt-4" />
+      }
       lead="Jóvenes de 15 a 30 años que viven la fe, se forman y sirven a los más pobres."
       actions={[
         { label: "Encuentra tu grupo", href: "/unete", icon: ArrowRight },
         { label: "Conoce JMV", href: "/quienes-somos" },
       ]}
-    >
-      <p className="mt-6 hidden font-display text-xl italic text-jmv-gold-text [text-shadow:0_1px_10px_rgb(15_23_42/0.6)] sm:block">
-        “{SITE.tagline}”
-      </p>
-    </HeroMedia>
+    />
   );
 }

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     // Las páginas sólo ponen su título; el sufijo lo añade esta plantilla
     template: `%s | ${SITE.name}`,
   },
-  description: `${SITE.fullName}: ${SITE.shortDescription}`,
+  description: `${SITE.fullName}: ${SITE.motto}. ${SITE.shortDescription}`,
   keywords: [
     "JMV",
     "Juventudes Marianas Vicencianas",

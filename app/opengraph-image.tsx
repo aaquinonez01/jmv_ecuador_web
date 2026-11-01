@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/site";
 
-export const alt = `${SITE.fullName}: ${SITE.tagline}`;
+export const alt = `${SITE.fullName}: ${SITE.motto}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -79,8 +79,8 @@ export default async function OpengraphImage() {
           <div style={{ fontSize: 62, fontWeight: 700, lineHeight: 1.1, marginTop: 16 }}>
             Juventudes Marianas Vicencianas
           </div>
-          <div style={{ fontSize: 30, marginTop: 28, color: "#e2e8f0", lineHeight: 1.35 }}>
-            {SITE.tagline}
+          <div style={{ fontSize: 42, fontWeight: 700, marginTop: 28, color: "#F5B83D", lineHeight: 1.2 }}>
+            {SITE.motto}
           </div>
         </div>
         <div

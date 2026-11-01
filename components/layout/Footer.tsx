@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import StarsRing from "@/components/brand/StarsRing";
+import Motto from "@/components/brand/Motto";
 import { SITE, SOCIAL_LINKS, mailtoHref, telHref, type SocialNetwork } from "@/lib/site";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -73,7 +74,8 @@ export default function Footer() {
                 className="h-auto w-60"
               />
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-blue-100">
+            <Motto size="footer" className="mt-4 text-jmv-gold-text" />
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-blue-100">
               {SITE.shortDescription}
             </p>
 
