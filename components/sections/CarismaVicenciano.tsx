@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, HandHeart, Lightbulb, Quote, Star, Users } from "lucide-react";
+import { ArrowRight, HandHeart, Lightbulb, Star, Users } from "lucide-react";
 import SectionHeading from "../ui/SectionHeading";
-import { StarsRing } from "../brand";
 import { useTabs } from "./institucional/useTabs";
 import SiteImage from "../media/SiteImage";
 import ReadMore from "../media/ReadMore";
@@ -23,7 +22,7 @@ const santos = [
       "La humildad es la base de toda virtud",
     ],
     hoy: "Su ejemplo nos inspira a ver en cada persona necesitada el rostro de Cristo y a servir con entrega generosa.",
-    imagen: false,
+    foto: "vicente",
   },
   {
     id: "catalina",
@@ -39,7 +38,7 @@ const santos = [
     ],
     hoy: "Su devoción mariana nos enseña a vivir bajo la protección de María y a fortalecer nuestro compromiso con los más necesitados.",
     // Foto del espacio "quienes-somos.carisma" (administrable desde /admin/imagenes)
-    imagen: true,
+    foto: "catalina",
   },
 ];
 
@@ -64,7 +63,13 @@ const carismaHoy = [
   },
 ];
 
-export default function CarismaVicenciano({ catalinaPhoto }: { catalinaPhoto?: SlotPhoto }) {
+export default function CarismaVicenciano({
+  catalinaPhoto,
+  vicentePhoto,
+}: {
+  catalinaPhoto?: SlotPhoto;
+  vicentePhoto?: SlotPhoto;
+}) {
   const { active, getTabProps, getPanelProps } = useTabs(santos.length, "carisma");
 
   return (
@@ -127,31 +132,23 @@ export default function CarismaVicenciano({ catalinaPhoto }: { catalinaPhoto?: S
               </ReadMore>
             </article>
 
-            {s.imagen && catalinaPhoto ? (
-              <figure className="relative order-1 aspect-[4/3] overflow-hidden rounded-2xl border border-line-card bg-surface-2 shadow-card sm:aspect-[16/9] lg:order-2 lg:aspect-auto lg:min-h-80">
-                <SiteImage
-                  src={catalinaPhoto.src}
-                  alt={catalinaPhoto.alt}
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                  style={{ objectPosition: catalinaPhoto.position ?? "top" }}
-                />
-              </figure>
-            ) : (
-              <figure className="relative order-1 hidden min-h-56 flex-col lg:order-2 lg:flex lg:min-h-80 items-center justify-center overflow-hidden rounded-2xl border border-line-card bg-surface p-8 text-center shadow-card dark:bg-jmv-ink">
-                <StarsRing
-                  withCircle
-                  className="pointer-events-none absolute h-80 w-80 text-accent-gold/15"
-                />
-                <Quote className="relative mb-4 h-10 w-10 text-accent-gold" aria-hidden />
-                <blockquote className="relative font-display text-2xl italic leading-snug text-fg sm:text-3xl">
-                  <p>“{s.ensenanzas[0]}”</p>
-                </blockquote>
-                <figcaption className="relative mt-4 text-fg-muted">{s.nombre}</figcaption>
-              </figure>
-            )}
+            {(() => {
+              const photo = s.foto === "catalina" ? catalinaPhoto : vicentePhoto;
+              if (!photo) return null;
+              return (
+                <figure className="relative order-1 aspect-[4/3] overflow-hidden rounded-2xl border border-line-card bg-surface-2 shadow-card sm:aspect-[16/9] lg:order-2 lg:aspect-auto lg:min-h-80">
+                  <SiteImage
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    loading="lazy"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                    style={{ objectPosition: photo.position ?? "top" }}
+                  />
+                </figure>
+              );
+            })()}
           </div>
         ))}
 

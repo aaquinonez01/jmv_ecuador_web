@@ -78,6 +78,12 @@ const P = {
     alt: "Grupo de JMV Ecuador con la bandera de la asociación",
     position: "center 30%",
   },
+  // Retrato por Simon François de Tours (s. XVII), dominio público (Wikimedia Commons)
+  sanVicente: {
+    src: "/images/historia/san_vicente.webp",
+    alt: "Retrato de San Vicente de Paúl, pintura del siglo XVII",
+    position: "center 18%",
+  },
   catalina: {
     src: "/images/historia/catalina.jpg",
     alt: "Pintura de santa Catalina Labouré ante la Virgen, con la Medalla Milagrosa",
@@ -141,6 +147,14 @@ export const SITE_IMAGE_SLOTS = {
     aspect: "4/5",
     max: 1,
     fallback: [P.asamblea],
+  },
+  "quienes-somos.san-vicente": {
+    page: "/quienes-somos",
+    label: "Retrato de San Vicente (Carisma)",
+    description: "Imagen de San Vicente de Paúl que acompaña su pestaña en «El carisma vicenciano». Vertical, con el rostro arriba.",
+    aspect: "4/5",
+    max: 1,
+    fallback: [P.sanVicente],
   },
   "quienes-somos.carisma": {
     page: "/quienes-somos",
@@ -251,7 +265,7 @@ export const SITE_IMAGE_SLOTS = {
     description: "Retrato o pintura de San Vicente de Paúl para su ficha. Vertical, con el rostro en la parte de arriba.",
     aspect: "4/5",
     max: 1,
-    fallback: [],
+    fallback: [P.sanVicente],
   },
   "santos.santa-luisa": {
     page: "/formacion/santos",

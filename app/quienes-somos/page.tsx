@@ -22,7 +22,12 @@ export const metadata: Metadata = {
 };
 
 export default async function QuienesSomosPage() {
-  const fotos = await fetchSlots(["quienes-somos.hero", "quienes-somos.mision", "quienes-somos.carisma"] as const);
+  const fotos = await fetchSlots([
+    "quienes-somos.hero",
+    "quienes-somos.mision",
+    "quienes-somos.carisma",
+    "quienes-somos.san-vicente",
+  ] as const);
 
   return (
     <>
@@ -41,7 +46,10 @@ export default async function QuienesSomosPage() {
       <MisionVision
         photo={fotos["quienes-somos.mision"][0]}
       />
-      <CarismaVicenciano catalinaPhoto={fotos["quienes-somos.carisma"][0]} />
+      <CarismaVicenciano
+        catalinaPhoto={fotos["quienes-somos.carisma"][0]}
+        vicentePhoto={fotos["quienes-somos.san-vicente"][0]}
+      />
       <EstatutosTeaser />
       <Suspense fallback={<TestimonialsSkeleton />}>
         <TestimoniosQuienesSomos />
