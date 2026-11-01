@@ -13,7 +13,7 @@ const CONTINENTES = [
   { region: "Europa", consejera: "Martha Araújo", pais: "Portugal" },
 ];
 
-const PAISES_ANDINA = ["Colombia", "Ecuador", "Perú", "Bolivia", "Venezuela"];
+const PAISES_ANDINA = ["Colombia", "Ecuador", "Perú"];
 
 export default async function JmvMundoRegiones() {
   const [encuentro] = await fetchSlotImages("jmv-mundo.encuentros");
@@ -81,8 +81,8 @@ export default async function JmvMundoRegiones() {
                 <p className="mb-4 leading-relaxed text-fg-soft">
                   Dentro del continente americano, la JMV se articula también por
                   zonas. JMV Ecuador forma parte de la <strong>Región Andina</strong>,
-                  que reúne a las JMV de los países que comparten la cordillera de los
-                  Andes y un mismo camino pastoral y vicenciano.
+                  formada por las JMV de Colombia, Ecuador y Perú, que comparten la
+                  cordillera de los Andes y un mismo camino pastoral y vicenciano.
                 </p>
                 <p className="leading-relaxed text-fg-muted">
                   Esta cercanía permite compartir encuentros, formación y misión entre
@@ -97,11 +97,11 @@ export default async function JmvMundoRegiones() {
                 <MapPin className="mr-2 h-5 w-5 text-accent-gold" aria-hidden />
                 Países de la Región Andina
               </h4>
-              <ul className="grid grid-cols-2 gap-3">
+              <ul className="grid grid-cols-3 gap-2 sm:gap-3">
                 {PAISES_ANDINA.map((pais) => (
                   <li
                     key={pais}
-                    className={`rounded-lg border px-4 py-3 text-center font-medium ${
+                    className={`rounded-lg border px-2 py-3 text-center font-medium sm:px-4 ${
                       pais === "Ecuador"
                         ? "border-accent-gold/60 bg-jmv-gold/15 text-[#7a4f00] dark:bg-accent-gold/10 dark:text-accent-gold"
                         : "border-line bg-surface-card text-fg-soft"
@@ -111,10 +111,6 @@ export default async function JmvMundoRegiones() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-center text-sm text-fg-muted">
-                La conformación de la región puede variar según los encuentros y la
-                organización pastoral de cada periodo.
-              </p>
             </div>
           </div>
         </div>
