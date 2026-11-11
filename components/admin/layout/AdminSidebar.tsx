@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
   BrainCircuit,
+  Coins,
   CalendarClock,
   Crown,
   ExternalLink,
@@ -206,17 +207,23 @@ export default function AdminSidebar() {
           active: pathname.startsWith("/admin/quiz"),
           badge: "EN VIVO",
         },
+        {
+          label: "Miembros y puntos",
+          href: "/admin/miembros",
+          icon: <Users className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/miembros"),
+        },
+        {
+          label: "Reglas de puntos",
+          href: "/admin/puntos",
+          icon: <Coins className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/puntos"),
+        },
       ],
     },
     {
       label: "Sistema",
       items: [
-        {
-          label: "Usuarios",
-          href: "/admin/usuarios",
-          icon: <Users className="h-[18px] w-[18px]" strokeWidth={1.85} />,
-          disabled: true,
-        },
         {
           label: "Configuración",
           href: "/admin/configuracion",
