@@ -19,6 +19,24 @@ export const getMemberTransactionsAPI = async (id: string, page = 1) =>
 export const adjustPointsAPI = async (id: string, amount: number, description: string) =>
   (await api().post<{ applied: number; member: Member }>(`/points/admin/members/${id}/adjust`, { amount, description })).data;
 
+export interface CreateMemberPayload {
+  fullName: string;
+  displayName?: string;
+  email: string;
+  password?: string;
+  phoneNumber?: string;
+  birthDate?: string;
+  comunidadId?: string;
+  level?: string;
+  verified?: boolean;
+}
+
+export const createMemberAPI = async (p: CreateMemberPayload) =>
+  (await api().post<{ member: Member; password: string; generated: boolean }>("/points/admin/members", p)).data;
+
+export const resetMemberPasswordAPI = async (id: string, password?: string) =>
+  (await api().post<{ password: string; generated: boolean }>(`/points/admin/members/${id}/password`, password ? { password } : {})).data;
+
 export const getPointsRulesAPI = async () => (await api().get<PointsRule[]>("/points/admin/rules")).data;
 
 export const updatePointsRulesAPI = async (rules: { key: string; points: number }[]) =>

@@ -122,7 +122,7 @@ export default function PrayersManager() {
 
       <Modal isOpen={Boolean(editing)} onClose={() => setEditing(null)} title={editing?.id ? "Editar oración" : "Nueva oración"} size="lg">
         {editing && (
-          <div className="space-y-4">
+          <div className="space-y-4 px-5 pb-5">
             <InputField label="Título" required value={editing.form.title} onChange={(e) => setF("title", e.target.value)} />
             <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
               <SelectField label="Categoría" value={editing.form.category} onChange={(e) => setF("category", e.target.value as PrayerPayload["category"])} options={PRAYER_CATEGORIES.map((c) => ({ id: c, name: c === "JMV" ? "De JMV" : c }))} />

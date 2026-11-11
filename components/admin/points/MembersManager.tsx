@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Coins, Search, UserCheck, X } from "lucide-react";
+import { Check, Coins, Search, UserCheck, UserPlus, X } from "lucide-react";
 import { formationErrorMessage } from "@/actions/formation";
 import { getComunidadesAPI } from "@/actions/comunidades";
 import { adjustPointsAPI, getMembersAPI, getMemberTransactionsAPI, reviewMemberAPI } from "@/actions/points";
@@ -15,6 +15,7 @@ import { useToastRef } from "@/components/admin/formation/shared";
 import { FORMATION_LEVELS } from "@/types/formation";
 import { MEMBER_STATUS, type Member, type MembersPage, type MemberStatus, type MemberTransactions } from "@/types/points";
 import type { ComunidadItem } from "@/types/territory-management";
+import { CredencialesModal, NuevoUsuarioModal, RestablecerClave, type Credenciales } from "./UserForms";
 
 const TABS: { id: MemberStatus | ""; label: string }[] = [
   { id: "pending", label: "Por verificar" },
@@ -43,6 +44,8 @@ export default function MembersManager() {
   const [busy, setBusy] = useState<string | null>(null);
   const [comunidades, setComunidades] = useState<ComunidadItem[]>([]);
   const [detail, setDetail] = useState<MemberTransactions | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [cred, setCred] = useState<Credenciales | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -84,10 +87,11 @@ export default function MembersManager() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Miembros y puntos"
-        description="Quienes usan la app. Verifica que pertenecen a una comunidad de JMV (solo los verificados podrán canjear) y revisa o ajusta sus Puntos JMV."
+        title="Usuarios y puntos"
+        description="Quienes usan la app. Crea cuentas y asígnales su comunidad, verifica a los miembros (solo los verificados podrán canjear) y revisa o ajusta sus Puntos JMV."
         icon={<UserCheck className="h-5 w-5" />}
-        breadcrumbs={[{ label: "Miembros y puntos" }]}
+        breadcrumbs={[{ label: "Usuarios y puntos" }]}
+        actions={<Button icon={<UserPlus className="h-4 w-4" />} onClick={() => setCreating(true)}>Nuevo usuario</Button>}
       />
 
       <div className="flex flex-wrap items-center gap-3">
@@ -163,9 +167,18 @@ export default function MembersManager() {
         </div>
       )}
 
+      <NuevoUsuarioModal
+        open={creating}
+        comunidades={comunidades}
+        onClose={() => setCreating(false)}
+        onCreated={async (_m, c) => { setCreating(false); setCred(c); setTab(""); setPage(1); await load(); }}
+      />
+      <CredencialesModal data={cred} onClose={() => setCred(null)} />
+
       <MemberDetail
         detail={detail}
         comunidades={comunidades}
+        onCredenciales={(c) => setCred(c)}
         onClose={() => setDetail(null)}
         onChanged={async (d) => { setDetail(d); await load(); }}
       />
@@ -173,9 +186,10 @@ export default function MembersManager() {
   );
 }
 
-function MemberDetail({ detail, comunidades, onClose, onChanged }: {
+function MemberDetail({ detail, comunidades, onClose, onChanged, onCredenciales }: {
   detail: MemberTransactions | null;
   comunidades: ComunidadItem[];
+  onCredenciales: (c: Credenciales) => void;
   onClose: () => void;
   onChanged: (d: MemberTransactions) => Promise<void>;
 }) {
@@ -236,7 +250,7 @@ function MemberDetail({ detail, comunidades, onClose, onChanged }: {
 
   return (
     <Modal isOpen onClose={onClose} title={m.fullName} description={m.email} size="xl">
-      <div className="space-y-6">
+      <div className="space-y-6 px-5 pb-5">
         <section className="space-y-3">
           <h3 className="font-semibold text-slate-900">Miembro de JMV</h3>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -254,7 +268,8 @@ function MemberDetail({ detail, comunidades, onClose, onChanged }: {
             <SelectField label="Sección" value={level} placeholder="Sin sección" onChange={(e) => setLevel(e.target.value)} options={FORMATION_LEVELS.map((l) => ({ id: l.id, name: `${l.name} (${l.ages})` }))} />
             <SelectField label="Comunidad" value={comunidadId} placeholder="Sin comunidad" onChange={(e) => setComunidadId(e.target.value)} options={comunidades.map((c) => ({ id: c.id, name: `${c.nombre} · ${c.ciudad}` }))} />
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <RestablecerClave member={m} onDone={(c) => { onClose(); onCredenciales(c); }} />
             <Button size="sm" onClick={saveMember} isLoading={saving === "member"}>Guardar datos</Button>
           </div>
         </section>

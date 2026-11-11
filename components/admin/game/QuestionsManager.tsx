@@ -244,7 +244,7 @@ export default function QuestionsManager() {
 
       <Modal isOpen={Boolean(editing)} onClose={() => setEditing(null)} title={editing?.id ? "Editar pregunta" : "Nueva pregunta"} size="xl">
         {editing && (
-          <div className="space-y-4">
+          <div className="space-y-4 px-5 pb-5">
             <div className="grid gap-4 sm:grid-cols-3">
               <SelectField label="Categoría" value={editing.form.category} onChange={(e) => setF("category", e.target.value as GameCategory)} options={GAME_CATEGORIES.map((c) => ({ id: c.id, name: c.name }))} />
               <SelectField label="Dificultad" value={String(editing.form.difficulty)} onChange={(e) => setF("difficulty", Number(e.target.value))} options={DIFFICULTIES} />

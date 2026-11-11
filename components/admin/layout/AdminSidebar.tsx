@@ -215,7 +215,7 @@ export default function AdminSidebar() {
           active: pathname.startsWith("/admin/preguntas"),
         },
         {
-          label: "Miembros y puntos",
+          label: "Usuarios y puntos",
           href: "/admin/miembros",
           icon: <Users className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/miembros"),
