@@ -11,6 +11,7 @@ import {
   Crown,
   ExternalLink,
   FolderKanban,
+  GraduationCap,
   HandHeart,
   HeartHandshake,
   ImageIcon,
@@ -87,6 +88,12 @@ export default function AdminSidebar() {
           href: "/admin/calendario",
           icon: <Star className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/calendario"),
+        },
+        {
+          label: "Formación (app)",
+          href: "/admin/formacion",
+          icon: <GraduationCap className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/formacion"),
         },
         {
           label: "Biblioteca",
