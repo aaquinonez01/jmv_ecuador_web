@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
   BrainCircuit,
+  CircleHelp,
   Coins,
   CalendarClock,
   Crown,
@@ -206,6 +207,12 @@ export default function AdminSidebar() {
           ),
           active: pathname.startsWith("/admin/quiz"),
           badge: "EN VIVO",
+        },
+        {
+          label: "Banco de preguntas",
+          href: "/admin/preguntas",
+          icon: <CircleHelp className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/preguntas"),
         },
         {
           label: "Miembros y puntos",
