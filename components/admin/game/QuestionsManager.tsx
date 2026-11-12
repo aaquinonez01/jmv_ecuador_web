@@ -17,7 +17,7 @@ import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import Modal from "@/components/admin/ui/Modal";
 import SelectField from "@/components/admin/ui/SelectField";
 import TextareaField from "@/components/admin/ui/TextareaField";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { useToastRef } from "@/components/admin/formation/shared";
 import { FORMATION_LEVELS } from "@/types/formation";
 import {
@@ -139,7 +139,7 @@ export default function QuestionsManager() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Banco de preguntas"
         description="Las preguntas del juego Gira y Aprende de la app. Cada una lleva su fuente: el joven la ve después de responder. Los miembros verificados pueden proponer preguntas; aquí se aprueban."
@@ -147,8 +147,9 @@ export default function QuestionsManager() {
         breadcrumbs={[{ label: "Banco de preguntas" }]}
         actions={<Button icon={<Plus className="h-4 w-4" />} onClick={() => setEditing({ form: empty((category as GameCategory) || "biblia") })}>Nueva pregunta</Button>}
       />
+      <PageBody>
 
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
         {GAME_CATEGORIES.map((c) => {
           const n = count(c.id, "approved");
           const on = category === c.id;
@@ -171,13 +172,13 @@ export default function QuestionsManager() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-1">
+        <div className="flex max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
           {([["", "Todas"], ["pending", "Por revisar"], ["approved", "Aprobadas"], ["rejected", "Rechazadas"]] as [QuestionStatus | "", string][]).map(([id, label]) => (
             <button
               key={id || "all"}
               type="button"
               onClick={() => { setStatus(id); setPage(1); }}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${status === id ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+              className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition ${status === id ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
             >
               {label}
               {id === "pending" && pendingTotal > 0 && <span className="ml-2 rounded-full bg-amber-400 px-1.5 text-xs font-bold text-slate-900">{pendingTotal}</span>}
@@ -200,9 +201,9 @@ export default function QuestionsManager() {
             const cat = catOf(q.category);
             const st = QUESTION_STATUS[q.status];
             return (
-              <li key={q.id} className="flex flex-wrap items-start gap-3 px-5 py-4">
+              <li key={q.id} className="flex flex-wrap items-start gap-3 px-4 sm:px-5 py-4">
                 <span className="mt-1 h-10 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: cat?.color }} aria-hidden />
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 max-sm:basis-[calc(100%-1.25rem)]">
                   <p className="font-medium text-slate-900">{q.prompt}</p>
                   <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-600">
                     {q.options.map((o, i) => (
@@ -301,6 +302,7 @@ export default function QuestionsManager() {
         confirmText="Eliminar"
         variant="danger"
       />
-    </div>
+      </PageBody>
+    </>
   );
 }

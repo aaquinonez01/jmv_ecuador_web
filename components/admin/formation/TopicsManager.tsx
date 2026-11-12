@@ -7,7 +7,7 @@ import { deleteTopicAPI, formationErrorMessage, getTopicsAPI } from "@/actions/f
 import Button from "@/components/admin/ui/Button";
 import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { FORMATION_AXES, FORMATION_LEVELS, type FormationTopic } from "@/types/formation";
 import { PublishedBadge, useToastRef } from "./shared";
 
@@ -47,7 +47,7 @@ export default function TopicsManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Itinerarios"
         description="Temas para los grupos: eje, nivel, subtemas para conversar y referencias (citas bíblicas, libros, encíclicas, documentos). Se ven en la app, en Formación."
@@ -59,6 +59,7 @@ export default function TopicsManager() {
           </Link>
         }
       />
+      <PageBody>
 
       {loading ? (
         <div className="flex justify-center py-16"><LoadingSpinner /></div>
@@ -69,9 +70,9 @@ export default function TopicsManager() {
           {items.map((t) => {
             const axis = FORMATION_AXES.find((a) => a.id === t.axis);
             return (
-              <li key={t.id} className="flex flex-wrap items-center gap-3 px-5 py-4">
+              <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4">
                 <span className="h-10 w-1.5 rounded-full" style={{ backgroundColor: axis?.color }} aria-hidden />
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 max-sm:basis-[calc(100%-1.25rem)]">
                   <p className="font-medium text-slate-900">{t.title}</p>
                   <p className="text-xs text-slate-500">
                     {axis?.name} · {t.levels.map((l) => FORMATION_LEVELS.find((x) => x.id === l)?.name).join(", ") || "Sin nivel"} · {t.subtopics.length} subtemas · {t.references.length} referencias
@@ -98,6 +99,7 @@ export default function TopicsManager() {
         variant="danger"
         isLoading={deleting}
       />
-    </div>
+      </PageBody>
+    </>
   );
 }

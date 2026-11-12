@@ -10,7 +10,7 @@ import InputField from "@/components/admin/ui/InputField";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import Modal from "@/components/admin/ui/Modal";
 import SelectField from "@/components/admin/ui/SelectField";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { useToastRef } from "@/components/admin/formation/shared";
 import { FORMATION_LEVELS } from "@/types/formation";
 import { MEMBER_STATUS, type Member, type MembersPage, type MemberStatus, type MemberTransactions } from "@/types/points";
@@ -85,7 +85,7 @@ export default function MembersManager() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1;
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Usuarios y puntos"
         description="Quienes usan la app. Crea cuentas y asígnales su comunidad, verifica a los miembros (solo los verificados podrán canjear) y revisa o ajusta sus Puntos JMV."
@@ -93,15 +93,16 @@ export default function MembersManager() {
         breadcrumbs={[{ label: "Usuarios y puntos" }]}
         actions={<Button icon={<UserPlus className="h-4 w-4" />} onClick={() => setCreating(true)}>Nuevo usuario</Button>}
       />
+      <PageBody>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-slate-200 bg-white p-1">
+        <div className="flex max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-white p-1">
           {TABS.map((t) => (
             <button
               key={t.id || "all"}
               type="button"
               onClick={() => { setTab(t.id); setPage(1); }}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${tab === t.id ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
+              className={`shrink-0 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition ${tab === t.id ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"}`}
             >
               {t.label}
               {t.id === "pending" && data && data.pending > 0 && (
@@ -133,11 +134,11 @@ export default function MembersManager() {
       ) : (
         <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
           {data.items.map((m) => (
-            <li key={m.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
+            <li key={m.id} className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 font-semibold text-slate-600">
                 {(m.displayName || m.fullName).charAt(0).toUpperCase()}
               </span>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 max-sm:basis-[calc(100%-3.25rem)]">
                 <p className="font-medium text-slate-900">{m.fullName}{m.displayName && m.displayName !== m.fullName ? <span className="text-slate-500"> · {m.displayName}</span> : null}</p>
                 <p className="text-xs text-slate-500">
                   {m.email} · {m.comunidad ? `${m.comunidad.nombre}${m.comunidad.zona ? ` (${m.comunidad.zona})` : ""}` : "Sin comunidad"} · {levelName(m.level)}
@@ -182,7 +183,8 @@ export default function MembersManager() {
         onClose={() => setDetail(null)}
         onChanged={async (d) => { setDetail(d); await load(); }}
       />
-    </div>
+      </PageBody>
+    </>
   );
 }
 

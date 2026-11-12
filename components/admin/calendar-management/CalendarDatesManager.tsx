@@ -893,7 +893,7 @@ export default function CalendarDatesManager() {
         }
       />
 
-      <div className="flex flex-1 flex-col overflow-auto px-4 py-5 sm:px-6">
+      <div className="flex flex-1 flex-col mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div
           role="search"
           aria-label="Filtrar fechas"

@@ -16,7 +16,7 @@ import InputField from "@/components/admin/ui/InputField";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import SelectField from "@/components/admin/ui/SelectField";
 import TextareaField from "@/components/admin/ui/TextareaField";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { MATERIAL_TYPES, type NationalTrainingPayload, type TrainingMaterial } from "@/types/formation";
 import { RowTools, Section, move, useToastRef } from "./shared";
 
@@ -120,12 +120,13 @@ export default function TrainingEditor({ id }: { id?: string }) {
   if (loading) return <div className="flex justify-center py-16"><LoadingSpinner /></div>;
 
   return (
-    <div className="space-y-6 pb-24">
+    <>
       <PageHeader
         title={id ? "Editar formación" : "Nueva formación nacional"}
         description="El tema, quién la da, cuándo, el enlace y todo el material de apoyo para que los jóvenes lo tengan en la app."
         breadcrumbs={[{ label: "Formaciones nacionales", href: "/admin/formaciones" }, { label: id ? "Editar" : "Nueva" }]}
       />
+      <PageBody className="pb-28">
 
       <Section title="Datos de la formación">
         <InputField label="Tema" required value={form.title} onChange={(e) => set("title", e.target.value)} />
@@ -194,6 +195,7 @@ export default function TrainingEditor({ id }: { id?: string }) {
         <Button type="button" variant="outline" onClick={() => router.push("/admin/formaciones")}>Volver</Button>
         <Button type="button" onClick={save} isLoading={saving} icon={<Save className="h-4 w-4" />}>Guardar</Button>
       </div>
-    </div>
+      </PageBody>
+    </>
   );
 }

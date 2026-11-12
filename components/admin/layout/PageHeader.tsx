@@ -33,7 +33,7 @@ export default function PageHeader({
       {/* Top brand accent */}
       <div className="h-[3px] bg-gradient-to-r from-jmv-blue via-jmv-blue/70 to-jmv-gold" />
 
-      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8 lg:py-5">
         <div className="min-w-0 flex-1">
           {breadcrumbs && breadcrumbs.length > 0 ? (
             <nav
@@ -88,7 +88,7 @@ export default function PageHeader({
                 {title}
               </h1>
               {description ? (
-                <p className="mt-0.5 truncate text-[12px] text-slate-500 sm:text-[13px]">
+                <p className="mt-1 line-clamp-2 max-w-3xl text-[12.5px] leading-snug text-slate-500 sm:text-[13px]">
                   {description}
                 </p>
               ) : null}
@@ -97,11 +97,16 @@ export default function PageHeader({
         </div>
 
         {actions ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 [&>*]:max-md:flex-1">
             {actions}
           </div>
         ) : null}
       </div>
     </div>
   );
+}
+
+/** Cuerpo de página del admin: margen y ancho cómodos en cualquier pantalla */
+export function PageBody({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`mx-auto w-full max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8 lg:py-7 ${className}`}>{children}</div>;
 }

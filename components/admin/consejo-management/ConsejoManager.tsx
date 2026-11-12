@@ -345,7 +345,7 @@ export default function ConsejoManager() {
         }
       />
 
-      <div className="flex-1 space-y-5 overflow-auto px-6 py-6">
+      <div className="flex-1 space-y-5 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         {periods.length === 0 ? (
           <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
             <Crown className="mx-auto mb-3 h-10 w-10 text-jmv-blue" />

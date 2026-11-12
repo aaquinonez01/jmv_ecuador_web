@@ -386,7 +386,7 @@ export default function TerritoriosManager() {
         breadcrumbs={[{ label: "Contenido" }, { label: "Territorios" }]}
       />
 
-      <div className="flex-1 overflow-auto px-6 py-5">
+      <div className="flex-1 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div className="grid h-full grid-cols-1 gap-4 xl:grid-cols-2">
           {/* Zonas */}
           <SectionShell

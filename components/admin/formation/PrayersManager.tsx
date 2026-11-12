@@ -10,7 +10,7 @@ import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import Modal from "@/components/admin/ui/Modal";
 import SelectField from "@/components/admin/ui/SelectField";
 import TextareaField from "@/components/admin/ui/TextareaField";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { PRAYER_CATEGORIES, type Prayer, type PrayerPayload } from "@/types/formation";
 import { PublishedBadge, useToastRef } from "./shared";
 
@@ -76,7 +76,7 @@ export default function PrayersManager() {
     setEditing((e) => (e ? { ...e, form: { ...e.form, [k]: v } } : e));
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Oraciones"
         description="Las oraciones de la pestaña Orar de la app. Cada día la app destaca una distinta."
@@ -84,6 +84,7 @@ export default function PrayersManager() {
         breadcrumbs={[{ label: "Oraciones" }]}
         actions={<Button icon={<Plus className="h-4 w-4" />} onClick={() => setEditing({ form: empty() })}>Nueva oración</Button>}
       />
+      <PageBody>
 
       {loading ? (
         <div className="flex justify-center py-16"><LoadingSpinner /></div>
@@ -101,8 +102,8 @@ export default function PrayersManager() {
               ) : (
                 <ul className="divide-y divide-slate-100">
                   {list.map((p) => (
-                    <li key={p.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
-                      <div className="min-w-0 flex-1">
+                    <li key={p.id} className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-3">
+                      <div className="min-w-0 flex-1 max-sm:basis-full">
                         <p className="font-medium text-slate-900">{p.title}</p>
                         <p className="truncate text-xs text-slate-500">{p.source || p.text.slice(0, 90)}</p>
                       </div>
@@ -152,6 +153,7 @@ export default function PrayersManager() {
         variant="danger"
         isLoading={deleting}
       />
-    </div>
+      </PageBody>
+    </>
   );
 }

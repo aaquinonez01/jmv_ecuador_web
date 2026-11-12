@@ -9,7 +9,7 @@ import InputField from "@/components/admin/ui/InputField";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import SelectField from "@/components/admin/ui/SelectField";
 import TextareaField from "@/components/admin/ui/TextareaField";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import {
   FORMATION_AXES,
   FORMATION_LEVELS,
@@ -98,12 +98,13 @@ export default function TopicEditor({ id }: { id?: string }) {
   const setRefs = (r: TopicReference[]) => set("references", r);
 
   return (
-    <div className="space-y-6 pb-24">
+    <>
       <PageHeader
         title={id ? "Editar itinerario" : "Nuevo itinerario"}
         description="Un tema para que los grupos lo trabajen: a qué eje apunta, para qué nivel, qué subtemas conversar y dónde buscar citas y referencias."
         breadcrumbs={[{ label: "Itinerarios", href: "/admin/itinerarios" }, { label: id ? "Editar" : "Nuevo" }]}
       />
+      <PageBody className="pb-28">
 
       <Section title="Tema">
         <InputField label="Tema" required value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="Ej.: La espiritualidad del Magníficat" />
@@ -173,6 +174,7 @@ export default function TopicEditor({ id }: { id?: string }) {
         <Button type="button" variant="outline" onClick={() => router.push("/admin/itinerarios")}>Volver</Button>
         <Button type="button" onClick={save} isLoading={saving} icon={<Save className="h-4 w-4" />}>Guardar</Button>
       </div>
-    </div>
+      </PageBody>
+    </>
   );
 }

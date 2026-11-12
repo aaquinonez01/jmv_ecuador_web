@@ -441,7 +441,7 @@ export default function StatuteEditor({ id, sourceId }: { id?: string; sourceId?
           e.preventDefault();
           void save();
         }}
-        className="flex flex-1 flex-col gap-6 overflow-auto px-4 py-5 sm:px-6"
+        className="flex flex-1 flex-col gap-6 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8"
       >
         {item?.isCurrent ? (
           <p className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">

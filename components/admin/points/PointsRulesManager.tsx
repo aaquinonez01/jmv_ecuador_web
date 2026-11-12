@@ -6,7 +6,7 @@ import { formationErrorMessage } from "@/actions/formation";
 import { getPointsRulesAPI, updatePointsRulesAPI } from "@/actions/points";
 import Button from "@/components/admin/ui/Button";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { Section, useToastRef } from "@/components/admin/formation/shared";
 import type { PointsRule } from "@/types/points";
 
@@ -38,13 +38,14 @@ export default function PointsRulesManager() {
   };
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Reglas de puntos"
         description="Cuántos Puntos JMV gana un joven en la app. Los cambios valen desde ahora; lo ya ganado no cambia."
         icon={<Coins className="h-5 w-5" />}
         breadcrumbs={[{ label: "Reglas de puntos" }]}
       />
+      <PageBody>
       {loading ? (
         <div className="flex justify-center py-16"><LoadingSpinner /></div>
       ) : (
@@ -75,6 +76,7 @@ export default function PointsRulesManager() {
           </div>
         </Section>
       )}
-    </div>
+      </PageBody>
+    </>
   );
 }

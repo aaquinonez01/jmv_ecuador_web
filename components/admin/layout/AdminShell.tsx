@@ -61,7 +61,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     >
       <div className="flex h-screen bg-slate-50">
         <AdminSidebar />
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <main id="admin-main" className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain scroll-smooth">
           {children}
         </main>
       </div>

@@ -795,7 +795,7 @@ export default function QuizManager() {
         }
       />
 
-      <div className="flex-1 space-y-5 overflow-auto px-6 py-5">
+      <div className="flex-1 space-y-5 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         {tab === "bank" ? (
           <section>
             <p className="mb-3 text-xs text-slate-500">

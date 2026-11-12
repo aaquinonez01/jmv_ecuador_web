@@ -7,7 +7,7 @@ import { deleteTrainingAPI, formationErrorMessage, getTrainingsAPI } from "@/act
 import Button from "@/components/admin/ui/Button";
 import ConfirmDialog from "@/components/admin/ui/ConfirmDialog";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
-import PageHeader from "@/components/admin/layout/PageHeader";
+import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import type { NationalTraining } from "@/types/formation";
 import { PublishedBadge, useToastRef } from "./shared";
 
@@ -52,7 +52,7 @@ export default function TrainingsManager() {
   const now = Date.now();
 
   return (
-    <div className="space-y-6">
+    <>
       <PageHeader
         title="Formaciones nacionales"
         description="Las formaciones que se ofrecen a nivel nacional: tema, ponente, fecha, enlace y material de apoyo (diapositivas, PDF, videos). Los jóvenes las ven en la app, en Formación."
@@ -64,6 +64,7 @@ export default function TrainingsManager() {
           </Link>
         }
       />
+      <PageBody>
 
       {loading ? (
         <div className="flex justify-center py-16"><LoadingSpinner /></div>
@@ -74,11 +75,11 @@ export default function TrainingsManager() {
           {items.map((t) => {
             const proxima = new Date(t.startsAt).getTime() >= now;
             return (
-              <li key={t.id} className="flex flex-wrap items-center gap-3 px-5 py-4">
+              <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4">
                 <span className={`rounded-lg px-2.5 py-1 text-xs font-semibold ${proxima ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                   {proxima ? "Próxima" : "Realizada"}
                 </span>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 max-sm:basis-full">
                   <p className="font-medium text-slate-900">{t.title}</p>
                   <p className="flex flex-wrap items-center gap-x-3 text-xs text-slate-500">
                     <span className="inline-flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" />{fmt(t.startsAt)}</span>
@@ -107,6 +108,7 @@ export default function TrainingsManager() {
         variant="danger"
         isLoading={deleting}
       />
-    </div>
+      </PageBody>
+    </>
   );
 }

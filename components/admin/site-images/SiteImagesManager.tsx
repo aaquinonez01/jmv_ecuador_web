@@ -183,7 +183,7 @@ export default function SiteImagesManager() {
         breadcrumbs={[{ label: "Contenido" }, { label: "Imágenes" }]}
       />
 
-      <div className="flex flex-1 flex-col overflow-auto px-4 py-5 sm:px-6">
+      <div className="flex flex-1 flex-col mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-6xl">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <p className="text-[13px] text-slate-600" aria-live="polite">

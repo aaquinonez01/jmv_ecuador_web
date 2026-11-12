@@ -128,7 +128,7 @@ export default function ContactMessagesManager() {
         }
       />
 
-      <div className="flex-1 space-y-4 overflow-auto px-6 py-6">
+      <div className="flex-1 space-y-4 mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
           <div className="inline-flex gap-0.5 rounded-md bg-slate-100 p-0.5" role="group" aria-label="Estado">
             {leidoOptions.map((opt) => (

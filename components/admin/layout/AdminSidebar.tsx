@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -241,6 +241,12 @@ export default function AdminSidebar() {
     },
   ];
 
+  const navRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = navRef.current?.querySelector<HTMLElement>("[data-active='true']");
+    el?.scrollIntoView({ block: "nearest" });
+  }, [pathname]);
+
   const fullName = user?.displayName || user?.fullName || "Administrador";
   const userInitial = fullName.charAt(0).toUpperCase() || "A";
 
@@ -258,7 +264,7 @@ export default function AdminSidebar() {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[280px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)] transition-transform duration-300 ease-out sm:w-[320px] lg:relative lg:z-30 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[280px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)] transition-transform duration-300 ease-out sm:w-[300px] lg:relative lg:w-[264px] lg:z-30 lg:translate-x-0 ${
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
@@ -298,17 +304,17 @@ export default function AdminSidebar() {
       </div>
 
       {/* Nav groups */}
-      <nav className="relative flex-1 overflow-y-auto px-3 py-5">
+      <nav ref={navRef} className="admin-scroll relative flex-1 overflow-y-auto px-3 py-4">
         {groups.map((group) => (
-          <div key={group.label} className="mb-6 last:mb-0">
-            <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
+          <div key={group.label} className="mb-4 last:mb-0">
+            <p className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
               {group.label}
             </p>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {group.items.map((item) => (
                 <li key={item.href}>
                   {item.disabled ? (
-                    <div className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-white/30">
+                    <div className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-white/30">
                       <span>{item.icon}</span>
                       <span className="flex-1 text-[13.5px] font-medium">
                         {item.label}
@@ -320,7 +326,8 @@ export default function AdminSidebar() {
                   ) : (
                     <Link
                       href={item.href}
-                      className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-all ${
+                      data-active={item.active ? "true" : undefined}
+                      className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] font-medium transition-all ${
                         item.active
                           ? "bg-gradient-to-r from-white/[0.18] via-white/[0.12] to-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
                           : "text-white/75 hover:bg-white/[0.06] hover:text-white"
