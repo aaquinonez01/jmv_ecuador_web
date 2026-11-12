@@ -264,7 +264,7 @@ export default function AdminSidebar() {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[280px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)] transition-transform duration-300 ease-out sm:w-[300px] lg:relative lg:w-[264px] lg:z-30 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-full w-[280px] shrink-0 flex-col bg-gradient-to-b from-[#0F2A4A] via-[#13325A] to-[#0F2A4A] text-slate-100 shadow-[4px_0_24px_-8px_rgba(15,42,74,0.35)] transition-transform duration-300 ease-out sm:w-[300px] lg:relative lg:w-[264px] lg:z-30 lg:translate-x-0 ${
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >

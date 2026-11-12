@@ -39,17 +39,18 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     setIsMobileOpen(false);
   }, [pathname]);
 
-  // Bloquear scroll del body cuando el drawer está abierto en móvil
+  // En el admin la página nunca desliza: solo el área de contenido (<main>).
+  // El panel vive dentro del layout público, que suma su propio alto.
   useEffect(() => {
-    if (isMobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    const html = document.documentElement;
+    const prev = { html: html.style.overflow, body: document.body.style.overflow };
+    html.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "unset";
+      html.style.overflow = prev.html;
+      document.body.style.overflow = prev.body;
     };
-  }, [isMobileOpen]);
+  }, []);
 
   return (
     <SidebarContext.Provider
@@ -59,7 +60,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         closeMobile: () => setIsMobileOpen(false),
       }}
     >
-      <div className="flex h-screen bg-slate-50">
+      <div className="fixed inset-0 flex h-dvh bg-slate-50">
         <AdminSidebar />
         <main id="admin-main" className="flex min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain scroll-smooth">
           {children}
