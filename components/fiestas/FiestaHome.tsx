@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Camera, LogOut, Sparkles, Trophy, Users } from "lucide-react";
 import StarField from "@/components/calendario/StarField";
 import { getComunidades, getFiesta, getMe, hasSession, logout } from "@/lib/fiestas/api";
-import { daysBetween, longDate, pieceInfo, PIECES } from "@/lib/fiestas/pieces";
+import { daysBetween, longDate, pieceInfo, PIECES, shortDate } from "@/lib/fiestas/pieces";
 import type { FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import AuthDialog from "./AuthDialog";
 import CommunityPanel from "./CommunityPanel";
@@ -60,15 +60,17 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
   const nextOpen = today ?? fiesta.days.filter((d) => d.state === "open").at(-1);
   const toFeast = daysBetween(fiesta.today, fiesta.feastDate);
   const first = fiesta.days[0];
+  const feastDay = fiesta.days.find((d) => d.piece === "medalla") ?? fiesta.days.at(-1);
+  const lastNovena = fiesta.days.filter((d) => d !== feastDay).at(-1);
   const startsIn = first ? daysBetween(fiesta.today, first.date) : 0;
   const totalPieces = fiesta.days.length;
 
   return (
-    <div data-tone="dark" className="relative isolate overflow-hidden bg-[#070d1d] text-white">
+    <div data-fiesta className="relative isolate overflow-hidden bg-[#070d1d] text-white">
       <FiestaStyles />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-20 bg-[radial-gradient(90%_60%_at_50%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
+        className="fiesta-sky absolute inset-0 -z-20 bg-[radial-gradient(90%_60%_at_50%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
       />
       <StarField count={140} seed={1127} className="-z-10 h-[1400px]" />
 
@@ -102,6 +104,41 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
             </motion.p>
           )}
           {fiesta.intro && <p className="mx-auto mt-4 max-w-xl whitespace-pre-line text-white/70 lg:mx-0">{fiesta.intro}</p>}
+
+          {/* Cómo participar: arriba, para que se lea antes de empezar */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="mt-7 text-left"
+          >
+            <Glass className="p-4 sm:p-5">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#f5c867]">Cómo participar</p>
+              <ol className="grid gap-3 sm:grid-cols-2">
+                {[
+                  ["Crea tu cuenta", "Con tu nombre, tu comunidad, tu correo y una contraseña."],
+                  [
+                    "Entra cada día",
+                    first && feastDay
+                      ? `Del ${shortDate(first.date)} al ${shortDate(lastNovena?.date ?? first.date)} se abre un camino nuevo; el ${shortDate(feastDay.date)} es la fiesta. Lee el tema y reza.`
+                      : "Cada día se abre un camino nuevo. Lee el tema y reza.",
+                  ],
+                  ["Responde y cumple", "Cada acierto da puntos y responder el mismo día da un bono. Marca «Lo cumplí» en el propósito."],
+                  ["Arma tu Medalla", "Cada día ganas una pieza. Tus puntos suman para ti y para tu comunidad."],
+                ].map(([t, d], i) => (
+                  <li key={t} className="flex gap-3">
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f5b83d] text-sm font-bold text-[#3b2600] shadow-[0_3px_0_#9a6504]">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm leading-snug">
+                      <strong className="block text-white">{t}</strong>
+                      <span className="text-white/70">{d}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </Glass>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -159,16 +196,6 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
                 </p>
               </Glass>
             )}
-            <Glass className="px-5 py-3 text-left">
-              <p className="text-xs text-white/60">Ya participan</p>
-              <p className="text-xl font-bold">
-                {fiesta.participants} <span className="text-sm font-semibold text-white/70">{fiesta.participants === 1 ? "joven" : "jóvenes"}</span>
-                <span className="text-sm font-semibold text-white/70">
-                  {" "}
-                  de {fiesta.comunidades} {fiesta.comunidades === 1 ? "comunidad" : "comunidades"}
-                </span>
-              </p>
-            </Glass>
           </div>
         </div>
 
@@ -192,37 +219,6 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
           </p>
         </div>
       </section>
-
-      {/* ── Cómo funciona ── */}
-      {!me && ready && (
-        <section className="mx-auto max-w-6xl px-4 pb-16">
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ["1", "Entra cada día", "Lee el tema del día y su oración."],
-              ["2", "Responde y suma", "Contesta las preguntas: cada acierto da puntos para ti y tu comunidad."],
-              ["3", "Arma tu Medalla", "Cada día ganas una pieza. El 27 la completas."],
-            ].map(([n, t, d], i) => (
-              <motion.div
-                key={n}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <Glass className="flex h-full gap-4 p-5">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-lg font-bold text-[#0f2547] shadow-[0_3px_0_rgba(0,0,0,0.3)]">
-                    {n}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-white">{t}</p>
-                    <p className="text-sm text-white/70">{d}</p>
-                  </div>
-                </Glass>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ── Camino de los días ── */}
       <section id="dias" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">

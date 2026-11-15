@@ -562,11 +562,11 @@ function DayLink({ slug, d, dir }: { slug: string; d: FiestaPublic["days"][numbe
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div data-tone="dark" className="relative isolate min-h-screen overflow-hidden bg-[#070d1d] text-white">
+    <div data-fiesta className="relative isolate min-h-screen overflow-hidden bg-[#070d1d] text-white">
       <FiestaStyles />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-20 bg-[radial-gradient(90%_50%_at_50%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
+        className="fiesta-sky absolute inset-0 -z-20 bg-[radial-gradient(90%_50%_at_50%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
       />
       <StarField count={110} seed={827} className="-z-10 h-[1200px]" />
       {children}

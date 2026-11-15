@@ -20,7 +20,49 @@ const CSS = `
   .fiesta-pulse { animation: fiesta-pulse 2s ease-out infinite; }
   .fiesta-rays { animation: fiesta-rays 60s linear infinite; }
 }
+${lightTheme()}
 `;
+
+/**
+ * Modo claro (cuando la web está en claro): un amanecer en lugar de la noche.
+ * Los componentes están escritos para el cielo nocturno (texto blanco, vidrio
+ * translúcido); aquí se traducen esas clases a tinta azul y tarjetas blancas.
+ */
+function lightTheme() {
+  const L = "html:not(.dark) [data-fiesta]";
+  const esc = (c: string) => c.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  const sel = (classes: string[], extra = "") => classes.map((c) => `${L} .${esc(c)}${extra}`).join(",");
+  const INK = "15,37,71";
+  // Texto blanco sobre fondos de color (botones, etiquetas) se queda blanco
+  const notOnColor = ':not([class*="bg-[#"]):not([class*="from-["])';
+  return `
+${L}.bg-\\[\\#070d1d\\] { background: #f4efe6; color: rgb(${INK}); }
+${L} .fiesta-sky { background:
+  radial-gradient(80% 40% at 50% 100%, rgba(245,184,61,0.22), transparent 70%),
+  radial-gradient(90% 60% at 50% 0%, #bcd4f1 0%, #e2ebf7 46%, #f4efe6 100%) !important; }
+${L} .fiesta-sheet { background: linear-gradient(180deg, #ffffff, #f3f6fb) !important; color: rgb(${INK}); border-color: rgba(${INK},0.1) !important; }
+${L} .fiesta-glass { background: rgba(255,255,255,0.82) !important; border-color: rgba(${INK},0.1) !important;
+  box-shadow: 0 2px 4px rgba(${INK},0.05), 0 14px 32px -14px rgba(${INK},0.28) !important; }
+${sel(["text-white"], notOnColor)} { color: rgb(${INK}); }
+${sel(["text-white/90", "text-white/85", "text-white/80"])} { color: rgba(${INK},0.85); }
+${sel(["text-white/75", "text-white/70", "text-white/65", "text-white/60"])} { color: rgba(${INK},0.7); }
+${sel(["text-white/55", "text-white/50", "text-white/45", "text-white/40"])} { color: rgba(${INK},0.55); }
+${sel(["text-[#f5c867]", "text-[#ffe7a3]"])} { color: #8a5a00; }
+${sel(["text-[#ffb4b3]", "text-[#ff8a8a]"])} { color: #b42322; }
+${sel(["text-[#7be3ad]", "text-[#4fd18f]"])} { color: #1f7a4d; }
+${L} .text-white[class*="bg-[#"][class*="]/2"] { color: rgb(${INK}); }
+${sel(["bg-white/[0.03]", "bg-white/[0.04]", "bg-white/[0.05]"])} { background-color: rgba(255,255,255,0.6); }
+${sel(["bg-white/[0.06]", "bg-white/[0.07]", "bg-white/[0.08]", "bg-white/[0.12]", "bg-white/5"])} { background-color: rgba(255,255,255,0.85); }
+${sel(["bg-white/10", "bg-white/15", "hover:bg-white/15", "hover:bg-white/10", "hover:bg-white/20"])} { background-color: rgba(255,255,255,0.92); }
+${sel(["hover:bg-white/15", "hover:bg-white/10"], ":hover")} { background-color: #ffffff; }
+${sel(["bg-black/20", "bg-black/25"])} { background-color: rgba(${INK},0.07); }
+${sel(["bg-[#132b4f]/95"])} { background-color: rgba(255,255,255,0.95); }
+${sel(["bg-[#050b18]/70"])} { background-color: rgba(${INK},0.35); }
+${sel(["border-white/10", "border-white/15", "border-white/20", "border-white/25", "border-white/30"])} { border-color: rgba(${INK},0.14); }
+${sel(["placeholder:text-white/45"], "::placeholder")} { color: rgba(${INK},0.45); }
+${L} .shadow-\\[0_4px_0_rgba\\(0\\,0\\,0\\,0\\.3\\)\\,0_12px_26px_-14px_rgba\\(0\\,0\\,0\\,0\\.6\\)\\] { box-shadow: 0 4px 0 rgba(${INK},0.12), 0 12px 26px -14px rgba(${INK},0.3); }
+`;
+}
 
 export function FiestaStyles() {
   return (
@@ -66,7 +108,7 @@ export function Glass({ className, children }: { className?: string; children: R
   return (
     <div
       className={cn(
-        "rounded-3xl border border-white/15 bg-white/[0.07] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] backdrop-blur-md",
+        "fiesta-glass rounded-3xl border border-white/15 bg-white/[0.07] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] backdrop-blur-md",
         className,
       )}
     >
@@ -110,7 +152,7 @@ export function Sheet({
   return createPortal(
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6" data-tone="dark">
+        <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6" data-fiesta>
           <motion.div
             className="absolute inset-0 bg-[#050b18]/70 backdrop-blur-sm"
             initial={{ opacity: 0 }}
@@ -128,7 +170,7 @@ export function Sheet({
             exit={{ y: 60, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}
             className={cn(
-              "relative max-h-[92vh] w-full overflow-y-auto rounded-t-[28px] border border-white/15 bg-gradient-to-b from-[#173763] to-[#0b1a33] p-6 pb-8 text-white shadow-2xl sm:rounded-[28px]",
+              "fiesta-sheet relative max-h-[92vh] w-full overflow-y-auto rounded-t-[28px] border border-white/15 bg-gradient-to-b from-[#173763] to-[#0b1a33] p-6 pb-8 text-white shadow-2xl sm:rounded-[28px]",
               wide ? "sm:max-w-2xl" : "sm:max-w-md",
             )}
           >

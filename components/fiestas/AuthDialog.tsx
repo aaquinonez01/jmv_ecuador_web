@@ -359,7 +359,7 @@ export default function AuthDialog({
                         <span className="block truncate text-xs text-white/55">
                           {chosen
                             ? [chosen.ciudad, chosen.zona?.nombre].filter(Boolean).join(" · ")
-                            : `${comunidades.length || "Todas las"} comunidades de JMV Ecuador`}
+                            : comunidades.length === 1 ? "1 comunidad de JMV Ecuador" : `${comunidades.length || "Todas las"} comunidades de JMV Ecuador`}
                         </span>
                       </span>
                       <ChevronRight className="h-5 w-5 shrink-0 text-white/50" aria-hidden="true" />
