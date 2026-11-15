@@ -5,7 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Camera, LogOut, Sparkles, Trophy, Users } from "lucide-react";
 import StarField from "@/components/calendario/StarField";
-import { getComunidades, getFiesta, getMe, hasSession, logout } from "@/lib/fiestas/api";
+import { getComunidades, getFiesta, getMe, hasSession, logout, resetMine } from "@/lib/fiestas/api";
+import { AdminBanner } from "./DayExperience";
 import { daysBetween, longDate, pieceInfo, PIECES, shortDate } from "@/lib/fiestas/pieces";
 import type { FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import AuthDialog from "./AuthDialog";
@@ -56,8 +57,13 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
     return new Set(fiesta.days.filter((d) => done.has(d.dayNumber)).map((d) => d.piece));
   }, [me, fiesta.days]);
 
+  const isAdmin = Boolean(me?.user.isAdmin);
   const today = fiesta.days.find((d) => d.isToday && d.state === "open");
-  const nextOpen = today ?? fiesta.days.filter((d) => d.state === "open").at(-1);
+  const answeredDays = new Set(me?.days.filter((d) => d.answered).map((d) => d.dayNumber));
+  // Administradores: el primer día que aún no probaron
+  const nextOpen = isAdmin
+    ? (fiesta.days.find((d) => !answeredDays.has(d.dayNumber)) ?? fiesta.days.at(-1))
+    : (today ?? fiesta.days.filter((d) => d.state === "open").at(-1));
   const toFeast = daysBetween(fiesta.today, fiesta.feastDate);
   const first = fiesta.days[0];
   const feastDay = fiesta.days.find((d) => d.piece === "medalla") ?? fiesta.days.at(-1);
@@ -155,7 +161,7 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
                     href={`/fiestas/${slug}/dia/${nextOpen.dayNumber}`}
                     className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-b from-[#ffd36e] to-[#f0a81f] px-6 text-base font-semibold text-[#3b2600] shadow-[0_4px_0_#9a6504,0_10px_24px_rgba(240,168,31,0.35)] transition active:translate-y-[3px] active:shadow-[0_1px_0_#9a6504]"
                   >
-                    {today ? `Vivir el ${today.label.toLowerCase()}` : `Ir al ${nextOpen.label.toLowerCase()}`}
+                    {isAdmin ? `Probar el ${nextOpen.label.toLowerCase()}` : today ? `Vivir el ${today.label.toLowerCase()}` : `Ir al ${nextOpen.label.toLowerCase()}`}
                     <ArrowRight className="h-5 w-5" aria-hidden="true" />
                   </Link>
                 ) : (
@@ -223,7 +229,22 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {/* ── Camino de los días ── */}
       <section id="dias" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">
         <SectionTitle kicker="Día a día" title="El camino de la novena" icon={Sparkles} />
-        <DayPath slug={slug} days={fiesta.days} me={me} />
+        {isAdmin && (
+          <AdminBanner>
+            <FiestaButton
+              tone="white"
+              className="min-h-10 px-4 text-sm"
+              onClick={async () => {
+                if (!window.confirm("¿Borrar tus respuestas de prueba y empezar la medalla desde cero?")) return;
+                await resetMine(slug).catch(() => undefined);
+                load();
+              }}
+            >
+              Reiniciar mi prueba
+            </FiestaButton>
+          </AdminBanner>
+        )}
+        <DayPath slug={slug} days={fiesta.days} me={me} preview={isAdmin} />
         {me && earned.size > 0 && (
           <div className="mt-6 flex flex-wrap gap-2">
             {PIECES.filter((p) => earned.has(p.id)).map((p) => (

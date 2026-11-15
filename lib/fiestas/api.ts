@@ -29,8 +29,14 @@ export async function getFiesta(slug: string) {
   return (await api().get<FiestaPublic>(base(slug))).data;
 }
 
-export async function getDay(slug: string, n: number) {
-  return (await api().get<FiestaDayContent>(`${base(slug)}/days/${n}`)).data;
+/** `preview`: los administradores abren cualquier día antes de su fecha */
+export async function getDay(slug: string, n: number, preview = false) {
+  return (await api().get<FiestaDayContent>(`${base(slug)}/days/${n}${preview ? "/preview" : ""}`)).data;
+}
+
+/** Administradores: borra su avance de prueba */
+export async function resetMine(slug: string) {
+  await api().delete(`${base(slug)}/me`);
 }
 
 /** Mi avance; null si no hay sesión o expiró */

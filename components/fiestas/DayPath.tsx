@@ -13,10 +13,13 @@ export default function DayPath({
   slug,
   days,
   me,
+  preview = false,
 }: {
   slug: string;
   days: FiestaDaySummary[];
   me: FiestaMe | null;
+  /** Administradores: todos los días se pueden abrir */
+  preview?: boolean;
 }) {
   const done = new Set(me?.days.filter((d) => d.answered).map((d) => d.dayNumber));
 
@@ -25,7 +28,7 @@ export default function DayPath({
       {days.map((d, i) => {
         const isDone = done.has(d.dayNumber);
         const isFeast = d.piece === "medalla";
-        const clickable = d.state === "open";
+        const clickable = d.state === "open" || preview;
         const card = (
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -85,7 +88,7 @@ export default function DayPath({
                 )}
               </span>
               <p className={cn("text-sm font-semibold leading-snug", clickable ? "text-white" : "text-white/55")}>
-                {d.state === "open" ? d.title : d.state === "soon" ? "En preparación" : "Se abre ese día"}
+                {d.state === "open" ? d.title : preview ? "Vista previa" : d.state === "soon" ? "En preparación" : "Se abre ese día"}
               </p>
             </div>
 

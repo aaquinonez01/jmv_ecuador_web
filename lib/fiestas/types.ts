@@ -63,7 +63,7 @@ export interface DayResult {
 }
 
 export interface FiestaMe {
-  user: { id: string; name: string; isLead: boolean };
+  user: { id: string; name: string; isLead: boolean; isAdmin?: boolean };
   comunidad: { id: string; nombre: string } | null;
   mode: FiestaMode | null;
   totalPoints: number;

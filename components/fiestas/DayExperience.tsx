@@ -60,9 +60,10 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   const [sharing, setSharing] = useState(false);
 
   const load = useCallback(async () => {
-    const fiesta = await getFiesta(slug).catch(() => null);
+    const [fiesta, m] = await Promise.all([getFiesta(slug).catch(() => null), getMe(slug)]);
+    setMe(m);
     try {
-      const day = await getDay(slug, dayNumber);
+      const day = await getDay(slug, dayNumber, Boolean(m?.user.isAdmin));
       if (!fiesta) throw new Error();
       setState({ kind: "ready", fiesta, day });
     } catch (e) {
@@ -74,9 +75,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       });
       return;
     }
-    const [m, r] = await Promise.all([getMe(slug), getResult(slug, dayNumber)]);
-    setMe(m);
-    setResult(r);
+    setResult(await getResult(slug, dayNumber));
   }, [slug, dayNumber]);
 
   useEffect(() => {
@@ -134,6 +133,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   const prev = fiesta.days[idx - 1];
   const next = fiesta.days[idx + 1];
   const answered = Boolean(result?.answered);
+  const isAdmin = Boolean(me?.user.isAdmin);
 
   const choose = (i: number) => {
     setPicks((p) => {
@@ -211,6 +211,8 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" /> {fiesta.title}
         </Link>
+
+        {isAdmin && <AdminBanner />}
 
         {/* Encabezado del día */}
         <header className="grid items-center gap-6 sm:grid-cols-[1fr_150px]">
@@ -481,11 +483,11 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
         {/* Navegación entre días */}
         <nav className="mt-12 grid grid-cols-2 gap-3" aria-label="Otros días">
           {prev ? (
-            <DayLink slug={slug} d={prev} dir="prev" />
+            <DayLink slug={slug} d={prev} dir="prev" preview={isAdmin} />
           ) : (
             <span />
           )}
-          {next ? <DayLink slug={slug} d={next} dir="next" /> : <span />}
+          {next ? <DayLink slug={slug} d={next} dir="next" preview={isAdmin} /> : <span />}
         </nav>
       </div>
 
@@ -538,8 +540,8 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   );
 }
 
-function DayLink({ slug, d, dir }: { slug: string; d: FiestaPublic["days"][number]; dir: "prev" | "next" }) {
-  const open = d.state === "open";
+function DayLink({ slug, d, dir, preview = false }: { slug: string; d: FiestaPublic["days"][number]; dir: "prev" | "next"; preview?: boolean }) {
+  const open = d.state === "open" || preview;
   const inner = (
     <span
       className={cn(
@@ -553,11 +555,23 @@ function DayLink({ slug, d, dir }: { slug: string; d: FiestaPublic["days"][numbe
       {dir === "prev" ? <ArrowLeft className="h-5 w-5 shrink-0" /> : open ? <ArrowRight className="h-5 w-5 shrink-0" /> : <Lock className="h-5 w-5 shrink-0" />}
       <span className="min-w-0">
         <span className="block text-xs text-white/60">{d.label}</span>
-        <span className="block truncate text-sm font-semibold">{open ? d.title : d.state === "soon" ? "En preparación" : "Aún no empieza"}</span>
+        <span className="block truncate text-sm font-semibold">{d.title ?? (open ? "Vista previa" : d.state === "soon" ? "En preparación" : "Aún no empieza")}</span>
       </span>
     </span>
   );
   return open ? <Link href={`/fiestas/${slug}/dia/${d.dayNumber}`}>{inner}</Link> : inner;
+}
+
+export function AdminBanner({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-[#f5b83d]/60 bg-[#f5b83d]/15 px-4 py-3 text-sm">
+      <span className="rounded-full bg-[#f5b83d] px-2.5 py-0.5 text-xs font-bold uppercase text-[#3b2600]">Modo prueba</span>
+      <span className="min-w-0 flex-1 text-white/85">
+        Como administrador puedes abrir todos los días antes de su fecha. Tus puntos no se suman y no apareces en el ranking.
+      </span>
+      {children}
+    </div>
+  );
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
