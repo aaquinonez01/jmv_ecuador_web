@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
   BrainCircuit,
+  PartyPopper,
   CircleHelp,
   Coins,
   CalendarClock,
@@ -199,6 +200,12 @@ export default function AdminSidebar() {
     {
       label: "Interactivo",
       items: [
+        {
+          label: "Fiestas (novenas)",
+          href: "/admin/fiestas",
+          icon: <PartyPopper className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/fiestas"),
+        },
         {
           label: "Quiz en vivo",
           href: "/admin/quiz",

@@ -1,0 +1,553 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Check,
+  CheckCircle2,
+  Clock,
+  HandHeart,
+  Loader2,
+  Lock,
+  Share2,
+  Sparkles,
+  X,
+} from "lucide-react";
+import StarField from "@/components/calendario/StarField";
+import {
+  errorMessage,
+  getDay,
+  getFiesta,
+  getMe,
+  getResult,
+  markPurpose,
+  sendAnswers,
+  statusOf,
+} from "@/lib/fiestas/api";
+import { longDate, pieceInfo } from "@/lib/fiestas/pieces";
+import { makeShareCard, shareCard } from "@/lib/fiestas/share-card";
+import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
+import { cn } from "@/lib/utils";
+import AuthDialog from "./AuthDialog";
+import Medal from "./Medal";
+import { Confetti, FiestaButton, FiestaStyles, Glass, Sheet } from "./ui";
+
+type Load =
+  | { kind: "loading" }
+  | { kind: "ready"; fiesta: FiestaPublic; day: FiestaDayContent }
+  | { kind: "closed"; fiesta: FiestaPublic | null; message: string };
+
+const LETTERS = ["A", "B", "C", "D", "E", "F"];
+
+export default function DayExperience({ slug, dayNumber }: { slug: string; dayNumber: number }) {
+  const [state, setState] = useState<Load>({ kind: "loading" });
+  const [me, setMe] = useState<FiestaMe | null>(null);
+  const [result, setResult] = useState<DayResult | null>(null);
+  const [step, setStep] = useState(0);
+  const [picks, setPicks] = useState<number[]>([]);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [auth, setAuth] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
+  const [burst, setBurst] = useState(0);
+  const [purposeBusy, setPurposeBusy] = useState(false);
+  const [toast, setToast] = useState("");
+  const [sharing, setSharing] = useState(false);
+
+  const load = useCallback(async () => {
+    const fiesta = await getFiesta(slug).catch(() => null);
+    try {
+      const day = await getDay(slug, dayNumber);
+      if (!fiesta) throw new Error();
+      setState({ kind: "ready", fiesta, day });
+    } catch (e) {
+      const s = statusOf(e);
+      setState({
+        kind: "closed",
+        fiesta,
+        message: s === 403 ? errorMessage(e) : s === 404 ? "Este día no existe." : "No pudimos cargar el día. Revisa tu internet.",
+      });
+      return;
+    }
+    const [m, r] = await Promise.all([getMe(slug), getResult(slug, dayNumber)]);
+    setMe(m);
+    setResult(r);
+  }, [slug, dayNumber]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(""), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const earned = useMemo(() => {
+    if (state.kind !== "ready") return new Set<string>();
+    const done = new Set(me?.days.filter((d) => d.answered).map((d) => d.dayNumber));
+    if (result?.answered) done.add(dayNumber);
+    return new Set(state.fiesta.days.filter((d) => done.has(d.dayNumber)).map((d) => d.piece));
+  }, [state, me, result, dayNumber]);
+
+  if (state.kind === "loading") {
+    return (
+      <Shell>
+        <div className="mx-auto max-w-3xl space-y-4 px-4 py-16">
+          <div className="h-10 w-2/3 animate-pulse rounded-2xl bg-white/10" />
+          <div className="h-64 animate-pulse rounded-3xl bg-white/10" />
+        </div>
+      </Shell>
+    );
+  }
+
+  if (state.kind === "closed") {
+    return (
+      <Shell>
+        <div className="mx-auto max-w-xl px-4 pb-24 pt-32 text-center">
+          <span className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-3xl bg-white/10 text-[#f5c867]">
+            {/todav[ií]a no/i.test(state.message) ? <Lock className="h-8 w-8" /> : <Clock className="h-8 w-8" />}
+          </span>
+          <h1 className="font-display text-3xl font-semibold">{state.message}</h1>
+          <p className="mt-3 text-white/70">Vuelve pronto: cada día se abre a la medianoche (hora de Ecuador).</p>
+          <Link
+            href={`/fiestas/${slug}`}
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-5 font-semibold shadow-[0_3px_0_rgba(0,0,0,0.25)]"
+          >
+            <ArrowLeft className="h-4 w-4" /> Volver a la novena
+          </Link>
+        </div>
+      </Shell>
+    );
+  }
+
+  const { fiesta, day } = state;
+  const piece = pieceInfo(day.piece);
+  const q = day.questions[step];
+  const idx = fiesta.days.findIndex((d) => d.dayNumber === dayNumber);
+  const prev = fiesta.days[idx - 1];
+  const next = fiesta.days[idx + 1];
+  const answered = Boolean(result?.answered);
+
+  const choose = (i: number) => {
+    setPicks((p) => {
+      const n = [...p];
+      n[step] = i;
+      return n;
+    });
+  };
+
+  const submit = async () => {
+    setSending(true);
+    setError("");
+    try {
+      const r = await sendAnswers(slug, dayNumber, picks);
+      setResult({ ...r, answered: true });
+      setBurst((b) => b + 1);
+      setCelebrate(true);
+      setMe(await getMe(slug));
+    } catch (e) {
+      if (statusOf(e) === 409) {
+        setResult(await getResult(slug, dayNumber));
+      } else if (statusOf(e) === 401) {
+        setAuth(true);
+      } else setError(errorMessage(e));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const purpose = async () => {
+    if (!me) return setAuth(true);
+    setPurposeBusy(true);
+    try {
+      const r = await markPurpose(slug, dayNumber);
+      setResult((res) => ({ ...(res ?? { answered: false }), purposeDone: true }));
+      if (r.points) {
+        setToast(`+${r.points} puntos por cumplir tu propósito 💛`);
+        setBurst((b) => b + 1);
+      }
+      setMe(await getMe(slug));
+    } catch (e) {
+      setToast(errorMessage(e));
+    } finally {
+      setPurposeBusy(false);
+    }
+  };
+
+  const share = async () => {
+    setSharing(true);
+    try {
+      const url = `${window.location.host}/fiestas/${slug}`;
+      const blob = await makeShareCard({
+        fiestaTitle: fiesta.title,
+        headline: day.piece === "medalla" ? "¡Completé mi Medalla!" : `Completé el ${day.label.toLowerCase()}`,
+        piece: `✦ ${piece.name}`,
+        footer: "JMV Ecuador",
+        url,
+      });
+      const res = await shareCard(blob, `Estoy viviendo la ${fiesta.title} con JMV Ecuador 💙 Únete: https://${url}`);
+      if (res === "downloaded") setToast("Imagen descargada: súbela a tu estado o historia ✨");
+    } catch {
+      setToast("No se pudo crear la imagen.");
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  return (
+    <Shell>
+      <Confetti burst={burst} />
+      <div className="mx-auto max-w-3xl px-4 pb-24 pt-24 sm:pt-28">
+        <Link
+          href={`/fiestas/${slug}`}
+          className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold shadow-[0_3px_0_rgba(0,0,0,0.25)] transition hover:bg-white/15 active:translate-y-0.5"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" /> {fiesta.title}
+        </Link>
+
+        {/* Encabezado del día */}
+        <header className="grid items-center gap-6 sm:grid-cols-[1fr_150px]">
+          <div>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-[#f5b83d] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#3b2600] shadow-[0_2px_0_#9a6504]">
+                {day.label}
+              </span>
+              <span className="text-sm text-white/70 first-letter:uppercase">{longDate(day.date)}</span>
+              {day.isToday && (
+                <span className="rounded-full bg-[#d3302f] px-2.5 py-0.5 text-xs font-bold uppercase text-white shadow-[0_2px_0_#8f1f1e]">
+                  Hoy
+                </span>
+              )}
+            </div>
+            <h1 className="font-display text-4xl font-semibold leading-tight sm:text-5xl">{day.title}</h1>
+            <p className="mt-3 inline-flex items-center gap-2 text-sm text-[#ffe7a3]">
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              {answered ? "Ganaste" : "Hoy puedes ganar"}: <strong>{piece.name}</strong>
+            </p>
+          </div>
+          <div className="mx-auto w-[130px] sm:w-[150px]">
+            <Medal
+              earned={earned}
+              initialFace={piece.face === "back" ? "back" : "front"}
+              showFlip={false}
+              key={piece.face}
+            />
+          </div>
+        </header>
+
+        {/* Tema */}
+        {day.theme && (
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-10">
+            <Glass className="p-6 sm:p-8">
+              <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-[#f5c867]">
+                <BookOpen className="h-4 w-4" aria-hidden="true" /> El tema del día
+              </h2>
+              <div className="whitespace-pre-line text-[17px] leading-relaxed text-white/90">{day.theme}</div>
+              {day.source && <p className="mt-5 text-xs text-white/50">Fuente: {day.source}</p>}
+            </Glass>
+          </motion.section>
+        )}
+
+        {/* Oración */}
+        {day.prayer && (
+          <section className="mt-6">
+            <div className="relative overflow-hidden rounded-3xl border border-[#f5b83d]/50 bg-gradient-to-br from-[#f5b83d]/20 via-[#f5b83d]/5 to-transparent p-6 shadow-[0_18px_40px_-20px_rgba(245,184,61,0.5)] sm:p-8">
+              <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-[#f5c867]">Oración</h2>
+              <p className="whitespace-pre-line font-display text-xl italic leading-relaxed text-white">{day.prayer}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Preguntas */}
+        {day.questions.length > 0 && (
+          <section className="mt-10" aria-labelledby="preguntas">
+            <h2 id="preguntas" className="mb-4 font-display text-3xl font-semibold">
+              {answered ? "Tus respuestas" : "Responde y gana puntos"}
+            </h2>
+
+            {!me && !answered ? (
+              <Glass className="p-6 text-center">
+                <p className="text-lg font-semibold">Crea tu cuenta para responder</p>
+                <p className="mt-1 text-white/70">Solo tu nombre, tu comunidad, tu correo y una contraseña.</p>
+                <FiestaButton tone="gold" className="mt-5" onClick={() => setAuth(true)}>
+                  Crear cuenta o entrar <ArrowRight className="h-5 w-5" />
+                </FiestaButton>
+              </Glass>
+            ) : answered && result?.questions ? (
+              <div className="space-y-4">
+                <Glass className="flex items-center gap-4 p-5">
+                  <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-[#f5b83d] text-2xl font-bold text-[#3b2600] shadow-[0_4px_0_#9a6504]">
+                    {result.correct}/{result.total}
+                  </span>
+                  <div>
+                    <p className="text-lg font-semibold">
+                      {result.correct === result.total ? "¡Perfecto! 🎉" : result.correct ? "¡Bien hecho!" : "¡Gracias por participar!"}
+                    </p>
+                    <p className="text-sm text-white/70">
+                      Ganaste <strong className="text-[#f5c867]">{result.points} puntos</strong>
+                      {result.onTime ? " (incluye el bono por responder hoy)" : ""}.
+                    </p>
+                  </div>
+                </Glass>
+                {result.questions.map((rq, i) => (
+                  <Glass key={rq.id} className="p-5">
+                    <p className="mb-3 font-semibold">
+                      {i + 1}. {rq.prompt}
+                    </p>
+                    <ul className="space-y-2">
+                      {rq.options.map((o, oi) => {
+                        const correct = oi === rq.correctIndex;
+                        const mine = oi === rq.yours;
+                        return (
+                          <li
+                            key={oi}
+                            className={cn(
+                              "flex items-center gap-3 rounded-2xl border px-4 py-2.5 text-sm",
+                              correct
+                                ? "border-[#2fa36b] bg-[#2fa36b]/20"
+                                : mine
+                                  ? "border-[#d3302f] bg-[#d3302f]/20"
+                                  : "border-white/10 bg-white/[0.03] text-white/70",
+                            )}
+                          >
+                            {correct ? (
+                              <CheckCircle2 className="h-5 w-5 shrink-0 text-[#4fd18f]" aria-label="Correcta" />
+                            ) : mine ? (
+                              <X className="h-5 w-5 shrink-0 text-[#ff8a8a]" aria-label="Tu respuesta" />
+                            ) : (
+                              <span className="w-5 shrink-0 text-center text-xs font-bold text-white/40">{LETTERS[oi]}</span>
+                            )}
+                            {o}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {rq.explanation && <p className="mt-3 text-sm text-white/70">💡 {rq.explanation}</p>}
+                  </Glass>
+                ))}
+              </div>
+            ) : (
+              q && (
+                <Glass className="overflow-hidden p-5 sm:p-7">
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-[#f5b83d] to-[#ffe7a3]"
+                        animate={{ width: `${((step + (picks[step] != null ? 1 : 0)) / day.questions.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-white/70">
+                      {step + 1} de {day.questions.length}
+                    </span>
+                  </div>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={q.id}
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -40 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <p className="mb-5 text-xl font-semibold leading-snug">{q.prompt}</p>
+                      <div className="grid gap-3">
+                        {q.options.map((o, i) => {
+                          const on = picks[step] === i;
+                          return (
+                            <motion.button
+                              key={i}
+                              type="button"
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => choose(i)}
+                              aria-pressed={on}
+                              className={cn(
+                                "flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left font-medium transition",
+                                on
+                                  ? "border-[#f5b83d] bg-[#f5b83d] text-[#3b2600] shadow-[0_4px_0_#9a6504]"
+                                  : "border-white/20 bg-white/[0.08] text-white shadow-[0_4px_0_rgba(0,0,0,0.3)] hover:bg-white/15 active:translate-y-1 active:shadow-none",
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  "grid h-8 w-8 shrink-0 place-items-center rounded-xl text-sm font-bold",
+                                  on ? "bg-[#3b2600] text-[#f5c867]" : "bg-white/15",
+                                )}
+                              >
+                                {on ? <Check className="h-4 w-4" strokeWidth={3} /> : LETTERS[i]}
+                              </span>
+                              {o}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                  {error && <p className="mt-4 rounded-2xl bg-[#d3302f]/25 px-4 py-3 text-sm">{error}</p>}
+                  <div className="mt-6 flex items-center justify-between gap-3">
+                    <FiestaButton tone="glass" disabled={step === 0} onClick={() => setStep((s) => s - 1)}>
+                      <ArrowLeft className="h-4 w-4" /> Atrás
+                    </FiestaButton>
+                    {step < day.questions.length - 1 ? (
+                      <FiestaButton tone="white" disabled={picks[step] == null} onClick={() => setStep((s) => s + 1)}>
+                        Siguiente <ArrowRight className="h-4 w-4" />
+                      </FiestaButton>
+                    ) : (
+                      <FiestaButton
+                        tone="gold"
+                        disabled={sending || day.questions.some((_, i) => picks[i] == null)}
+                        onClick={submit}
+                      >
+                        {sending && <Loader2 className="h-5 w-5 animate-spin" />}
+                        Enviar respuestas
+                      </FiestaButton>
+                    )}
+                  </div>
+                  <p className="mt-4 text-center text-xs text-white/50">
+                    Solo tienes una oportunidad. {day.isToday ? "Si respondes hoy, ganas un bono extra." : ""}
+                  </p>
+                </Glass>
+              )
+            )}
+          </section>
+        )}
+
+        {/* Propósito */}
+        {day.purpose && (
+          <section className="mt-10">
+            <div
+              className={cn(
+                "rounded-3xl border p-6 sm:p-8",
+                result?.purposeDone
+                  ? "border-[#2fa36b]/60 bg-[#2fa36b]/15"
+                  : "border-white/15 bg-gradient-to-br from-[#d3302f]/20 to-transparent shadow-[0_18px_40px_-22px_rgba(211,48,47,0.6)]",
+              )}
+            >
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-[#ffb4b3]">
+                <HandHeart className="h-4 w-4" aria-hidden="true" /> Propósito del día
+              </h2>
+              <p className="whitespace-pre-line text-lg leading-relaxed text-white">{day.purpose}</p>
+              <div className="mt-5">
+                {result?.purposeDone ? (
+                  <p className="inline-flex items-center gap-2 font-semibold text-[#7be3ad]">
+                    <CheckCircle2 className="h-5 w-5" /> ¡Lo cumpliste! Gracias por servir.
+                  </p>
+                ) : (
+                  <FiestaButton tone="red" onClick={purpose} disabled={purposeBusy}>
+                    {purposeBusy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Check className="h-5 w-5" />}
+                    Lo cumplí
+                  </FiestaButton>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {answered && (
+          <div className="mt-8 text-center">
+            <FiestaButton tone="glass" onClick={share} disabled={sharing}>
+              {sharing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Share2 className="h-5 w-5" />}
+              Compartir en mi estado
+            </FiestaButton>
+          </div>
+        )}
+
+        {/* Navegación entre días */}
+        <nav className="mt-12 grid grid-cols-2 gap-3" aria-label="Otros días">
+          {prev ? (
+            <DayLink slug={slug} d={prev} dir="prev" />
+          ) : (
+            <span />
+          )}
+          {next ? <DayLink slug={slug} d={next} dir="next" /> : <span />}
+        </nav>
+      </div>
+
+      {/* Celebración: pieza ganada */}
+      <Sheet open={celebrate} onClose={() => setCelebrate(false)} title="¡Nueva pieza!">
+        <div className="text-center">
+          <div className="mx-auto w-48">
+            <Medal earned={earned} highlight={day.piece} initialFace={piece.face === "back" ? "back" : "front"} showFlip={false} />
+          </div>
+          <p className="mt-5 text-sm uppercase tracking-[0.2em] text-[#f5c867]">Ganaste</p>
+          <p className="font-display text-3xl font-semibold">{piece.name}</p>
+          <p className="mt-2 text-white/75">
+            {result?.correct}/{result?.total} correctas · <strong className="text-[#f5c867]">+{result?.points} puntos</strong>
+          </p>
+          <div className="mt-6 grid gap-3">
+            <FiestaButton tone="gold" onClick={share} disabled={sharing}>
+              {sharing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Share2 className="h-5 w-5" />}
+              Compartir en mi estado
+            </FiestaButton>
+            <FiestaButton tone="glass" onClick={() => setCelebrate(false)}>
+              Ver mis respuestas
+            </FiestaButton>
+          </div>
+        </div>
+      </Sheet>
+
+      <AuthDialog
+        open={auth}
+        onClose={() => setAuth(false)}
+        onDone={() => {
+          setAuth(false);
+          load();
+        }}
+      />
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            role="status"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 40, opacity: 0 }}
+            className="fixed inset-x-4 bottom-6 z-[96] mx-auto max-w-md rounded-2xl bg-white px-5 py-4 text-center font-semibold text-[#0f2547] shadow-2xl"
+          >
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Shell>
+  );
+}
+
+function DayLink({ slug, d, dir }: { slug: string; d: FiestaPublic["days"][number]; dir: "prev" | "next" }) {
+  const open = d.state === "open";
+  const inner = (
+    <span
+      className={cn(
+        "flex min-h-16 items-center gap-3 rounded-2xl border px-4 py-3",
+        dir === "next" && "flex-row-reverse text-right",
+        open
+          ? "border-white/20 bg-white/[0.08] shadow-[0_4px_0_rgba(0,0,0,0.3)] transition hover:bg-white/15 active:translate-y-1 active:shadow-none"
+          : "border-white/10 bg-white/[0.03] text-white/50",
+      )}
+    >
+      {dir === "prev" ? <ArrowLeft className="h-5 w-5 shrink-0" /> : open ? <ArrowRight className="h-5 w-5 shrink-0" /> : <Lock className="h-5 w-5 shrink-0" />}
+      <span className="min-w-0">
+        <span className="block text-xs text-white/60">{d.label}</span>
+        <span className="block truncate text-sm font-semibold">{open ? d.title : d.state === "soon" ? "En preparación" : "Aún no empieza"}</span>
+      </span>
+    </span>
+  );
+  return open ? <Link href={`/fiestas/${slug}/dia/${d.dayNumber}`}>{inner}</Link> : inner;
+}
+
+function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <div data-tone="dark" className="relative isolate min-h-screen overflow-hidden bg-[#070d1d] text-white">
+      <FiestaStyles />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(90%_50%_at_50%_0%,#1d4e8a_0%,#0f2547_45%,#070d1d_100%)]"
+      />
+      <StarField count={110} seed={827} className="-z-10 h-[1200px]" />
+      {children}
+    </div>
+  );
+}
