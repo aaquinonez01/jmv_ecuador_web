@@ -27,7 +27,34 @@ function linkify(text: string): ReactNode[] {
   );
 }
 
+/** Una línea con [[mas]] separa lo principal de lo que va plegado en "Para profundizar" */
+const MORE = /\n?\s*\[\[mas\]\]\s*\n?/;
+
 export default function RichText({ text }: { text: string }) {
+  const [main, more] = text.split(MORE);
+  return (
+    <div className="space-y-4">
+      <Blocks text={main} />
+      {more?.trim() && (
+        <details className="group mt-6 rounded-2xl border border-white/15 bg-white/[0.05]">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-white [&::-webkit-details-marker]:hidden">
+            <span>
+              Para profundizar <span className="font-normal text-white/60">(opcional · para vivirla en grupo)</span>
+            </span>
+            <span className="text-lg text-white/60 transition group-open:rotate-90" aria-hidden="true">
+              ›
+            </span>
+          </summary>
+          <div className="border-t border-white/10 px-4 py-4 text-[16px]">
+            <Blocks text={more} />
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
+function Blocks({ text }: { text: string }) {
   const blocks = text.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
   return (
     <div className="space-y-4">
@@ -54,7 +81,7 @@ export default function RichText({ text }: { text: string }) {
           return (
             <blockquote
               key={i}
-              className="rounded-2xl border-l-4 border-[#f5b83d] bg-[#f5b83d]/10 px-4 py-3 font-display text-lg italic leading-relaxed text-white"
+              className="rounded-2xl border-l-4 border-[#f5b83d] bg-[#f5b83d]/15 px-4 py-3 font-display text-lg italic leading-relaxed text-[#111827] dark:text-white"
             >
               <span className="mb-1 block font-sans text-xs font-bold uppercase not-italic tracking-[0.16em] text-[#f5c867]">
                 Frase para guardar en el corazón

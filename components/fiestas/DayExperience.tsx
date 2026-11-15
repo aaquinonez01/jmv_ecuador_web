@@ -564,11 +564,13 @@ function DayLink({ slug, d, dir, preview = false }: { slug: string; d: FiestaPub
 
 export function AdminBanner({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-[#f5b83d]/60 bg-[#f5b83d]/15 px-4 py-3 text-sm">
-      <span className="rounded-full bg-[#f5b83d] px-2.5 py-0.5 text-xs font-bold uppercase text-[#3b2600]">Modo prueba</span>
-      <span className="min-w-0 flex-1 text-white/85">
-        Como administrador puedes abrir todos los días antes de su fecha. Tus puntos no se suman y no apareces en el ranking.
-      </span>
+    <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-[#f5b83d]/60 bg-[#f5b83d]/15 p-4 text-sm sm:flex-row sm:items-center">
+      <div className="min-w-0 flex-1">
+        <span className="mb-1.5 inline-block rounded-full bg-[#f5b83d] px-2.5 py-0.5 text-xs font-bold uppercase text-[#3b2600]">Modo prueba</span>
+        <p className="leading-snug text-white/85">
+          Como administrador puedes abrir todos los días antes de su fecha. Tus puntos no se suman y no apareces en el ranking.
+        </p>
+      </div>
       {children}
     </div>
   );
