@@ -598,6 +598,7 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
     title: fiesta.title,
     subtitle: fiesta.subtitle ?? "",
     intro: fiesta.intro ?? "",
+    dailyPrayers: fiesta.dailyPrayers ?? "",
     feastDate: fiesta.feastDate,
     published: fiesta.published,
   });
@@ -625,6 +626,13 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
         value={f.intro}
         onChange={(e) => setF({ ...f, intro: e.target.value })}
         hint="Un párrafo corto bajo el título."
+      />
+      <TextareaField
+        label="Oraciones para todos los días (opcional)"
+        rows={10}
+        value={f.dailyPrayers}
+        onChange={(e) => setF({ ...f, dailyPrayers: e.target.value })}
+        hint="Se muestran plegadas al inicio de cada día. Deja una línea en blanco entre párrafos; una línea corta sin punto final se ve como título."
       />
       <InputField label="Día de la fiesta" type="date" value={f.feastDate} onChange={(e) => setF({ ...f, feastDate: e.target.value })} />
       <label className="flex items-center gap-2 text-sm text-slate-700">

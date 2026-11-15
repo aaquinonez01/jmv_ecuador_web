@@ -34,6 +34,7 @@ import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/
 import { cn } from "@/lib/utils";
 import AuthDialog from "./AuthDialog";
 import Medal from "./Medal";
+import RichText from "./RichText";
 import { Confetti, FiestaButton, FiestaStyles, Glass, Sheet } from "./ui";
 
 type Load =
@@ -241,14 +242,35 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </div>
         </header>
 
+        {/* Oraciones de todos los días (plegables) */}
+        {day.dailyPrayers && (
+          <details className="group mt-10 overflow-hidden rounded-3xl border border-white/15 bg-white/[0.05] shadow-[0_4px_0_rgba(0,0,0,0.3)]">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 py-3 font-semibold text-white [&::-webkit-details-marker]:hidden">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-[#f5c867]">
+                <HandHeart className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="flex-1">
+                Oraciones para todos los días
+                <span className="block text-xs font-normal text-white/55">Para empezar la jornada · toca para abrir</span>
+              </span>
+              <ArrowRight className="h-5 w-5 text-white/50 transition group-open:rotate-90" aria-hidden="true" />
+            </summary>
+            <div className="border-t border-white/10 px-5 py-5 text-[16px]">
+              <RichText text={day.dailyPrayers} />
+            </div>
+          </details>
+        )}
+
         {/* Tema */}
         {day.theme && (
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-10">
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={day.dailyPrayers ? "mt-6" : "mt-10"}>
             <Glass className="p-6 sm:p-8">
               <h2 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] text-[#f5c867]">
-                <BookOpen className="h-4 w-4" aria-hidden="true" /> El tema del día
+                <BookOpen className="h-4 w-4" aria-hidden="true" /> El camino de hoy
               </h2>
-              <div className="whitespace-pre-line text-[17px] leading-relaxed text-white/90">{day.theme}</div>
+              <div className="text-[17px]">
+                <RichText text={day.theme} />
+              </div>
               {day.source && <p className="mt-5 text-xs text-white/50">Fuente: {day.source}</p>}
             </Glass>
           </motion.section>

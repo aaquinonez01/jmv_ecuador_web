@@ -31,6 +31,7 @@ export interface FiestaPublic {
 }
 
 export interface FiestaDayContent {
+  dailyPrayers: string | null;
   dayNumber: number;
   label: string;
   date: string;

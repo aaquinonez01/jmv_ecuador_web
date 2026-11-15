@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Camera, LogOut, Sparkles, Trophy, Users } from "lucide-react";
 import StarField from "@/components/calendario/StarField";
-import { getFiesta, getMe, logout } from "@/lib/fiestas/api";
+import { getComunidades, getFiesta, getMe, hasSession, logout } from "@/lib/fiestas/api";
 import { daysBetween, longDate, pieceInfo, PIECES } from "@/lib/fiestas/pieces";
 import type { FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import AuthDialog from "./AuthDialog";
@@ -47,6 +47,8 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
 
   useEffect(() => {
     load();
+    // Las comunidades del registro se piden de una vez para que el formulario abra listo
+    if (!hasSession()) getComunidades().catch(() => undefined);
   }, [load]);
 
   const earned = useMemo(() => {

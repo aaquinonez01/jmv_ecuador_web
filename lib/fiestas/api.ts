@@ -113,23 +113,34 @@ export interface ComunidadOption {
   zona?: { id: string; nombre: string } | null;
 }
 
-export async function getComunidades() {
-  return (await api().get<ComunidadOption[]>("/comunidades")).data;
+// Se piden una sola vez y en cuanto carga la página: al abrir el registro ya están listas
+let comunidadesCache: Promise<ComunidadOption[]> | null = null;
+export function getComunidades() {
+  comunidadesCache ??= api()
+    .get<ComunidadOption[]>("/comunidades")
+    .then((r) => r.data.filter((c) => c.nombre))
+    .catch((e) => {
+      comunidadesCache = null;
+      throw e;
+    });
+  return comunidadesCache;
 }
 
-async function startSession(token: string) {
+function startSession(token: string) {
   setToken(token);
-  await fetch("/api/session", {
+  // La cookie de la web se guarda en segundo plano: no hace esperar al joven
+  void fetch("/api/session", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token }),
+    keepalive: true,
   }).catch(() => null);
 }
 
 export async function login(email: string, password: string) {
   const { data } = await api().post<{ token: string }>("/auth/login", { email: email.trim(), password });
   if (!data?.token) throw new Error("Sin token");
-  await startSession(data.token);
+  startSession(data.token);
 }
 
 export async function register(p: { fullName: string; email: string; password: string; comunidadId: string }) {
@@ -140,7 +151,7 @@ export async function register(p: { fullName: string; email: string; password: s
     comunidadId: p.comunidadId,
   });
   if (!data?.token) throw new Error("Sin token");
-  await startSession(data.token);
+  startSession(data.token);
 }
 
 export async function logout() {

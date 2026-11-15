@@ -1,5 +1,5 @@
 // Piezas de la Medalla Milagrosa que se ganan día a día (el día lo elige el admin).
-// Solo nombran lo que se ve en la medalla; el significado lo da el tema de cada día.
+// Los nombres siguen los símbolos de la novena «Milagrosa, abres caminos».
 
 export type PieceFace = "front" | "back" | "both";
 
@@ -10,15 +10,15 @@ export interface PieceInfo {
 }
 
 export const PIECES: PieceInfo[] = [
-  { id: "maria", name: "La Virgen Inmaculada", face: "front" },
-  { id: "globo", name: "El globo bajo sus pies", face: "front" },
+  { id: "m", name: "La «M» unida a la cruz", face: "back" },
   { id: "rayos", name: "Los rayos de sus manos", face: "front" },
-  { id: "inscripcion", name: "La oración de la Medalla", face: "front" },
+  { id: "corazones", name: "Los dos Corazones", face: "back" },
+  { id: "globo", name: "El globo bajo sus pies", face: "front" },
+  { id: "serpiente", name: "La serpiente vencida", face: "front" },
+  { id: "cruz", name: "La cruz sobre la «M»", face: "back" },
+  { id: "inscripcion", name: "La jaculatoria", face: "front" },
   { id: "estrellas", name: "Las doce estrellas", face: "back" },
-  { id: "m", name: "La M de María", face: "back" },
-  { id: "cruz", name: "La cruz", face: "back" },
-  { id: "corazon_jesus", name: "El Corazón de Jesús", face: "back" },
-  { id: "corazon_maria", name: "El Corazón de María", face: "back" },
+  { id: "maria", name: "La Virgen Inmaculada", face: "front" },
   { id: "medalla", name: "La Medalla completa", face: "both" },
 ];
 

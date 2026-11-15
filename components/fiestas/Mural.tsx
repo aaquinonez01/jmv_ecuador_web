@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Lightbox from "yet-another-react-lightbox";
+import dynamic from "next/dynamic";
 import "yet-another-react-lightbox/styles.css";
 import { motion } from "framer-motion";
 import { Camera } from "lucide-react";
 import { getMyReactions, getPhotos, hasSession, react } from "@/lib/fiestas/api";
 import { REACTIONS, type FiestaDaySummary, type FiestaPhoto, type Reaction } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
+
+// El visor de fotos se descarga solo cuando alguien abre una foto
+const Lightbox = dynamic(() => import("yet-another-react-lightbox"), { ssr: false });
 
 // Mural "Así lo vivimos": fotos aprobadas de cada comunidad, por día, con reacciones.
 
@@ -152,12 +155,14 @@ export default function Mural({
         </div>
       )}
 
+      {index >= 0 && (
       <Lightbox
-        open={index >= 0}
+        open
         close={() => setIndex(-1)}
         index={Math.max(0, index)}
         slides={(photos ?? []).map((p) => ({ src: p.url, alt: p.caption ?? p.comunidad }))}
       />
+      )}
     </div>
   );
 }

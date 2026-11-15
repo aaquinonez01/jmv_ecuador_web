@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const HEART =
   "M0 10C0 2 6-4 13-4c5 0 9 3 11 7 2-4 6-7 11-7 7 0 13 6 13 14 0 14-16 24-24 32C16 34 0 24 0 10Z";
 const FLAME = "M24 3c-4-5-2-10 0-14 2 4 4 9 0 14Z";
-const INSCRIPTION = "OH MARÍA SIN PECADO CONCEBIDA, ROGAD POR NOSOTROS QUE RECURRIMOS A VOS";
+const INSCRIPTION = "OH MARÍA, SIN PECADO CONCEBIDA, RUEGA POR NOSOTROS QUE RECURRIMOS A TI";
 
 const STARS = Array.from({ length: 12 }, (_, i) => {
   const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
@@ -111,6 +111,12 @@ function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>;
                 <path d="M74 205 Q100 198 126 205 M100 196 V214 M84 199 Q80 207 82 214 M116 199 Q120 207 118 214" strokeWidth="1.2" />
               </g>
             </Piece>
+            <Piece id="serpiente" earned={earned} highlight={highlight}>
+              <g strokeWidth="2.2">
+                <path d="M58 206 C66 196 74 212 84 204 S100 196 110 204 S128 210 136 200" />
+                <path d="M136 200 C139 196 145 196 146 200 C145 204 139 204 136 200 Z" strokeWidth="1.6" />
+              </g>
+            </Piece>
             <Piece id="maria" earned={earned} highlight={highlight} fill>
               <g strokeWidth="2.2">
                 <circle cx="100" cy="74" r="9" />
@@ -159,15 +165,14 @@ function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>;
             <Piece id="m" earned={earned} highlight={highlight}>
               <path d="M72 164 V122 L100 150 L128 122 V164 M100 108 V150" strokeWidth="5" />
             </Piece>
-            <Piece id="corazon_jesus" earned={earned} highlight={highlight} fill>
+            <Piece id="corazones" earned={earned} highlight={highlight} fill>
               <g transform="translate(51 186) scale(0.82)" strokeWidth="2.4">
                 <path d={HEART} />
                 <path d="M1 12c9 5 37 5 46 0M2 18c9 5 35 5 44 0" fill="none" />
                 <path d={FLAME} />
                 <path d="M24 -14v-10M20 -20h8" fill="none" />
               </g>
-            </Piece>
-            <Piece id="corazon_maria" earned={earned} highlight={highlight} fill>
+
               <g transform="translate(110 186) scale(0.82)" strokeWidth="2.4">
                 <path d={HEART} />
                 <path d="M-12 -8L20 20M-14 0l10-10M-12 -8l-5-5" fill="none" />
