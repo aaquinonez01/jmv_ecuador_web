@@ -96,6 +96,10 @@ export interface TestimonialItem {
   role: string;
   location?: string | null;
   quote: string;
+  /** Testimonio largo (opcional): tiene su propia página */
+  title?: string | null;
+  story?: string | null;
+  hasStory?: boolean;
   rating: number;
   imageUrl?: string | null;
   active: boolean;
@@ -109,6 +113,8 @@ export interface TestimonialPayload {
   role: string;
   location?: string;
   quote: string;
+  title?: string;
+  story?: string;
   rating?: number;
   active?: boolean;
   displayOrder?: number;

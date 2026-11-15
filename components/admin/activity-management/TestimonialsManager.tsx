@@ -38,6 +38,8 @@ interface TestimonialFormState {
   role: string;
   location: string;
   quote: string;
+  title: string;
+  story: string;
   rating: string;
   active: boolean;
   displayOrder: string;
@@ -49,6 +51,8 @@ const emptyForm = (): TestimonialFormState => ({
   role: "",
   location: "",
   quote: "",
+  title: "",
+  story: "",
   rating: "5",
   active: true,
   displayOrder: "",
@@ -191,6 +195,8 @@ export default function TestimonialsManager() {
       role: item.role,
       location: item.location || "",
       quote: item.quote,
+      title: item.title || "",
+      story: item.story || "",
       rating: String(item.rating || 5),
       active: item.active,
       displayOrder: String(item.displayOrder || ""),
@@ -218,6 +224,8 @@ export default function TestimonialsManager() {
         role: form.role.trim(),
         location: form.location.trim() || undefined,
         quote: form.quote.trim(),
+        title: form.title.trim(),
+        story: form.story.trim(),
         rating: Number(form.rating || "5"),
         active: form.active,
         displayOrder: form.displayOrder ? Number(form.displayOrder) : undefined,
@@ -622,7 +630,29 @@ export default function TestimonialsManager() {
             }
             placeholder="Texto del testimonio"
             rows={5}
+            hint="La frase corta que sale en el carrusel del inicio."
           />
+
+          <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs font-semibold text-slate-700">Testimonio completo (opcional)</p>
+            <p className="text-xs text-slate-500">
+              Si lo llenas, el carrusel muestra el botón «Leer el testimonio completo» y se crea su propia página. Deja una
+              línea en blanco entre párrafos; una línea sola entre «comillas» se destaca como frase.
+            </p>
+            <InputField
+              label="Título"
+              value={form.title}
+              onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+              placeholder="Ej. Ser Hija de María: un regalo que transforma mi vida"
+            />
+            <TextareaField
+              label="Texto completo"
+              value={form.story}
+              onChange={(event) => setForm((current) => ({ ...current, story: event.target.value }))}
+              placeholder="Pega aquí el testimonio completo"
+              rows={12}
+            />
+          </div>
 
           <label className="inline-flex h-9 w-full cursor-pointer items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50">
             <input

@@ -27,6 +27,9 @@ function buildTestimonialFormData(payload: TestimonialPayload): FormData {
   appendText(formData, "role", payload.role);
   appendText(formData, "location", payload.location);
   appendText(formData, "quote", payload.quote);
+  // se envían aunque estén vacíos: así se puede quitar el testimonio largo
+  if (payload.title !== undefined) formData.append("title", payload.title);
+  if (payload.story !== undefined) formData.append("story", payload.story);
   appendText(formData, "rating", payload.rating);
   appendText(formData, "active", payload.active);
   appendText(formData, "displayOrder", payload.displayOrder);

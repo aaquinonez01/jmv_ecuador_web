@@ -113,8 +113,9 @@ export default function TestimonialsSectionClient({
 
   return (
     <section
+      id="testimonios"
       aria-labelledby="testimonios-titulo"
-      className="relative overflow-hidden bg-gradient-to-b from-page via-section-blue to-page py-16 sm:py-24"
+      className="relative scroll-mt-20 overflow-hidden bg-gradient-to-b from-page via-section-blue to-page py-16 sm:py-24"
     >
       {/* Motivo de la Medalla, muy sutil, detrás del contenido */}
       <StarsRing className="pointer-events-none absolute -right-40 top-10 hidden h-[34rem] w-[34rem] text-accent-gold opacity-[0.07] lg:block" />
@@ -186,6 +187,16 @@ export default function TestimonialsSectionClient({
                       <p className="whitespace-pre-line">{item.quote.replace(/\r?\n/g, " ")}</p>
                     </blockquote>
                   </ReadMore>
+
+                  {item.hasStory && (
+                    <Link
+                      href={`/testimonios/${item.id}`}
+                      className={cn(buttonVariants({ variant: "primary", size: "md" }), "mt-6")}
+                    >
+                      Leer el testimonio completo
+                      <ChevronRight className="h-4 w-4" aria-hidden />
+                    </Link>
+                  )}
 
                   <figcaption className="mt-6 sm:mt-8">
                     <span aria-hidden className="mx-auto mb-4 block h-1 w-12 rounded-full bg-accent-gold md:mx-0" />
