@@ -63,7 +63,13 @@ export default function DayPath({
               >
                 {d.label}
               </span>
-              <span className="text-xs font-medium text-white/60">{shortDate(d.date)}</span>
+              {d.isToday && d.state === "open" && !isDone ? (
+                <span className="rounded-full bg-[#d3302f] px-2 py-0.5 text-[10px] font-bold uppercase text-white shadow-[0_2px_0_#8f1f1e]">
+                  Hoy
+                </span>
+              ) : (
+                <span className="text-xs font-medium text-white/60">{shortDate(d.date)}</span>
+              )}
             </div>
 
             <div className="flex min-h-12 items-center gap-3">
@@ -96,11 +102,6 @@ export default function DayPath({
               {isDone ? "Ganaste: " : "Pieza: "}
               <span className="font-semibold">{pieceInfo(d.piece).name}</span>
             </p>
-            {d.isToday && d.state === "open" && !isDone && (
-              <span className="absolute right-2 top-11 rounded-full bg-[#d3302f] px-2 py-0.5 text-[10px] font-bold uppercase text-white shadow-[0_2px_0_#8f1f1e]">
-                Hoy
-              </span>
-            )}
           </motion.div>
         );
         return (
