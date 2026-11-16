@@ -197,11 +197,14 @@ export default function AuthDialog({
   onClose,
   onDone,
   initialTab = "registro",
+  joinTitle,
 }: {
   open: boolean;
   onClose: () => void;
   onDone: () => void;
   initialTab?: Tab;
+  /** Título del registro (por defecto, el de la novena) */
+  joinTitle?: string;
 }) {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [picking, setPicking] = useState(false);
@@ -255,7 +258,7 @@ export default function AuthDialog({
     }
   };
 
-  const title = picking ? "Tu comunidad" : tab === "registro" ? "Únete a la novena" : "Qué bueno verte";
+  const title = picking ? "Tu comunidad" : tab === "registro" ? (joinTitle ?? "Únete a la novena") : "Qué bueno verte";
 
   return (
     <Sheet open={open} onClose={picking ? () => setPicking(false) : onClose} title={title}>

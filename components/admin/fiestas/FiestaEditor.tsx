@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Camera,
   Check,
   ChevronDown,
   ExternalLink,
   Eye,
+  ImagePlus,
   Plus,
   Save,
   Search,
@@ -25,7 +27,10 @@ import TextareaField from "@/components/admin/ui/TextareaField";
 import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { PublishedBadge, useToastRef } from "@/components/admin/formation/shared";
 import {
+  addDayAPI,
   adminError,
+  deleteDayAPI,
+  deleteFiestaAPI,
   deletePhotoAPI,
   getFiestaAPI,
   listLeadsAPI,
@@ -34,6 +39,7 @@ import {
   setPhotoStatusAPI,
   updateDayAPI,
   updateFiestaAPI,
+  uploadSymbolImageAPI,
   type AdminDay,
   type AdminFiesta,
   type AdminPhoto,
@@ -117,17 +123,27 @@ export default function FiestaEditor({ id }: { id: string }) {
 
         {tab === "dias" && (
           <div className="space-y-3">
+            {fiesta.days.length === 0 && (
+              <p className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+                Esta fiesta todavía no tiene días. Agrega el primero aquí abajo.
+              </p>
+            )}
             {fiesta.days.map((d) => (
               <DayCard
                 key={d.id}
                 day={d}
                 today={fiesta.today}
                 slug={fiesta.slug}
+                fiestaId={fiesta.id}
+                layers={fiesta.symbolKind === "layers"}
+                baseImage={fiesta.symbolImage}
+                onRemoved={setFiesta}
                 onSaved={(saved) =>
                   setFiesta((f) => (f ? { ...f, days: f.days.map((x) => (x.id === saved.id ? { ...saved, stats: x.stats } : x)) } : f))
                 }
               />
             ))}
+            <AddDay fiesta={fiesta} onAdded={setFiesta} />
           </div>
         )}
         {tab === "fotos" && <PhotosTab id={fiesta.id} onCount={setPending} />}
@@ -142,21 +158,146 @@ export default function FiestaEditor({ id }: { id: string }) {
 
 const emptyQ = (): AdminQuestion => ({ prompt: "", options: ["", "", ""], correctIndex: 0, explanation: "" });
 
+/** Botón para subir una imagen del símbolo (base o capa), con vista previa */
+function ImageField({
+  fiestaId,
+  label,
+  hint,
+  value,
+  under,
+  onChange,
+}: {
+  fiestaId: string;
+  label: string;
+  hint: string;
+  value: string | null;
+  /** Imagen base que se muestra debajo de una capa, para ver cómo queda */
+  under?: string | null;
+  onChange: (url: string | null) => void;
+}) {
+  const toast = useToastRef();
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const pick = async (file?: File) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      onChange(await uploadSymbolImageAPI(fiestaId, file));
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo subir la imagen."));
+    } finally {
+      setBusy(false);
+      if (input.current) input.current.value = "";
+    }
+  };
+
+  return (
+    <div>
+      <p className="mb-1 text-xs font-semibold text-slate-700">{label}</p>
+      <div className="flex items-start gap-3">
+        <div className="relative grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-lg border border-slate-200 bg-[#0f2547]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {under && <img src={under} alt="" className="absolute inset-0 h-full w-full object-contain" />}
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="absolute inset-0 h-full w-full object-contain" />
+          ) : (
+            !under && <ImagePlus className="h-6 w-6 text-white/50" />
+          )}
+        </div>
+        <div className="min-w-0 space-y-2">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" isLoading={busy} icon={<ImagePlus className="h-4 w-4" />} onClick={() => input.current?.click()}>
+              {value ? "Cambiar imagen" : "Subir imagen"}
+            </Button>
+            {value && (
+              <Button size="sm" variant="ghost" onClick={() => onChange(null)}>
+                Quitar
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-slate-500">{hint}</p>
+          <input ref={input} type="file" accept="image/png,image/webp,image/jpeg" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddDay({ fiesta, onAdded }: { fiesta: AdminFiesta; onAdded: (f: AdminFiesta) => void }) {
+  const toast = useToastRef();
+  const [date, setDate] = useState("");
+  const [label, setLabel] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const add = async () => {
+    if (!label.trim()) return toast.current.error('Escribe la etiqueta (por ejemplo "Primer domingo").');
+    if (!date) return toast.current.error("Elige la fecha en que se abre.");
+    setBusy(true);
+    try {
+      onAdded(await addDayAPI(fiesta.id, { date, label: label.trim() }));
+      setDate("");
+      setLabel("");
+      toast.current.success("Día agregado. Ábrelo para escribir su tema.");
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo agregar el día."));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="rounded-xl border border-dashed border-slate-300 bg-white p-4">
+      <h3 className="mb-3 font-semibold text-slate-900">Agregar un día</h3>
+      <div className="grid items-end gap-3 sm:grid-cols-[1fr_180px_auto]">
+        <InputField label="Etiqueta" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Ej. Primer domingo, Día 1" />
+        <InputField label="Se abre el" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <Button icon={<Plus className="h-4 w-4" />} onClick={add} isLoading={busy}>
+          Agregar
+        </Button>
+      </div>
+    </section>
+  );
+}
+
 function DayCard({
   day,
   today,
   slug,
+  fiestaId,
+  layers,
+  baseImage,
   onSaved,
+  onRemoved,
 }: {
   day: AdminDay;
   today: string;
   slug: string;
+  fiestaId: string;
+  /** La fiesta arma una imagen por capas (no la Medalla) */
+  layers: boolean;
+  baseImage: string | null;
   onSaved: (d: AdminDay) => void;
+  onRemoved: (f: AdminFiesta) => void;
 }) {
   const toast = useToastRef();
   const [open, setOpen] = useState(false);
   const [f, setF] = useState(day);
   const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
+
+  const remove = async () => {
+    if (!window.confirm(`¿Quitar "${day.label}"? Se borra su tema y sus preguntas. No se puede deshacer.`)) return;
+    setRemoving(true);
+    try {
+      onRemoved(await deleteDayAPI(day.id));
+      toast.current.success("Día quitado.");
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo quitar el día."));
+      setRemoving(false);
+    }
+  };
 
   useEffect(() => setF(day), [day]);
 
@@ -194,6 +335,7 @@ function DayCard({
         label: f.label.trim(),
         title: f.title.trim(),
         piece: f.piece,
+        ...(layers ? { pieceName: f.pieceName ?? "", layerImage: f.layerImage ?? "" } : {}),
         theme: f.theme ?? "",
         prayer: f.prayer ?? "",
         purpose: f.purpose ?? "",
@@ -219,7 +361,7 @@ function DayCard({
         aria-expanded={open}
       >
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-900 text-sm font-bold text-white">
-          {day.piece === "medalla" ? "★" : day.dayNumber}
+          {!layers && day.piece === "medalla" ? "★" : day.dayNumber}
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-2">
@@ -229,7 +371,7 @@ function DayCard({
             {!day.theme && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">Falta el tema</span>}
           </span>
           <span className="block truncate text-sm text-slate-600">
-            {day.title || "Sin título"} · {pieceInfo(day.piece).name} · {day.questions.length} preguntas
+            {day.title || "Sin título"} · {layers ? day.pieceName || "Sin nombre de lo que se gana" : pieceInfo(day.piece).name} · {day.questions.length} preguntas
           </span>
           <span className="block text-xs text-slate-400">
             {status} · {day.stats.answered} respondieron · {day.stats.purposes} propósitos · {day.stats.photos} fotos
@@ -243,21 +385,41 @@ function DayCard({
           <div className="grid gap-3 sm:grid-cols-4">
             <InputField label="Etiqueta" value={f.label} onChange={(e) => set("label", e.target.value)} hint="Ej. Día 1, Fiesta" />
             <InputField label="Se abre el" type="date" value={f.date} onChange={(e) => set("date", e.target.value)} />
-            <div className="sm:col-span-2">
-              <label className="mb-1 block text-xs font-semibold text-slate-700">Pieza que se gana</label>
-              <select
-                value={f.piece}
-                onChange={(e) => set("piece", e.target.value)}
-                className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
-              >
-                {PIECES.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {layers ? (
+              <InputField
+                className="sm:col-span-2"
+                label="Qué se gana"
+                value={f.pieceName ?? ""}
+                onChange={(e) => set("pieceName", e.target.value)}
+                placeholder="Ej. Primera vela"
+              />
+            ) : (
+              <div className="sm:col-span-2">
+                <label className="mb-1 block text-xs font-semibold text-slate-700">Pieza que se gana</label>
+                <select
+                  value={f.piece}
+                  onChange={(e) => set("piece", e.target.value)}
+                  className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm"
+                >
+                  {PIECES.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
+          {layers && (
+            <ImageField
+              fiestaId={fiestaId}
+              label="Capa que se suma al completar este día"
+              hint="Una imagen PNG con fondo transparente, del mismo tamaño que la imagen base. Se dibuja encima de ella."
+              value={f.layerImage}
+              under={baseImage}
+              onChange={(url) => set("layerImage", url)}
+            />
+          )}
           <InputField label="Título del día" value={f.title} onChange={(e) => set("title", e.target.value)} placeholder="Tal como aparece en la novena" />
           <TextareaField
             label="Tema del día"
@@ -364,6 +526,11 @@ function DayCard({
             >
               <Eye className="h-4 w-4" /> Ver en la web
             </Link>
+            {day.stats.answered === 0 && day.stats.photos === 0 && (
+              <Button variant="ghost" onClick={remove} isLoading={removing} icon={<Trash2 className="h-4 w-4 text-red-600" />}>
+                Quitar día
+              </Button>
+            )}
             {day.published ? (
               <Button variant="outline" onClick={() => save(false)} disabled={saving}>
                 Pasar a borrador
@@ -601,13 +768,32 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
     feastDate: fiesta.feastDate,
     published: fiesta.published,
     earlyPhotos: fiesta.earlyPhotos ?? false,
+    symbolName: fiesta.symbolName ?? "",
+    symbolImage: fiesta.symbolImage,
+    pieceWord: fiesta.pieceWord ?? "",
+    piecesWord: fiesta.piecesWord ?? "",
   });
+  const router = useRouter();
+  const layers = fiesta.symbolKind === "layers";
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const removeFiesta = async () => {
+    if (!window.confirm(`¿Borrar la fiesta "${fiesta.title}" con todos sus días? No se puede deshacer.`)) return;
+    setDeleting(true);
+    try {
+      await deleteFiestaAPI(fiesta.id);
+      router.push("/admin/fiestas");
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo borrar la fiesta."));
+      setDeleting(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
     try {
-      onSaved(await updateFiestaAPI(fiesta.id, f));
+      onSaved(await updateFiestaAPI(fiesta.id, { ...f, symbolImage: f.symbolImage ?? "" }));
       toast.current.success("Guardado.");
     } catch (e) {
       toast.current.error(adminError(e, "No se pudo guardar."));
@@ -635,6 +821,40 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
         hint="Se muestran plegadas al inicio de cada día. Deja una línea en blanco entre párrafos; una línea corta sin punto final se ve como título."
       />
       <InputField label="Día de la fiesta" type="date" value={f.feastDate} onChange={(e) => setF({ ...f, feastDate: e.target.value })} />
+      {layers && (
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div>
+            <p className="text-sm font-semibold text-slate-800">Lo que se va armando</p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Una imagen base y, encima, la capa de cada día completado. La capa de cada día se sube en la pestaña Días.
+            </p>
+          </div>
+          <InputField
+            label="Cómo se llama"
+            value={f.symbolName}
+            onChange={(e) => setF({ ...f, symbolName: e.target.value })}
+            placeholder="Ej. Corona de Adviento"
+            hint='Se usa en frases como "Completa tu Corona de Adviento".'
+          />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <InputField label="Cada parte (singular)" value={f.pieceWord} onChange={(e) => setF({ ...f, pieceWord: e.target.value })} placeholder="Ej. vela" />
+            <InputField
+              label="Las partes (plural)"
+              value={f.piecesWord}
+              onChange={(e) => setF({ ...f, piecesWord: e.target.value })}
+              placeholder="Ej. velas"
+              hint='Se usa en "Llevas 2 de 4 velas".'
+            />
+          </div>
+          <ImageField
+            fiestaId={fiesta.id}
+            label="Imagen base"
+            hint="Lo que se ve antes de ganar nada (por ejemplo, la corona con las velas apagadas). PNG con fondo transparente; se muestra sobre fondo azul oscuro."
+            value={f.symbolImage}
+            onChange={(url) => setF({ ...f, symbolImage: url })}
+          />
+        </div>
+      )}
       <label className="flex items-center gap-2 text-sm text-slate-700">
         <input type="checkbox" checked={f.published} onChange={(e) => setF({ ...f, published: e.target.checked })} />
         Página visible en la web (<code>/fiestas/{fiesta.slug}</code>)
@@ -662,7 +882,10 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
           />
         </button>
       </div>
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button variant="ghost" onClick={removeFiesta} isLoading={deleting} icon={<Trash2 className="h-4 w-4 text-red-600" />}>
+          Borrar fiesta
+        </Button>
         <Button onClick={save} isLoading={saving} icon={<Save className="h-4 w-4" />}>
           Guardar
         </Button>

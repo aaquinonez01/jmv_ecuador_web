@@ -4,7 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Check, Clock, Lock, Sparkles } from "lucide-react";
 import type { FiestaDaySummary, FiestaMe } from "@/lib/fiestas/types";
-import { pieceInfo, shortDate } from "@/lib/fiestas/pieces";
+import { shortDate } from "@/lib/fiestas/pieces";
+import { dayPieceName, isMedal, type FiestaSymbolInfo } from "@/lib/fiestas/symbol";
 import { cn } from "@/lib/utils";
 
 // El camino de los días: hechos (oro), hoy (late), abiertos, en preparación y bloqueados.
@@ -14,20 +15,27 @@ export default function DayPath({
   days,
   me,
   preview = false,
+  fiesta,
 }: {
   slug: string;
   days: FiestaDaySummary[];
   me: FiestaMe | null;
   /** Administradores: todos los días se pueden abrir */
   preview?: boolean;
+  /** Para saber qué símbolo se arma (si falta, la Medalla) */
+  fiesta?: { symbol?: FiestaSymbolInfo | null };
 }) {
   const done = new Set(me?.days.filter((d) => d.answered).map((d) => d.dayNumber));
+  const sym = fiesta ?? {};
+  const medal = isMedal(sym);
+  // Con pocas fechas (cuatro domingos) las tarjetas se reparten a lo ancho
+  const wide = !medal && days.length <= 4;
 
   return (
-    <ol className="relative grid grid-cols-2 gap-3 lg:grid-cols-5">
+    <ol className={cn("relative grid grid-cols-2 gap-3", wide ? "lg:grid-cols-4" : "lg:grid-cols-5")}>
       {days.map((d, i) => {
         const isDone = done.has(d.dayNumber);
-        const isFeast = d.piece === "medalla";
+        const isFeast = medal && d.piece === "medalla";
         const clickable = d.state === "open" || preview;
         const card = (
           <motion.div
@@ -99,8 +107,8 @@ export default function DayPath({
             </div>
 
             <p className={cn("mt-auto text-xs", isDone ? "text-[#ffe7a3]" : "text-white/55")}>
-              {isDone ? "Ganaste: " : "Pieza: "}
-              <span className="font-semibold">{pieceInfo(d.piece).name}</span>
+              {isDone ? "Ganaste: " : medal ? "Pieza: " : "Ganas: "}
+              <span className="font-semibold">{dayPieceName(sym, d)}</span>
             </p>
           </motion.div>
         );

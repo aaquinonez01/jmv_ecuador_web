@@ -32,6 +32,7 @@ export default function Mural({
   onNeedAuth,
   refreshKey,
   isAdmin = false,
+  generic = false,
 }: {
   slug: string;
   days: FiestaDaySummary[];
@@ -39,6 +40,8 @@ export default function Mural({
   refreshKey?: number;
   /** Los administradores pueden quitar fotos desde el mismo mural */
   isAdmin?: boolean;
+  /** Fiestas sin novena: el texto no habla de novena ni triduo */
+  generic?: boolean;
 }) {
   const [day, setDay] = useState<number | undefined>(undefined);
   const [photos, setPhotos] = useState<FiestaPhoto[] | null>(null);
@@ -152,7 +155,7 @@ export default function Mural({
           <Camera className="mx-auto mb-3 h-10 w-10 text-[#f5c867]" aria-hidden="true" />
           <p className="font-semibold text-white">Todavía no hay fotos {day ? "de este día" : ""}</p>
           <p className="mt-1 text-sm text-white/65">
-            El responsable de cada comunidad sube cómo vivieron la novena, el triduo o la fiesta.
+            {generic ? "El responsable de cada comunidad sube cómo lo vivieron." : "El responsable de cada comunidad sube cómo vivieron la novena, el triduo o la fiesta."}
           </p>
         </div>
       ) : (

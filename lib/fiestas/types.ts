@@ -1,5 +1,7 @@
 // Fiestas del Año Vicenciano en la web (novena / triduo / día)
 
+import type { FiestaSymbolInfo } from "./symbol";
+
 export type DayState = "locked" | "open" | "soon";
 export type FiestaMode = "novena" | "triduo" | "dia";
 export type Reaction = "pray" | "heart" | "fire";
@@ -10,6 +12,9 @@ export interface FiestaDaySummary {
   label: string;
   date: string;
   piece: string;
+  /** Símbolo por capas: nombre e imagen de lo que se gana este día */
+  pieceName?: string | null;
+  layerImage?: string | null;
   state: DayState;
   isToday: boolean;
   title: string | null;
@@ -24,6 +29,8 @@ export interface FiestaPublic {
   subtitle: string | null;
   intro: string | null;
   feastDate: string;
+  /** Qué se arma al completar los días (si falta, es la Medalla) */
+  symbol?: FiestaSymbolInfo | null;
   today: string;
   participants: number;
   comunidades: number;
@@ -38,6 +45,7 @@ export interface FiestaDayContent {
   isToday: boolean;
   title: string;
   piece: string;
+  pieceName?: string | null;
   theme: string | null;
   prayer: string | null;
   purpose: string | null;

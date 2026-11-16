@@ -7,12 +7,13 @@ import { ArrowRight, Camera, LogOut, Sparkles, Trophy, Users } from "lucide-reac
 import StarField from "@/components/calendario/StarField";
 import { getComunidades, getFiesta, getMe, hasSession, logout, resetMine } from "@/lib/fiestas/api";
 import { AdminBanner } from "./DayExperience";
-import { daysBetween, longDate, pieceInfo, PIECES, shortDate } from "@/lib/fiestas/pieces";
+import { daysBetween, longDate, shortDate } from "@/lib/fiestas/pieces";
+import { dayPieceName, isMedal, symbolWords } from "@/lib/fiestas/symbol";
 import type { FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import AuthDialog from "./AuthDialog";
 import CommunityPanel from "./CommunityPanel";
 import DayPath from "./DayPath";
-import Medal from "./Medal";
+import FiestaSymbol from "./FiestaSymbol";
 import Mural from "./Mural";
 import Ranking from "./Ranking";
 import { FiestaButton, FiestaStyles, Glass } from "./ui";
@@ -70,6 +71,8 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
   const lastNovena = fiesta.days.filter((d) => d !== feastDay).at(-1);
   const startsIn = first ? daysBetween(fiesta.today, first.date) : 0;
   const totalPieces = fiesta.days.length;
+  const medal = isMedal(fiesta);
+  const words = symbolWords(fiesta);
 
   return (
     <div data-fiesta className="relative isolate overflow-hidden bg-[#070d1d] text-white">
@@ -123,14 +126,26 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
               <ol className="grid gap-3 sm:grid-cols-2">
                 {[
                   ["Crea tu cuenta", "Con tu nombre, tu comunidad, tu correo y una contraseña."],
-                  [
-                    "Entra cada día",
-                    first && feastDay
-                      ? `Del ${shortDate(first.date)} al ${shortDate(lastNovena?.date ?? first.date)} se abre un camino nuevo; el ${shortDate(feastDay.date)} es la fiesta. Lee el tema y reza.`
-                      : "Cada día se abre un camino nuevo. Lee el tema y reza.",
-                  ],
+                  medal
+                    ? [
+                        "Entra cada día",
+                        first && feastDay
+                          ? `Del ${shortDate(first.date)} al ${shortDate(lastNovena?.date ?? first.date)} se abre un camino nuevo; el ${shortDate(feastDay.date)} es la fiesta. Lee el tema y reza.`
+                          : "Cada día se abre un camino nuevo. Lee el tema y reza.",
+                      ]
+                    : [
+                        "Entra en cada fecha",
+                        first
+                          ? `Desde el ${shortDate(first.date)} se abre un tema nuevo en cada fecha del camino. Lee el tema y reza.`
+                          : "En cada fecha del camino se abre un tema nuevo. Lee el tema y reza.",
+                      ],
                   ["Responde y cumple", "Cada acierto da puntos y responder el mismo día da un bono. Marca «Lo cumplí» en el propósito."],
-                  ["Arma tu Medalla", "Cada día ganas una pieza. Tus puntos suman para ti y para tu comunidad."],
+                  medal
+                    ? ["Arma tu Medalla", "Cada día ganas una pieza. Tus puntos suman para ti y para tu comunidad."]
+                    : [
+                        `Completa tu ${words.name}`,
+                        `Completa cada tema y reúne ${totalPieces} ${words.pieces}. Tus puntos suman para ti y para tu comunidad.`,
+                      ],
                 ].map(([t, d], i) => (
                   <li key={t} className="flex gap-3">
                     <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f5b83d] text-sm font-bold text-[#3b2600] shadow-[0_3px_0_#9a6504]">
@@ -183,7 +198,7 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
             ) : (
               <>
                 <FiestaButton tone="gold" className="px-7 text-base" onClick={() => setAuth("registro")}>
-                  Únete a la novena
+                  {medal ? "Únete a la novena" : "Quiero participar"}
                   <ArrowRight className="h-5 w-5" aria-hidden="true" />
                 </FiestaButton>
                 <FiestaButton tone="glass" onClick={() => setAuth("entrar")}>
@@ -212,15 +227,15 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
             className="fiesta-rays absolute -inset-24 -z-10 opacity-40 [background:repeating-conic-gradient(from_0deg,rgba(245,184,61,0.22)_0deg_4deg,transparent_4deg_15deg)] [mask-image:radial-gradient(circle,black_25%,transparent_68%)]"
           />
           <div className="fiesta-float">
-            <Medal earned={earned} />
+            <FiestaSymbol fiesta={fiesta} earned={earned} />
           </div>
           <p className="mt-3 text-center text-sm text-white/75">
             {me ? (
               <>
-                Llevas <strong className="text-[#f5c867]">{earned.size}</strong> de {totalPieces} piezas
+                Llevas <strong className="text-[#f5c867]">{earned.size}</strong> de {totalPieces} {words.pieces}
               </>
             ) : (
-              "Cada día completado suma una pieza a tu Medalla"
+              medal ? "Cada día completado suma una pieza a tu Medalla" : `Cada tema completado suma a tu ${words.name}`
             )}
           </p>
         </div>
@@ -228,14 +243,14 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
 
       {/* ── Camino de los días ── */}
       <section id="dias" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">
-        <SectionTitle kicker="Día a día" title="El camino de la novena" icon={Sparkles} />
+        <SectionTitle kicker={medal ? "Día a día" : "Paso a paso"} title={medal ? "El camino de la novena" : "El camino"} icon={Sparkles} />
         {isAdmin && (
           <AdminBanner>
             <FiestaButton
               tone="white"
               className="min-h-10 px-4 text-sm"
               onClick={async () => {
-                if (!window.confirm("¿Borrar tus respuestas de prueba y empezar la medalla desde cero?")) return;
+                if (!window.confirm("¿Borrar tus respuestas de prueba y empezar desde cero?")) return;
                 await resetMine(slug).catch(() => undefined);
                 load();
               }}
@@ -244,17 +259,19 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
             </FiestaButton>
           </AdminBanner>
         )}
-        <DayPath slug={slug} days={fiesta.days} me={me} preview={isAdmin} />
+        <DayPath slug={slug} days={fiesta.days} me={me} preview={isAdmin} fiesta={fiesta} />
         {me && earned.size > 0 && (
           <div className="mt-6 flex flex-wrap gap-2">
-            {PIECES.filter((p) => earned.has(p.id)).map((p) => (
-              <span
-                key={p.id}
-                className="rounded-full border border-[#f5b83d]/50 bg-[#f5b83d]/15 px-3 py-1 text-xs font-semibold text-[#ffe7a3]"
-              >
-                ✦ {pieceInfo(p.id).name}
-              </span>
-            ))}
+            {fiesta.days
+              .filter((d) => earned.has(d.piece))
+              .map((d) => (
+                <span
+                  key={d.dayNumber}
+                  className="rounded-full border border-[#f5b83d]/50 bg-[#f5b83d]/15 px-3 py-1 text-xs font-semibold text-[#ffe7a3]"
+                >
+                  ✦ {dayPieceName(fiesta, d)}
+                </span>
+              ))}
           </div>
         )}
       </section>
@@ -263,7 +280,7 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {me && (
         <section id="comunidad" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">
           <SectionTitle kicker="Juntos" title="Tu comunidad" icon={Users} />
-          <CommunityPanel slug={slug} days={fiesta.days} onChanged={() => setRefresh((r) => r + 1)} />
+          <CommunityPanel slug={slug} days={fiesta.days} onChanged={() => setRefresh((r) => r + 1)} showModes={medal} />
         </section>
       )}
 
@@ -276,12 +293,13 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {/* ── Mural ── */}
       <section id="mural" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24">
         <SectionTitle kicker="Así lo vivimos" title="Mural de las comunidades" icon={Camera} />
-        <Mural slug={slug} days={fiesta.days} onNeedAuth={() => setAuth("registro")} refreshKey={refresh} isAdmin={isAdmin} />
+        <Mural slug={slug} days={fiesta.days} onNeedAuth={() => setAuth("registro")} refreshKey={refresh} isAdmin={isAdmin} generic={!medal} />
       </section>
 
       <AuthDialog
         open={auth !== null}
         initialTab={auth ?? "registro"}
+        joinTitle={medal ? undefined : "Únete"}
         onClose={() => setAuth(null)}
         onDone={() => {
           setAuth(null);

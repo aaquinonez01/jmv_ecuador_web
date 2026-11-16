@@ -12,7 +12,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const fiesta = await fetchFiesta(slug).catch(() => null);
   if (!fiesta) return { title: "Fiesta no encontrada" };
   const description =
-    fiesta.subtitle ?? "Vive la fiesta con JMV Ecuador: un tema cada día, preguntas, puntos y tu Medalla por armar.";
+    fiesta.subtitle ??
+    ((fiesta.symbol?.kind ?? "medal") === "medal"
+      ? "Vive la fiesta con JMV Ecuador: un tema cada día, preguntas, puntos y tu Medalla por armar."
+      : "Vívelo con JMV Ecuador: temas para orar, preguntas, puntos y un símbolo que se completa paso a paso.");
   return {
     title: fiesta.title,
     description,

@@ -2,16 +2,50 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronRight, Plus, Sparkles } from "lucide-react";
+import Button from "@/components/admin/ui/Button";
+import InputField from "@/components/admin/ui/InputField";
+import Modal from "@/components/admin/ui/Modal";
 import LoadingSpinner from "@/components/admin/ui/LoadingSpinner";
 import PageHeader, { PageBody } from "@/components/admin/layout/PageHeader";
 import { PublishedBadge, useToastRef } from "@/components/admin/formation/shared";
-import { adminError, listFiestasAPI, type AdminFiestaRow } from "@/lib/fiestas/admin-api";
+import { adminError, createFiestaAPI, listFiestasAPI, type AdminFiestaRow } from "@/lib/fiestas/admin-api";
+import type { SymbolKind } from "@/lib/fiestas/symbol";
+
+/** "Adviento 2026" → "adviento-2026" */
+const toSlug = (t: string) =>
+  t
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
 import { longDate } from "@/lib/fiestas/pieces";
 
 export default function FiestasList() {
   const toast = useToastRef();
+  const router = useRouter();
   const [rows, setRows] = useState<AdminFiestaRow[] | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ title: "", slug: "", slugTouched: false, feastDate: "", symbolKind: "layers" as SymbolKind });
+
+  const create = async () => {
+    const slug = form.slug || toSlug(form.title);
+    if (form.title.trim().length < 3) return toast.current.error("Escribe el nombre de la fiesta.");
+    if (slug.length < 3) return toast.current.error("Escribe la dirección de la página.");
+    if (!form.feastDate) return toast.current.error("Elige el día de la fiesta.");
+    setSaving(true);
+    try {
+      const f = await createFiestaAPI({ title: form.title.trim(), slug, feastDate: form.feastDate, symbolKind: form.symbolKind });
+      router.push(`/admin/fiestas/${f.id}`);
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo crear la fiesta."));
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     listFiestasAPI()
@@ -29,6 +63,11 @@ export default function FiestasList() {
         description="Novenas, triduos y fiestas del Año Vicenciano en la web: el tema de cada día, sus preguntas con puntos, el propósito y el mural de fotos de las comunidades."
         icon={<Sparkles className="h-5 w-5" />}
         breadcrumbs={[{ label: "Fiestas" }]}
+        actions={
+          <Button icon={<Plus className="h-4 w-4" />} onClick={() => setCreating(true)}>
+            Nueva fiesta
+          </Button>
+        }
       />
       <PageBody>
         {!rows ? (
@@ -68,6 +107,67 @@ export default function FiestasList() {
             ))}
           </ul>
         )}
+        <Modal isOpen={creating} onClose={() => setCreating(false)} title="Nueva fiesta" size="md">
+          <div className="space-y-4 px-5 pb-5">
+            <InputField
+              label="Nombre"
+              required
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value, slug: f.slugTouched ? f.slug : toSlug(e.target.value) }))}
+              placeholder="Ej. Adviento"
+            />
+            <InputField
+              label="Dirección de la página"
+              required
+              value={form.slug}
+              onChange={(e) => setForm((f) => ({ ...f, slug: toSlug(e.target.value), slugTouched: true }))}
+              hint={`Quedará en /fiestas/${form.slug || "nombre"}. Después no se puede cambiar.`}
+            />
+            <InputField
+              label="Día de la fiesta"
+              type="date"
+              required
+              value={form.feastDate}
+              onChange={(e) => setForm((f) => ({ ...f, feastDate: e.target.value }))}
+              hint="El gran día al que lleva el camino. La página cuenta los días que faltan."
+            />
+            <fieldset>
+              <legend className="mb-1.5 text-sm font-medium text-slate-800">Qué se va armando</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {(
+                  [
+                    ["layers", "Una imagen por capas", "Subes una imagen base y una capa por cada día (velas, figuras…)."],
+                    ["medal", "La Medalla Milagrosa", "El dibujo de la Medalla con sus piezas."],
+                  ] as const
+                ).map(([id, label, hint]) => (
+                  <label
+                    key={id}
+                    className={`cursor-pointer rounded-lg border p-3 text-sm ${form.symbolKind === id ? "border-jmv-blue bg-blue-50" : "border-slate-300 bg-white"}`}
+                  >
+                    <input
+                      type="radio"
+                      name="symbolKind"
+                      className="sr-only"
+                      checked={form.symbolKind === id}
+                      onChange={() => setForm((f) => ({ ...f, symbolKind: id }))}
+                    />
+                    <span className="block font-semibold text-slate-900">{label}</span>
+                    <span className="block text-xs text-slate-500">{hint}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <p className="text-xs text-slate-500">La fiesta se crea oculta. Agrega sus días y publícala cuando esté lista.</p>
+            <div className="flex justify-end gap-3 pt-1">
+              <Button variant="outline" onClick={() => setCreating(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={create} isLoading={saving}>
+                Crear fiesta
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </PageBody>
     </>
   );

@@ -1,4 +1,5 @@
 import { getAxiosClient } from "@/config/axios.config";
+import type { SymbolKind } from "./symbol";
 import type { PhotoStatus } from "./types";
 
 // Administración de fiestas (solo administradores)
@@ -18,6 +19,9 @@ export interface AdminDay {
   label: string;
   title: string;
   piece: string;
+  /** Símbolo por capas: nombre e imagen de lo que se gana este día */
+  pieceName: string | null;
+  layerImage: string | null;
   theme: string | null;
   prayer: string | null;
   purpose: string | null;
@@ -37,6 +41,11 @@ export interface AdminFiesta {
   feastDate: string;
   published: boolean;
   earlyPhotos: boolean;
+  symbolKind: SymbolKind;
+  symbolName: string | null;
+  symbolImage: string | null;
+  pieceWord: string | null;
+  piecesWord: string | null;
   today: string;
   days: AdminDay[];
 }
@@ -79,10 +88,24 @@ export const listFiestasAPI = async () => (await api().get<AdminFiestaRow[]>("/a
 export const getFiestaAPI = async (id: string) => (await api().get<AdminFiesta>(`/admin/fiestas/${id}`)).data;
 export const updateFiestaAPI = async (
   id: string,
-  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published" | "earlyPhotos">>,
+  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published" | "earlyPhotos" | "symbolKind" | "symbolName" | "symbolImage" | "pieceWord" | "piecesWord">>,
 ) => (await api().put<AdminFiesta>(`/admin/fiestas/${id}`, p)).data;
 export const updateDayAPI = async (dayId: string, p: Partial<Omit<AdminDay, "id" | "dayNumber" | "stats">>) =>
   (await api().put<AdminDay>(`/admin/fiestas/days/${dayId}`, p)).data;
+export const createFiestaAPI = async (p: { title: string; slug: string; feastDate: string; symbolKind: SymbolKind }) =>
+  (await api().post<AdminFiesta>("/admin/fiestas", p)).data;
+export const deleteFiestaAPI = async (id: string) => {
+  await api().delete(`/admin/fiestas/${id}`);
+};
+export const addDayAPI = async (id: string, p: { date: string; label: string }) =>
+  (await api().post<AdminFiesta>(`/admin/fiestas/${id}/days`, p)).data;
+export const deleteDayAPI = async (dayId: string) => (await api().delete<AdminFiesta>(`/admin/fiestas/days/${dayId}`)).data;
+/** Sube una imagen del símbolo (base o capa) y devuelve su dirección */
+export const uploadSymbolImageAPI = async (id: string, file: File) => {
+  const body = new FormData();
+  body.append("image", file);
+  return (await api().post<{ url: string }>(`/admin/fiestas/${id}/image`, body)).data.url;
+};
 export const listPhotosAPI = async (id: string, status?: PhotoStatus) =>
   (await api().get<AdminPhoto[]>(`/admin/fiestas/${id}/photos`, { params: status ? { status } : {} })).data;
 export const setPhotoStatusAPI = async (photoId: string, status: PhotoStatus) =>

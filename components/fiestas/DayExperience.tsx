@@ -29,11 +29,12 @@ import {
   statusOf,
 } from "@/lib/fiestas/api";
 import { longDate, pieceInfo } from "@/lib/fiestas/pieces";
+import { dayPieceName, isMedal, symbolWords } from "@/lib/fiestas/symbol";
 import { makeShareCard, shareCard } from "@/lib/fiestas/share-card";
 import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
 import AuthDialog from "./AuthDialog";
-import Medal from "./Medal";
+import FiestaSymbol from "./FiestaSymbol";
 import RichText from "./RichText";
 import { Confetti, FiestaButton, FiestaStyles, Glass, Sheet } from "./ui";
 
@@ -119,7 +120,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
             href={`/fiestas/${slug}`}
             className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-5 font-semibold shadow-[0_3px_0_rgba(0,0,0,0.25)]"
           >
-            <ArrowLeft className="h-4 w-4" /> Volver a la novena
+            <ArrowLeft className="h-4 w-4" /> Volver
           </Link>
         </div>
       </Shell>
@@ -127,7 +128,12 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   }
 
   const { fiesta, day } = state;
-  const piece = pieceInfo(day.piece);
+  const medal = isMedal(fiesta);
+  const words = symbolWords(fiesta);
+  const summary = fiesta.days.find((d) => d.dayNumber === dayNumber);
+  const piece = { ...pieceInfo(day.piece), name: dayPieceName(fiesta, summary ?? day) };
+  /** Con este día quedó completo el símbolo */
+  const complete = medal ? day.piece === "medalla" : fiesta.days.every((d) => earned.has(d.piece));
   const q = day.questions[step];
   const idx = fiesta.days.findIndex((d) => d.dayNumber === dayNumber);
   const prev = fiesta.days[idx - 1];
@@ -187,14 +193,17 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       const url = `${window.location.host}/fiestas/${slug}`;
       const blob = await makeShareCard({
         fiestaTitle: fiesta.title,
-        headline: day.piece === "medalla" ? "¡Completé mi Medalla!" : `Completé el ${day.label.toLowerCase()}`,
+        headline: complete ? `¡Completé mi ${words.name}!` : `Completé el ${day.label.toLowerCase()}`,
         piece: `✦ ${piece.name}`,
         earned: [...earned],
         face: piece.face === "back" ? "back" : "front",
-        progress:
-          day.piece === "medalla"
-            ? undefined
-            : `${earned.size} de ${fiesta.days.length} piezas de mi Medalla`,
+        progress: complete ? undefined : `${earned.size} de ${fiesta.days.length} ${words.pieces} de mi ${words.name}`,
+        layers: medal
+          ? undefined
+          : {
+              base: fiesta.symbol?.image ?? null,
+              images: fiesta.days.filter((d) => d.layerImage && earned.has(d.piece)).map((d) => d.layerImage!),
+            },
         footer: "JMV Ecuador",
         url,
       });
@@ -241,7 +250,8 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
             </p>
           </div>
           <div className="mx-auto w-[130px] sm:w-[150px]">
-            <Medal
+            <FiestaSymbol
+              fiesta={fiesta}
               earned={earned}
               initialFace={piece.face === "back" ? "back" : "front"}
               showFlip={false}
@@ -498,10 +508,10 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       </div>
 
       {/* Celebración: pieza ganada */}
-      <Sheet open={celebrate} onClose={() => setCelebrate(false)} title="¡Nueva pieza!">
+      <Sheet open={celebrate} onClose={() => setCelebrate(false)} title={medal ? "¡Nueva pieza!" : "¡Lo lograste!"}>
         <div className="text-center">
           <div className="mx-auto w-48">
-            <Medal earned={earned} highlight={day.piece} initialFace={piece.face === "back" ? "back" : "front"} showFlip={false} />
+            <FiestaSymbol fiesta={fiesta} earned={earned} highlight={day.piece} initialFace={piece.face === "back" ? "back" : "front"} showFlip={false} />
           </div>
           <p className="mt-5 text-sm uppercase tracking-[0.2em] text-[#f5c867]">Ganaste</p>
           <p className="font-display text-3xl font-semibold">{piece.name}</p>

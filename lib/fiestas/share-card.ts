@@ -184,6 +184,17 @@ function drawMedal(ctx: CanvasRenderingContext2D, cx: number, cy: number, k: num
   ctx.restore();
 }
 
+/** Carga una imagen para dibujarla en el lienzo (null si no se puede) */
+function loadImage(url: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 export async function makeShareCard(p: {
   fiestaTitle: string;
   headline: string;
@@ -194,6 +205,8 @@ export async function makeShareCard(p: {
   face: "front" | "back";
   /** Ej.: "1 de 10 piezas de mi Medalla" */
   progress?: string;
+  /** Símbolo por capas: imagen base y capas ya ganadas (en lugar de la Medalla) */
+  layers?: { base: string | null; images: string[] };
   footer: string;
   url: string;
 }): Promise<Blob> {
@@ -225,13 +238,25 @@ export async function makeShareCard(p: {
   // La medalla tal como va: en oro las piezas ganadas, en contorno tenue las que faltan
   const cx = W / 2;
   const cy = 680;
-  const complete = p.earned.includes("medalla");
+  const complete = p.layers ? !p.progress : p.earned.includes("medalla");
   const halo = ctx.createRadialGradient(cx, cy, 60, cx, cy, 540);
   halo.addColorStop(0, complete ? "rgba(245,184,61,0.45)" : "rgba(91,141,214,0.35)");
   halo.addColorStop(1, "rgba(245,184,61,0)");
   ctx.fillStyle = halo;
   ctx.fillRect(0, 110, W, 1140);
-  drawMedal(ctx, cx, cy, 3.3, new Set(p.earned), p.face);
+  if (p.layers) {
+    // Todas las capas miden lo mismo que la base: se dibujan en el mismo recuadro
+    const imgs = await Promise.all([p.layers.base, ...p.layers.images].map((u) => (u ? loadImage(u) : null)));
+    const ref = imgs.find(Boolean);
+    if (ref) {
+      const k = Math.min(820 / ref.naturalWidth, 820 / ref.naturalHeight);
+      const w = ref.naturalWidth * k;
+      const h = ref.naturalHeight * k;
+      for (const img of imgs) if (img) ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+    }
+  } else {
+    drawMedal(ctx, cx, cy, 3.3, new Set(p.earned), p.face);
+  }
 
   ctx.textAlign = "center";
   ctx.fillStyle = "#f5c867";

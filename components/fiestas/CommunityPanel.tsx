@@ -132,10 +132,13 @@ export default function CommunityPanel({
   slug,
   days,
   onChanged,
+  showModes = true,
 }: {
   slug: string;
   days: FiestaDaySummary[];
   onChanged?: () => void;
+  /** Novena / triduo / solo el día: solo en fiestas que tienen novena */
+  showModes?: boolean;
 }) {
   const [data, setData] = useState<MyCommunity | null>(null);
   const [day, setDay] = useState<number>(() => days.filter((d) => d.state !== "locked").at(-1)?.dayNumber ?? 1);
@@ -207,6 +210,7 @@ export default function CommunityPanel({
     <Glass className="space-y-6 p-5 sm:p-6">
       <h3 className="font-display text-2xl font-semibold text-white">{data.comunidad.nombre}</h3>
 
+      {showModes && (
       <div>
         <p className="mb-2 text-sm font-semibold text-white/85">
           {data.isLead ? "¿Cómo la viven en persona?" : "Así la viven en persona"}
@@ -240,6 +244,7 @@ export default function CommunityPanel({
           <p className="mt-2 text-xs text-white/55">El responsable de tu comunidad aún no lo eligió.</p>
         )}
       </div>
+      )}
 
       {(data.perDay?.length ?? 0) > 0 && (
         <div>
