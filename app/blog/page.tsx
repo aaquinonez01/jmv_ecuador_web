@@ -48,7 +48,7 @@ export default async function BlogPage() {
       <div className="absolute inset-0 flex items-center justify-center bg-jmv-ink/55 px-4 pt-20 backdrop-blur-[2px]">
         <section
           aria-labelledby="proximamente-titulo"
-          className="w-full max-w-md rounded-[2rem] border border-white/20 bg-surface-card p-8 text-center shadow-2xl sm:p-10"
+          className="w-full max-w-md rounded-[2rem] border border-white/20 bg-white p-8 dark:bg-slate-900 text-center shadow-2xl sm:p-10"
         >
           <span className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-jmv-gold text-jmv-ink shadow-lg">
             <Sparkles className="h-8 w-8" aria-hidden />

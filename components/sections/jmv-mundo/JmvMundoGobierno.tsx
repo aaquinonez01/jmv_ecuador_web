@@ -52,8 +52,8 @@ const VOLUNTARIOS = [
   { nombre: "Karla S. Loor", idioma: "Español", iniciales: "KL", img: "" },
   { nombre: "Timothy Kuenzel", idioma: "Inglés", iniciales: "TK", img: "" },
   { nombre: "Elissa Alchidiac", idioma: "Francés", iniciales: "EA", img: "" },
-  { nombre: "Mario López", idioma: "Portugués", iniciales: "ML", img: "", origen: "Riobamba, Ecuador" },
-] as { nombre: string; idioma: string; iniciales: string; img: string; origen?: string }[];
+  { nombre: "Mario López", idioma: "Portugués", iniciales: "ML", img: "" },
+];
 
 const ORGANOS = [
   {
@@ -242,7 +242,6 @@ export default function JmvMundoGobierno() {
                     </span>
                     <span className="text-sm font-medium leading-tight text-fg">{v.nombre}</span>
                     <span className="text-xs text-accent-gold">{v.idioma}</span>
-                    {v.origen && <span className="text-xs text-fg-muted">{v.origen}</span>}
                   </li>
                 ))}
               </ul>
