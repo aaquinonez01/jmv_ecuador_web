@@ -24,6 +24,7 @@ import {
   LogOut,
   MapPinned,
   Megaphone,
+  Music,
   MessageSquareQuote,
   Presentation,
   ScrollText,
@@ -111,6 +112,12 @@ export default function AdminSidebar() {
           href: "/admin/oraciones",
           icon: <Flame className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/oraciones"),
+        },
+        {
+          label: "Cantos",
+          href: "/admin/cantos",
+          icon: <Music className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/cantos"),
         },
         {
           label: "Biblioteca",

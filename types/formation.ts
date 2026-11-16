@@ -102,3 +102,27 @@ export interface Prayer extends PrayerPayload {
   displayOrder: number;
   published: boolean;
 }
+
+export const SONG_CATEGORIES = ["Entrada", "Ofertorio", "Comunión", "Salida", "Partes de la misa", "Marianos", "Vicencianos", "Adoración", "Alabanza"] as const;
+export type SongCategory = (typeof SONG_CATEGORIES)[number];
+
+export interface SongPayload {
+  title: string;
+  author?: string;
+  category: SongCategory;
+  /** Letra; los acordes van entre corchetes: [Do]Santo */
+  lyrics: string;
+  songKey?: string;
+  videoUrl?: string;
+  displayOrder?: number;
+  published?: boolean;
+}
+
+export interface Song extends Omit<SongPayload, "author" | "songKey" | "videoUrl"> {
+  id: string;
+  author?: string | null;
+  songKey?: string | null;
+  videoUrl?: string | null;
+  displayOrder: number;
+  published: boolean;
+}

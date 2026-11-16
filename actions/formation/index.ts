@@ -6,6 +6,8 @@ import type {
   NationalTrainingPayload,
   Prayer,
   PrayerPayload,
+  Song,
+  SongPayload,
 } from "@/types/formation";
 
 // Formación de la app móvil: itinerarios, formaciones nacionales y oraciones (solo administradores)
@@ -41,6 +43,11 @@ export const getPrayersAPI = async () => (await api().get<Prayer[]>("/formation/
 export const createPrayerAPI = async (p: PrayerPayload) => (await api().post<Prayer>("/formation/admin/prayers", p)).data;
 export const updatePrayerAPI = async (id: string, p: PrayerPayload) => (await api().patch<Prayer>(`/formation/admin/prayers/${id}`, p)).data;
 export const deletePrayerAPI = async (id: string) => { await api().delete(`/formation/admin/prayers/${id}`); };
+
+export const getSongsAPI = async () => (await api().get<Song[]>("/formation/admin/songs")).data;
+export const createSongAPI = async (p: SongPayload) => (await api().post<Song>("/formation/admin/songs", p)).data;
+export const updateSongAPI = async (id: string, p: SongPayload) => (await api().patch<Song>(`/formation/admin/songs/${id}`, p)).data;
+export const deleteSongAPI = async (id: string) => { await api().delete(`/formation/admin/songs/${id}`); };
 
 /** Mensaje legible de un error del backend (validaciones de NestJS) */
 export function formationErrorMessage(error: unknown, fallback: string): string {
