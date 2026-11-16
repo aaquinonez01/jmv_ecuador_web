@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ImagePlus, Loader2, Trash2, UploadCloud } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CalendarClock, Check, ChevronDown, ImagePlus, Loader2, Trash2, UploadCloud } from "lucide-react";
 import { errorMessage, getMyCommunity, removeMyPhoto, setMode, uploadPhotos } from "@/lib/fiestas/api";
 import { MODES, type FiestaDaySummary, type MyCommunity, type PhotoStatus } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
@@ -13,14 +13,131 @@ const STATUS: Record<PhotoStatus, { label: string; cls: string }> = {
   rejected: { label: "No aprobada", cls: "bg-[#d3302f] text-white" },
 };
 
+const shortDate = (iso: string) =>
+  new Date(iso.slice(0, 10) + "T12:00:00").toLocaleDateString("es-EC", { day: "numeric", month: "short" }).replace(".", "");
+const longDate = (iso: string) =>
+  new Date(iso.slice(0, 10) + "T12:00:00").toLocaleDateString("es-EC", { day: "numeric", month: "long" });
+
+/** Selector del día con el estilo de la fiesta (reemplaza al <select> nativo) */
+function DayPicker({
+  days,
+  value,
+  onChange,
+  lastDay,
+}: {
+  days: FiestaDaySummary[];
+  value: number;
+  onChange: (n: number) => void;
+  lastDay: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = days.find((d) => d.dayNumber === value) ?? days[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const out = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", out);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", out);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [open]);
+
+  const badge = (d: FiestaDaySummary, on: boolean) => (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "grid h-10 w-10 shrink-0 place-items-center rounded-xl text-base font-bold",
+        on ? "bg-[#f5b83d] text-[#3b2600] shadow-[0_3px_0_#9a6504]" : "bg-white/15 text-white",
+      )}
+    >
+      {d.dayNumber === lastDay ? "★" : d.dayNumber}
+    </span>
+  );
+
+  return (
+    <div ref={ref}>
+      <p id="fiesta-dia-label" className="mb-1.5 text-sm text-white/75">
+        ¿De qué día?
+      </p>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-labelledby="fiesta-dia-label"
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex min-h-14 w-full items-center gap-3 rounded-2xl border bg-white/10 px-3 py-2 text-left shadow-[0_4px_0_rgba(0,0,0,0.3)] transition hover:bg-white/15 active:translate-y-0.5",
+          open ? "border-[#f5b83d]" : "border-white/20",
+        )}
+      >
+        {badge(current, true)}
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-bold text-white">
+            {current.label}
+            {current.title ? ` · ${current.title}` : ""}
+          </span>
+          <span className="block text-xs text-white/60">{shortDate(current.date)}</span>
+        </span>
+        <ChevronDown className={cn("h-5 w-5 shrink-0 text-[#f5c867] transition-transform", open && "rotate-180")} aria-hidden="true" />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-labelledby="fiesta-dia-label"
+          className="mt-2 max-h-80 space-y-1 overflow-y-auto rounded-2xl border border-white/20 bg-black/30 p-1.5"
+        >
+          {days.map((d) => {
+            const on = d.dayNumber === current.dayNumber;
+            return (
+              <li key={d.dayNumber} role="option" aria-selected={on}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(d.dayNumber);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex min-h-14 w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition",
+                    on ? "bg-[#f5b83d]/20" : "hover:bg-white/10",
+                  )}
+                >
+                  {badge(d, on)}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-white">
+                      {d.label}
+                      {d.title ? ` · ${d.title}` : ""}
+                    </span>
+                    <span className="block text-xs text-white/60">{shortDate(d.date)}</span>
+                  </span>
+                  {on && <Check className="h-5 w-5 shrink-0 text-[#f5c867]" aria-hidden="true" />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 // Mi comunidad en la fiesta. El responsable elige cómo la viven y sube las fotos.
 export default function CommunityPanel({
   slug,
   days,
+  preview = false,
   onChanged,
 }: {
   slug: string;
   days: FiestaDaySummary[];
+  /** Administrador probando: puede subir a cualquier día aunque no haya empezado */
+  preview?: boolean;
   onChanged?: () => void;
 }) {
   const [data, setData] = useState<MyCommunity | null>(null);
@@ -43,7 +160,8 @@ export default function CommunityPanel({
       </Glass>
     );
 
-  const opened = days.filter((d) => d.state !== "locked");
+  const opened = preview ? days : days.filter((d) => d.state !== "locked");
+  const lastDay = days.at(-1)?.dayNumber ?? 0;
   const max = Math.max(1, ...(data.perDay ?? []).map((d) => d.participants));
 
   const chooseMode = async (m: (typeof MODES)[number]["id"]) => {
@@ -134,7 +252,7 @@ export default function CommunityPanel({
                   className="w-full rounded-t-lg bg-gradient-to-t from-[#c8860a] to-[#ffd36e] transition-all"
                   style={{ height: `${Math.max(4, (d.participants / max) * 64)}px`, opacity: d.participants ? 1 : 0.25 }}
                 />
-                <span className="text-[10px] text-white/55">{d.dayNumber === days.at(-1)?.dayNumber ? "★" : d.dayNumber}</span>
+                <span className="text-[10px] text-white/55">{d.dayNumber === lastDay ? "★" : d.dayNumber}</span>
               </div>
             ))}
           </div>
@@ -147,21 +265,15 @@ export default function CommunityPanel({
             <UploadCloud className="h-5 w-5 text-[#f5c867]" aria-hidden="true" />
             <p className="font-semibold text-white">Sube las fotos de tu comunidad</p>
           </div>
-          <label className="block">
-            <span className="mb-1.5 block text-sm text-white/75">¿De qué día?</span>
-            <select
-              value={day}
-              onChange={(e) => setDay(Number(e.target.value))}
-              className="min-h-12 w-full rounded-2xl border border-white/20 bg-white/10 px-4 text-white"
-            >
-              {opened.map((d) => (
-                <option key={d.dayNumber} value={d.dayNumber} className="text-black">
-                  {d.label}
-                  {d.title ? ` · ${d.title}` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+          {opened.length === 0 && days[0] && (
+            <p className="flex items-center gap-3 rounded-2xl border border-[#f5b83d]/40 bg-[#f5b83d]/10 px-4 py-3 text-sm text-white/85">
+              <CalendarClock className="h-5 w-5 shrink-0 text-[#f5c867]" aria-hidden="true" />
+              Podrán subir fotos desde el {longDate(days[0].date)}, cuando empiece el primer día.
+            </p>
+          )}
+          {opened.length > 0 && (
+            <>
+          {opened.length > 0 && <DayPicker days={opened} value={day} onChange={setDay} lastDay={lastDay} />}
           <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/25 bg-white/[0.04] p-4 text-center transition hover:border-[#f5b83d] hover:bg-white/[0.07]">
             <ImagePlus className="h-8 w-8 text-[#f5c867]" aria-hidden="true" />
             <span className="text-sm font-semibold text-white">
@@ -194,6 +306,8 @@ export default function CommunityPanel({
             {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <UploadCloud className="h-5 w-5" aria-hidden="true" />}
             {busy ? "Subiendo…" : "Subir fotos"}
           </FiestaButton>
+            </>
+          )}
           {msg && (
             <p
               role="status"

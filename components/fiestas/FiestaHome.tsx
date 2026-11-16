@@ -263,7 +263,7 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {me && (
         <section id="comunidad" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">
           <SectionTitle kicker="Juntos" title="Tu comunidad" icon={Users} />
-          <CommunityPanel slug={slug} days={fiesta.days} onChanged={() => setRefresh((r) => r + 1)} />
+          <CommunityPanel slug={slug} days={fiesta.days} preview={isAdmin} onChanged={() => setRefresh((r) => r + 1)} />
         </section>
       )}
 
