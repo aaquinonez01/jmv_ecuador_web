@@ -10,7 +10,7 @@ import { FiestaButton, Glass } from "./ui";
 const STATUS: Record<PhotoStatus, { label: string; cls: string }> = {
   pending: { label: "En revisión", cls: "bg-white/85 text-[#0f2547]" },
   approved: { label: "En el mural", cls: "bg-[#2fa36b] text-white" },
-  rejected: { label: "No aprobada", cls: "bg-[#d3302f] text-white" },
+  rejected: { label: "Quitada del mural", cls: "bg-[#d3302f] text-white" },
 };
 
 const shortDate = (iso: string) =>
@@ -180,7 +180,7 @@ export default function CommunityPanel({
       setCaption("");
       setMsg({
         ok: true,
-        text: `¡Listo! ${r.uploaded} ${r.uploaded === 1 ? "foto subida" : "fotos subidas"}. Aparecen en el mural cuando se aprueban.${r.failed ? ` (${r.failed} no se pudieron subir)` : ""}`,
+        text: `¡Listo! ${r.uploaded} ${r.uploaded === 1 ? "foto subida" : "fotos subidas"}. Ya están en el mural.${r.failed ? ` (${r.failed} no se pudieron subir)` : ""}`,
       });
       await load();
       onChanged?.();
@@ -331,7 +331,7 @@ export default function CommunityPanel({
                     <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white">
                       Día {p.dayNumber}
                     </span>
-                    {p.status !== "approved" && (
+                    {(
                       <button
                         type="button"
                         onClick={() => remove(p.id)}

@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "yet-another-react-lightbox/styles.css";
 import { motion } from "framer-motion";
-import { Camera } from "lucide-react";
+import { Camera, EyeOff } from "lucide-react";
+import { setPhotoStatusAPI } from "@/lib/fiestas/admin-api";
 import { getMyReactions, getPhotos, hasSession, react } from "@/lib/fiestas/api";
 import { REACTIONS, type FiestaDaySummary, type FiestaPhoto, type Reaction } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
@@ -19,11 +20,14 @@ export default function Mural({
   days,
   onNeedAuth,
   refreshKey,
+  isAdmin = false,
 }: {
   slug: string;
   days: FiestaDaySummary[];
   onNeedAuth: () => void;
   refreshKey?: number;
+  /** Los administradores pueden quitar fotos desde el mismo mural */
+  isAdmin?: boolean;
 }) {
   const [day, setDay] = useState<number | undefined>(undefined);
   const [photos, setPhotos] = useState<FiestaPhoto[] | null>(null);
@@ -63,7 +67,19 @@ export default function Mural({
     }
   };
 
-  const opened = days.filter((d) => d.state !== "locked");
+  const hide = async (p: FiestaPhoto) => {
+    if (!window.confirm(`¿Quitar del mural esta foto de ${p.comunidad}? Queda en Admin → Fiestas → Fotos → Rechazadas, por si quieres devolverla.`)) return;
+    try {
+      await setPhotoStatusAPI(p.id, "rejected");
+      setPhotos((list) => list?.filter((x) => x.id !== p.id) ?? null);
+    } catch {
+      window.alert("No se pudo quitar la foto. Inténtalo de nuevo.");
+    }
+  };
+
+  // Con fotos de prueba subidas antes de tiempo, también se muestran esos días
+  const withPhotos = new Set((photos ?? []).map((p) => p.dayNumber));
+  const opened = days.filter((d) => d.state !== "locked" || d.dayNumber === day || withPhotos.has(d.dayNumber));
 
   return (
     <div>
@@ -107,8 +123,18 @@ export default function Mural({
               initial={{ opacity: 0, scale: 0.94 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="mb-3 break-inside-avoid overflow-hidden rounded-3xl border border-white/15 bg-white/[0.06] shadow-[0_14px_30px_-16px_rgba(0,0,0,0.7)]"
+              className="relative mb-3 break-inside-avoid overflow-hidden rounded-3xl border border-white/15 bg-white/[0.06] shadow-[0_14px_30px_-16px_rgba(0,0,0,0.7)]"
             >
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => hide(p)}
+                  className="absolute right-2 top-2 z-10 inline-flex min-h-9 items-center gap-1.5 rounded-full bg-[#d3302f] px-3 text-xs font-bold text-white shadow-[0_3px_0_#7f1d1d] transition hover:bg-[#b92524] active:translate-y-0.5"
+                >
+                  <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  Quitar
+                </button>
+              )}
               <button type="button" onClick={() => setIndex(i)} className="block w-full" aria-label={`Ver foto de ${p.comunidad}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img

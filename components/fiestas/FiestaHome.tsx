@@ -276,7 +276,7 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {/* ── Mural ── */}
       <section id="mural" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-24">
         <SectionTitle kicker="Así lo vivimos" title="Mural de las comunidades" icon={Camera} />
-        <Mural slug={slug} days={fiesta.days} onNeedAuth={() => setAuth("registro")} refreshKey={refresh} />
+        <Mural slug={slug} days={fiesta.days} onNeedAuth={() => setAuth("registro")} refreshKey={refresh} isAdmin={isAdmin} />
       </section>
 
       <AuthDialog

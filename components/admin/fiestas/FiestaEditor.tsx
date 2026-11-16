@@ -387,7 +387,7 @@ function DayCard({
 
 function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }) {
   const toast = useToastRef();
-  const [status, setStatus] = useState<PhotoStatus | "">("pending");
+  const [status, setStatus] = useState<PhotoStatus | "">("approved");
   const [photos, setPhotos] = useState<AdminPhoto[] | null>(null);
   const [toDelete, setToDelete] = useState<AdminPhoto | null>(null);
 
@@ -420,7 +420,6 @@ function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }
       <div className="flex w-fit rounded-lg border border-slate-200 bg-white p-1">
         {(
           [
-            ["pending", "Por revisar"],
             ["approved", "En el mural"],
             ["rejected", "Rechazadas"],
             ["", "Todas"],
