@@ -142,13 +142,13 @@ export async function makeShareCard(p: {
   return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error("canvas"))), "image/png"));
 }
 
-/** Comparte con el menú del teléfono; si no se puede, descarga la imagen */
-export async function shareCard(blob: Blob, text: string, filename = "jmv-medalla.png") {
+/** Comparte solo la imagen (sin texto ni enlace) con el menú del teléfono; si no se puede, la descarga */
+export async function shareCard(blob: Blob, filename = "jmv-medalla.png") {
   const file = new File([blob], filename, { type: "image/png" });
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
   if (nav.canShare?.({ files: [file] })) {
     try {
-      await nav.share({ files: [file], text });
+      await nav.share({ files: [file] });
       return "shared";
     } catch (e) {
       if ((e as Error).name === "AbortError") return "cancelled";

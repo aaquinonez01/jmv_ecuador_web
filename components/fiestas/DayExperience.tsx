@@ -192,7 +192,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
         footer: "JMV Ecuador",
         url,
       });
-      const res = await shareCard(blob, `Estoy viviendo la ${fiesta.title} con JMV Ecuador 💙 Únete: https://${url}`);
+      const res = await shareCard(blob);
       if (res === "downloaded") setToast("Imagen descargada: súbela a tu estado o historia ✨");
     } catch {
       setToast("No se pudo crear la imagen.");
