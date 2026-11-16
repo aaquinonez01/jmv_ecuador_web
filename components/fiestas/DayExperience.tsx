@@ -189,6 +189,12 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
         fiestaTitle: fiesta.title,
         headline: day.piece === "medalla" ? "¡Completé mi Medalla!" : `Completé el ${day.label.toLowerCase()}`,
         piece: `✦ ${piece.name}`,
+        earned: [...earned],
+        face: piece.face === "back" ? "back" : "front",
+        progress:
+          day.piece === "medalla"
+            ? undefined
+            : `${earned.size} de ${fiesta.days.length} piezas de mi Medalla`,
         footer: "JMV Ecuador",
         url,
       });
