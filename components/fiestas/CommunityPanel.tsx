@@ -159,6 +159,9 @@ export default function CommunityPanel({
 
   const opened = data.earlyPhotos ? days : days.filter((d) => d.state !== "locked");
   const lastDay = days.at(-1)?.dayNumber ?? 0;
+  // Solo las fotos del día elegido arriba
+  const dayPhotos = (data.photos ?? []).filter((p) => p.dayNumber === day);
+  const dayLabel = days.find((d) => d.dayNumber === day)?.label ?? `Día ${day}`;
   const max = Math.max(1, ...(data.perDay ?? []).map((d) => d.participants));
 
   const chooseMode = async (m: (typeof MODES)[number]["id"]) => {
@@ -317,11 +320,16 @@ export default function CommunityPanel({
             </p>
           )}
 
-          {(data.photos?.length ?? 0) > 0 && (
+          {opened.length > 0 && (
             <div>
-              <p className="mb-2 text-sm font-semibold text-white/85">Fotos de tu comunidad</p>
+              <p className="mb-2 text-sm font-semibold text-white/85">
+                Fotos de tu comunidad · {dayLabel} ({dayPhotos.length} de {data.maxPhotosPerDay ?? 10})
+              </p>
+              {dayPhotos.length === 0 && (
+                <p className="rounded-2xl bg-white/[0.06] px-4 py-3 text-sm text-white/65">Todavía no subieron fotos de este día.</p>
+              )}
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {data.photos!.map((p) => (
+                {dayPhotos.map((p) => (
                   <div key={p.id} className="relative overflow-hidden rounded-2xl">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={p.url.replace("/upload/", "/upload/w_300,q_auto,f_auto/")} alt={p.caption ?? ""} className="aspect-square w-full object-cover" />
