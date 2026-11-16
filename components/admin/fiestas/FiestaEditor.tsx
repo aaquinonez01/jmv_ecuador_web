@@ -601,6 +601,7 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
     dailyPrayers: fiesta.dailyPrayers ?? "",
     feastDate: fiesta.feastDate,
     published: fiesta.published,
+    earlyPhotos: fiesta.earlyPhotos ?? false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -639,6 +640,29 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
         <input type="checkbox" checked={f.published} onChange={(e) => setF({ ...f, published: e.target.checked })} />
         Página visible en la web (<code>/fiestas/{fiesta.slug}</code>)
       </label>
+      <div className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div>
+          <p id="early-photos-label" className="text-sm font-semibold text-slate-800">
+            Permitir subir fotos antes de que empiecen los días
+          </p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Para probar. Con esto activado, los responsables de comunidad pueden subir fotos a cualquier día aunque todavía no
+            haya empezado. Apágalo antes de que comience la fiesta.
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={f.earlyPhotos}
+          aria-labelledby="early-photos-label"
+          onClick={() => setF({ ...f, earlyPhotos: !f.earlyPhotos })}
+          className={`relative mt-0.5 h-7 w-12 shrink-0 rounded-full transition-colors ${f.earlyPhotos ? "bg-jmv-blue" : "bg-slate-300"}`}
+        >
+          <span
+            className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${f.earlyPhotos ? "translate-x-5" : ""}`}
+          />
+        </button>
+      </div>
       <div className="flex justify-end">
         <Button onClick={save} isLoading={saving} icon={<Save className="h-4 w-4" />}>
           Guardar

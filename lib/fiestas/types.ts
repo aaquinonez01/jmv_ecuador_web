@@ -109,6 +109,8 @@ export interface MyCommunity {
   perDay?: { dayNumber: number; participants: number }[];
   photos?: { id: string; url: string; caption: string | null; status: PhotoStatus; dayNumber: number }[];
   maxPhotosPerDay?: number;
+  /** El admin activó subir fotos antes de que empiecen los días */
+  earlyPhotos?: boolean;
 }
 
 export const MODES: { id: FiestaMode; label: string; hint: string }[] = [

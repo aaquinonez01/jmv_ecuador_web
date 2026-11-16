@@ -36,6 +36,7 @@ export interface AdminFiesta {
   dailyPrayers: string | null;
   feastDate: string;
   published: boolean;
+  earlyPhotos: boolean;
   today: string;
   days: AdminDay[];
 }
@@ -78,7 +79,7 @@ export const listFiestasAPI = async () => (await api().get<AdminFiestaRow[]>("/a
 export const getFiestaAPI = async (id: string) => (await api().get<AdminFiesta>(`/admin/fiestas/${id}`)).data;
 export const updateFiestaAPI = async (
   id: string,
-  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published">>,
+  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published" | "earlyPhotos">>,
 ) => (await api().put<AdminFiesta>(`/admin/fiestas/${id}`, p)).data;
 export const updateDayAPI = async (dayId: string, p: Partial<Omit<AdminDay, "id" | "dayNumber" | "stats">>) =>
   (await api().put<AdminDay>(`/admin/fiestas/days/${dayId}`, p)).data;

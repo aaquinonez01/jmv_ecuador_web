@@ -131,13 +131,10 @@ function DayPicker({
 export default function CommunityPanel({
   slug,
   days,
-  preview = false,
   onChanged,
 }: {
   slug: string;
   days: FiestaDaySummary[];
-  /** Administrador probando: puede subir a cualquier día aunque no haya empezado */
-  preview?: boolean;
   onChanged?: () => void;
 }) {
   const [data, setData] = useState<MyCommunity | null>(null);
@@ -160,7 +157,7 @@ export default function CommunityPanel({
       </Glass>
     );
 
-  const opened = preview ? days : days.filter((d) => d.state !== "locked");
+  const opened = data.earlyPhotos ? days : days.filter((d) => d.state !== "locked");
   const lastDay = days.at(-1)?.dayNumber ?? 0;
   const max = Math.max(1, ...(data.perDay ?? []).map((d) => d.participants));
 
