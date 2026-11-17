@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import StarsRing from "@/components/brand/StarsRing";
 import MarianMonogram from "@/components/brand/MarianMonogram";
 import ReadMore from "@/components/media/ReadMore";
+import AnnouncementPopup from "./AnnouncementPopup";
 
 function pickPrimary(items: HomeAnnouncement[]): HomeAnnouncement | null {
   if (!items.length) return null
@@ -20,8 +21,12 @@ export default async function HomeAnnouncementBanner() {
   const primary = pickPrimary(announcements)
 
   if (!primary) return null
+  // La ventana al entrar: el primer anuncio marcado para eso
+  const popup = announcements.find((a) => a.showAsPopup)
 
   return (
+    <>
+    {popup && <AnnouncementPopup announcement={popup} />}
     <section
       aria-labelledby="anuncio-destacado"
       className="relative overflow-hidden bg-hero-plain py-12 sm:py-16"
@@ -93,5 +98,6 @@ export default async function HomeAnnouncementBanner() {
         </div>
       </div>
     </section>
+    </>
   )
 }

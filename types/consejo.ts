@@ -120,6 +120,8 @@ export interface HomeAnnouncement {
   fechaExpiracion?: string | null;
   displayOrder: number;
   featuredInHome: boolean;
+  /** Se abre como ventana al entrar a la portada */
+  showAsPopup?: boolean;
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -136,6 +138,7 @@ export interface HomeAnnouncementPayload {
   fechaExpiracion?: string | null;
   displayOrder?: number | string | null;
   featuredInHome?: boolean | string | null;
+  showAsPopup?: boolean | string | null;
   active?: boolean | string | null;
   image?: File | null;
 }

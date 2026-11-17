@@ -43,6 +43,7 @@ interface FormState {
   fechaExpiracion: string;
   displayOrder: string;
   featuredInHome: boolean;
+  showAsPopup: boolean;
   active: boolean;
   image: File | null;
 }
@@ -58,6 +59,7 @@ const emptyForm = (): FormState => ({
   fechaExpiracion: "",
   displayOrder: "",
   featuredInHome: true,
+  showAsPopup: false,
   active: true,
   image: null,
 });
@@ -133,6 +135,7 @@ export default function AnnouncementsManager() {
       fechaExpiracion: toLocalDateTime(a.fechaExpiracion),
       displayOrder: String(a.displayOrder ?? ""),
       featuredInHome: a.featuredInHome,
+      showAsPopup: Boolean(a.showAsPopup),
       active: a.active,
       image: null,
     });
@@ -163,6 +166,7 @@ export default function AnnouncementsManager() {
         fechaExpiracion: form.fechaExpiracion || null,
         displayOrder: form.displayOrder || null,
         featuredInHome: form.featuredInHome,
+        showAsPopup: form.showAsPopup,
         active: form.active,
         image: form.image,
       };
@@ -270,6 +274,11 @@ export default function AnnouncementsManager() {
                       <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600">
                         {a.tipo}
                       </span>
+                      {a.showAsPopup && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-800">
+                          Ventana al entrar
+                        </span>
+                      )}
                     </div>
                     {a.subtitulo && (
                       <p className="text-xs font-semibold text-jmv-blue">
@@ -468,6 +477,22 @@ export default function AnnouncementsManager() {
               Mostrar en el Home
             </label>
           </div>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <input
+              type="checkbox"
+              checked={form.showAsPopup}
+              onChange={(e) => setForm((c) => ({ ...c, showAsPopup: e.target.checked }))}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-jmv-blue focus:ring-2 focus:ring-jmv-blue/30"
+            />
+            <span>
+              <span className="block text-sm font-semibold text-slate-800">Mostrar como ventana al entrar</span>
+              <span className="block text-xs text-slate-500">
+                Para lo más importante. Al abrir la página de inicio el anuncio aparece en una ventana, una sola vez por
+                persona. Si hay varios marcados, sale el primero según el orden.
+              </span>
+            </span>
+          </label>
         </div>
       </Modal>
     </>

@@ -35,6 +35,7 @@ function buildAnnouncementFormData(
     "featuredInHome",
     payload.featuredInHome as string | boolean | null
   );
+  appendText(formData, "showAsPopup", payload.showAsPopup as string | boolean | null);
   appendText(formData, "active", payload.active as string | boolean | null);
   if (payload.image) {
     formData.append("image", payload.image);
