@@ -119,6 +119,28 @@ export interface MyCommunity {
   maxPhotosPerDay?: number;
   /** El admin activó subir fotos antes de que empiecen los días */
   earlyPhotos?: boolean;
+  /** Cuándo puede subir fotos esta comunidad */
+  upload?: {
+    usesModes: boolean;
+    /** Días de su modalidad */
+    allowed: number[];
+    /** Días a los que se puede subir ahora mismo */
+    open: number[];
+    /** Horario diario (hora de Ecuador), si lo hay */
+    hours: { from: number; to: number } | null;
+    /** Permiso especial del administrador, hasta esta hora */
+    specialUntil: string | null;
+    /** Por qué ahora no se puede subir */
+    notice: string | null;
+  };
+}
+
+/** 20 → "8 de la noche", 24 → "12 de la noche" */
+export function hourLabel(h: number): string {
+  if (h === 0 || h === 24) return "12 de la noche";
+  if (h === 12) return "12 del día";
+  if (h < 12) return `${h} de la mañana`;
+  return h < 19 ? `${h - 12} de la tarde` : `${h - 12} de la noche`;
 }
 
 export const MODES: { id: FiestaMode; label: string; hint: string }[] = [

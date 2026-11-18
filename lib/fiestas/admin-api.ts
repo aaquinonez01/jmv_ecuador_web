@@ -1,6 +1,6 @@
 import { getAxiosClient } from "@/config/axios.config";
 import type { SymbolKind } from "./symbol";
-import type { PhotoStatus } from "./types";
+import type { FiestaMode, PhotoStatus } from "./types";
 
 // Administración de fiestas (solo administradores)
 
@@ -41,6 +41,9 @@ export interface AdminFiesta {
   feastDate: string;
   published: boolean;
   earlyPhotos: boolean;
+  /** Horario para subir fotos (hora de Ecuador); null = sin horario */
+  photoStartHour: number | null;
+  photoEndHour: number | null;
   symbolKind: SymbolKind;
   symbolName: string | null;
   symbolImage: string | null;
@@ -88,7 +91,7 @@ export const listFiestasAPI = async () => (await api().get<AdminFiestaRow[]>("/a
 export const getFiestaAPI = async (id: string) => (await api().get<AdminFiesta>(`/admin/fiestas/${id}`)).data;
 export const updateFiestaAPI = async (
   id: string,
-  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published" | "earlyPhotos" | "symbolKind" | "symbolName" | "symbolImage" | "pieceWord" | "piecesWord">>,
+  p: Partial<Pick<AdminFiesta, "title" | "subtitle" | "intro" | "dailyPrayers" | "feastDate" | "published" | "earlyPhotos" | "photoStartHour" | "photoEndHour" | "symbolKind" | "symbolName" | "symbolImage" | "pieceWord" | "piecesWord">>,
 ) => (await api().put<AdminFiesta>(`/admin/fiestas/${id}`, p)).data;
 export const updateDayAPI = async (dayId: string, p: Partial<Omit<AdminDay, "id" | "dayNumber" | "stats">>) =>
   (await api().put<AdminDay>(`/admin/fiestas/days/${dayId}`, p)).data;
@@ -106,6 +109,20 @@ export const uploadSymbolImageAPI = async (id: string, file: File) => {
   body.append("image", file);
   return (await api().post<{ url: string }>(`/admin/fiestas/${id}/image`, body)).data.url;
 };
+export interface CommunityRow {
+  id: string;
+  nombre: string;
+  zona: string | null;
+  /** Nombres de sus responsables */
+  leads: string | null;
+  mode: FiestaMode | null;
+  /** Permiso especial para subir fuera del horario, hasta esta hora */
+  openUntil: string | null;
+  photoDays: number;
+}
+export const listCommunitiesAPI = async (id: string) => (await api().get<CommunityRow[]>(`/admin/fiestas/${id}/communities`)).data;
+export const setCommunityAPI = async (id: string, comunidadId: string, p: { mode?: FiestaMode; open?: boolean }) =>
+  (await api().put<CommunityRow[]>(`/admin/fiestas/${id}/communities/${comunidadId}`, p)).data;
 export const listPhotosAPI = async (id: string, status?: PhotoStatus) =>
   (await api().get<AdminPhoto[]>(`/admin/fiestas/${id}/photos`, { params: status ? { status } : {} })).data;
 export const setPhotoStatusAPI = async (photoId: string, status: PhotoStatus) =>

@@ -17,6 +17,7 @@ import {
   Sparkles,
   Trash2,
   UserCheck,
+  Users,
   X,
 } from "lucide-react";
 import Button from "@/components/admin/ui/Button";
@@ -33,8 +34,10 @@ import {
   deleteFiestaAPI,
   deletePhotoAPI,
   getFiestaAPI,
+  listCommunitiesAPI,
   listLeadsAPI,
   listPhotosAPI,
+  setCommunityAPI,
   setLeadAPI,
   setPhotoStatusAPI,
   updateDayAPI,
@@ -44,12 +47,13 @@ import {
   type AdminFiesta,
   type AdminPhoto,
   type AdminQuestion,
+  type CommunityRow,
   type LeadRow,
 } from "@/lib/fiestas/admin-api";
 import { PIECES, pieceInfo, shortDate } from "@/lib/fiestas/pieces";
-import type { PhotoStatus } from "@/lib/fiestas/types";
+import { hourLabel, MODES, type FiestaMode, type PhotoStatus } from "@/lib/fiestas/types";
 
-type Tab = "dias" | "fotos" | "responsables" | "general";
+type Tab = "dias" | "fotos" | "responsables" | "comunidades" | "general";
 
 export default function FiestaEditor({ id }: { id: string }) {
   const toast = useToastRef();
@@ -103,6 +107,7 @@ export default function FiestaEditor({ id }: { id: string }) {
               ["dias", "Días", Sparkles],
               ["fotos", "Fotos del mural", Camera],
               ["responsables", "Responsables", UserCheck],
+              ["comunidades", "Comunidades", Users],
               ["general", "General", Settings],
             ] as const
           ).map(([t, label, Icon]) => (
@@ -148,6 +153,7 @@ export default function FiestaEditor({ id }: { id: string }) {
         )}
         {tab === "fotos" && <PhotosTab id={fiesta.id} onCount={setPending} />}
         {tab === "responsables" && <LeadsTab />}
+        {tab === "comunidades" && <CommunitiesTab fiesta={fiesta} />}
         {tab === "general" && <GeneralTab fiesta={fiesta} onSaved={setFiesta} />}
       </PageBody>
     </>
@@ -756,6 +762,124 @@ function LeadsTab() {
   );
 }
 
+// ── Comunidades: modalidad y permiso para subir fotos ─────────────────
+
+function CommunitiesTab({ fiesta }: { fiesta: AdminFiesta }) {
+  const toast = useToastRef();
+  const [rows, setRows] = useState<CommunityRow[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const usesModes = fiesta.symbolKind === "medal";
+
+  useEffect(() => {
+    listCommunitiesAPI(fiesta.id)
+      .then(setRows)
+      .catch((e) => {
+        toast.current.error(adminError(e, "No se pudieron cargar las comunidades."));
+        setRows([]);
+      });
+  }, [fiesta.id, toast]);
+
+  const change = async (c: CommunityRow, p: { mode?: FiestaMode; open?: boolean }) => {
+    setBusy(c.id);
+    try {
+      setRows(await setCommunityAPI(fiesta.id, c.id, p));
+      toast.current.success(
+        p.open === true ? `${c.nombre} puede subir fotos durante 24 horas.` : p.open === false ? "Permiso retirado." : "Modalidad guardada.",
+      );
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo guardar."));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const hours =
+    fiesta.photoStartHour !== null && fiesta.photoStartHour !== undefined
+      ? `de ${hourLabel(fiesta.photoStartHour)} a ${hourLabel(fiesta.photoEndHour ?? 24)}`
+      : null;
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
+        <p>
+          Aquí aparecen las comunidades que ya tienen responsable. {usesModes && "Registra cómo vive la fiesta cada una: solo podrá subir fotos en los días de su modalidad. "}
+          {hours
+            ? `Las fotos de cada día se suben ese mismo día, ${hours}.`
+            : "Esta fiesta no tiene horario para subir fotos: se puede subir a cualquier día ya empezado."}
+        </p>
+        <p className="mt-1">
+          Si una comunidad no alcanzó a subir, usa <strong>Habilitar</strong>: durante 24 horas podrá subir fotos de los días de su
+          modalidad que ya pasaron, a cualquier hora.
+        </p>
+      </div>
+
+      {!rows ? (
+        <div className="flex justify-center py-12">
+          <LoadingSpinner />
+        </div>
+      ) : rows.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          Todavía no hay comunidades con responsable. Márcalos en la pestaña Responsables.
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {rows.map((c) => (
+            <li key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+              <div className="min-w-0 flex-1 basis-56">
+                <p className="font-semibold text-slate-900">{c.nombre}</p>
+                <p className="text-xs text-slate-500">
+                  {[c.zona, c.leads ? `Responsable: ${c.leads}` : "Sin responsable", `${c.photoDays} ${c.photoDays === 1 ? "día" : "días"} con fotos`]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+                {c.openUntil && (
+                  <p className="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+                    Subida abierta hasta el{" "}
+                    {new Date(c.openUntil).toLocaleString("es-EC", { weekday: "long", hour: "numeric", minute: "2-digit", timeZone: "America/Guayaquil" })}
+                  </p>
+                )}
+              </div>
+              {usesModes && (
+                <label className="text-xs font-semibold text-slate-700">
+                  <span className="sr-only">Modalidad de {c.nombre}</span>
+                  <select
+                    value={c.mode ?? ""}
+                    disabled={busy === c.id}
+                    onChange={(e) => e.target.value && change(c, { mode: e.target.value as FiestaMode })}
+                    className={`h-10 rounded-md border px-3 text-sm font-medium ${c.mode ? "border-slate-300 bg-white text-slate-900" : "border-amber-400 bg-amber-50 text-amber-900"}`}
+                  >
+                    {!c.mode && <option value="">Falta la modalidad</option>}
+                    {MODES.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              {c.openUntil ? (
+                <Button size="sm" variant="outline" isLoading={busy === c.id} onClick={() => change(c, { open: false })}>
+                  Cerrar subida
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  isLoading={busy === c.id}
+                  disabled={usesModes && !c.mode}
+                  onClick={() => change(c, usesModes ? { open: true } : { open: true, mode: c.mode ?? "novena" })}
+                >
+                  Habilitar
+                </Button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 // ── General ───────────────────────────────────────────────────────────
 
 function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: AdminFiesta) => void }) {
@@ -768,6 +892,8 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
     feastDate: fiesta.feastDate,
     published: fiesta.published,
     earlyPhotos: fiesta.earlyPhotos ?? false,
+    photoStartHour: fiesta.photoStartHour ?? null,
+    photoEndHour: fiesta.photoEndHour ?? null,
     symbolName: fiesta.symbolName ?? "",
     symbolImage: fiesta.symbolImage,
     pieceWord: fiesta.pieceWord ?? "",
@@ -881,6 +1007,50 @@ function GeneralTab({ fiesta, onSaved }: { fiesta: AdminFiesta; onSaved: (f: Adm
             className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${f.earlyPhotos ? "translate-x-5" : ""}`}
           />
         </button>
+      </div>
+      <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div>
+          <p className="text-sm font-semibold text-slate-800">Horario para subir fotos</p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Hora de Ecuador. Con horario, cada comunidad sube las fotos del día ese mismo día y dentro de esas horas. Sin horario,
+            puede subir a cualquier día ya empezado.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+          <select
+            aria-label="Desde qué hora"
+            value={f.photoStartHour ?? ""}
+            onChange={(e) =>
+              setF({
+                ...f,
+                photoStartHour: e.target.value === "" ? null : Number(e.target.value),
+                photoEndHour: e.target.value === "" ? null : (f.photoEndHour ?? 24),
+              })
+            }
+            className="h-10 rounded-md border border-slate-300 bg-white px-3"
+          >
+            <option value="">Sin horario</option>
+            {Array.from({ length: 24 }, (_, h) => (
+              <option key={h} value={h}>
+                Desde las {hourLabel(h)}
+              </option>
+            ))}
+          </select>
+          {f.photoStartHour !== null && (
+            <select
+              aria-label="Hasta qué hora"
+              value={f.photoEndHour ?? 24}
+              onChange={(e) => setF({ ...f, photoEndHour: Number(e.target.value) })}
+              className="h-10 rounded-md border border-slate-300 bg-white px-3"
+            >
+              {Array.from({ length: 24 - f.photoStartHour }, (_, i) => f.photoStartHour! + 1 + i).map((h) => (
+                <option key={h} value={h}>
+                  hasta las {hourLabel(h)}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" onClick={removeFiesta} isLoading={deleting} icon={<Trash2 className="h-4 w-4 text-red-600" />}>

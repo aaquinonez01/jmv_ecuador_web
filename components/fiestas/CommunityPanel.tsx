@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CalendarClock, Check, ChevronDown, ImagePlus, Loader2, Trash2, UploadCloud } from "lucide-react";
-import { errorMessage, getMyCommunity, removeMyPhoto, setMode, uploadPhotos } from "@/lib/fiestas/api";
-import { MODES, type FiestaDaySummary, type MyCommunity, type PhotoStatus } from "@/lib/fiestas/types";
+import { errorMessage, getMyCommunity, removeMyPhoto, uploadPhotos } from "@/lib/fiestas/api";
+import { hourLabel, MODES, type FiestaDaySummary, type MyCommunity, type PhotoStatus } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
 import { FiestaButton, Glass } from "./ui";
 
@@ -147,7 +147,18 @@ export default function CommunityPanel({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const load = useCallback(() => getMyCommunity(slug).then(setData).catch(() => setData({ comunidad: null })), [slug]);
+  const load = useCallback(
+    () =>
+      getMyCommunity(slug)
+        .then((d) => {
+          setData(d);
+          // Si hay un día al que se puede subir ahora, ese queda elegido
+          const openNow = d.upload?.open.at(-1);
+          if (openNow) setDay(openNow);
+        })
+        .catch(() => setData({ comunidad: null })),
+    [slug],
+  );
   useEffect(() => {
     load();
   }, [load]);
@@ -167,14 +178,15 @@ export default function CommunityPanel({
   const dayLabel = days.find((d) => d.dayNumber === day)?.label ?? `Día ${day}`;
   const max = Math.max(1, ...(data.perDay ?? []).map((d) => d.participants));
 
-  const chooseMode = async (m: (typeof MODES)[number]["id"]) => {
-    try {
-      await setMode(slug, m);
-      setData((d) => (d ? { ...d, mode: m } : d));
-    } catch (e) {
-      setMsg({ ok: false, text: errorMessage(e) });
-    }
-  };
+  // Sin reglas del servidor (versión anterior): se puede subir a cualquier día abierto
+  const rules = data.upload;
+  const canUpload = rules ? rules.open.includes(day) : true;
+  const blocked = rules
+    ? (rules.notice ??
+      (rules.allowed.includes(day)
+        ? "Ahora solo se pueden subir las fotos del día de hoy."
+        : "Ese día no corresponde a la modalidad de tu comunidad."))
+    : null;
 
   const upload = async () => {
     if (!files.length) return;
@@ -213,7 +225,7 @@ export default function CommunityPanel({
       {showModes && (
       <div>
         <p className="mb-2 text-sm font-semibold text-white/85">
-          {data.isLead ? "¿Cómo la viven en persona?" : "Así la viven en persona"}
+          Así la viven en persona
         </p>
         <div className="grid grid-cols-3 gap-2">
           {MODES.map((m) => {
@@ -222,16 +234,14 @@ export default function CommunityPanel({
               <button
                 key={m.id}
                 type="button"
-                disabled={!data.isLead}
-                onClick={() => chooseMode(m.id)}
+                disabled
                 aria-pressed={on}
                 className={cn(
                   "rounded-2xl border px-2 py-3 text-center transition",
                   on
                     ? "border-[#f5b83d] bg-[#f5b83d] text-[#3b2600] shadow-[0_4px_0_#9a6504]"
                     : "border-white/20 bg-white/[0.08] text-white",
-                  data.isLead && !on && "shadow-[0_4px_0_rgba(0,0,0,0.3)] hover:bg-white/15 active:translate-y-1",
-                  !data.isLead && !on && "opacity-60",
+                  !on && "opacity-60",
                 )}
               >
                 <span className="block text-sm font-bold">{m.label}</span>
@@ -240,9 +250,11 @@ export default function CommunityPanel({
             );
           })}
         </div>
-        {!data.mode && !data.isLead && (
-          <p className="mt-2 text-xs text-white/55">El responsable de tu comunidad aún no lo eligió.</p>
-        )}
+        <p className="mt-2 text-xs text-white/55">
+          {data.mode
+            ? "Lo registra el equipo nacional con lo que envía cada localidad."
+            : "Todavía no lo registramos. La localidad lo envía al equipo nacional junto con el nombre del responsable."}
+        </p>
       </div>
       )}
 
@@ -279,6 +291,27 @@ export default function CommunityPanel({
           {opened.length > 0 && (
             <>
           {opened.length > 0 && <DayPicker days={opened} value={day} onChange={setDay} lastDay={lastDay} />}
+          {rules?.hours && !rules.specialUntil && (
+            <p className="flex items-center gap-2 text-sm text-white/75">
+              <CalendarClock className="h-4 w-4 shrink-0 text-[#f5c867]" aria-hidden="true" />
+              Las fotos de cada día se suben ese mismo día, de {hourLabel(rules.hours.from)} a {hourLabel(rules.hours.to)}.
+            </p>
+          )}
+          {rules?.specialUntil && (
+            <p className="flex items-center gap-2 rounded-2xl border border-[#2fa36b]/50 bg-[#2fa36b]/15 px-4 py-3 text-sm text-white">
+              <CalendarClock className="h-4 w-4 shrink-0 text-[#a8f0cc]" aria-hidden="true" />
+              El equipo nacional les abrió la subida hasta el{" "}
+              {new Date(rules.specialUntil).toLocaleString("es-EC", { weekday: "long", hour: "numeric", minute: "2-digit", timeZone: "America/Guayaquil" })}.
+            </p>
+          )}
+          {!canUpload && blocked && (
+            <p className="flex items-center gap-3 rounded-2xl border border-[#f5b83d]/40 bg-[#f5b83d]/10 px-4 py-3 text-sm text-white/85">
+              <CalendarClock className="h-5 w-5 shrink-0 text-[#f5c867]" aria-hidden="true" />
+              {blocked}
+            </p>
+          )}
+          {canUpload && (
+            <>
           <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/25 bg-white/[0.04] p-4 text-center transition hover:border-[#f5b83d] hover:bg-white/[0.07]">
             <ImagePlus className="h-8 w-8 text-[#f5c867]" aria-hidden="true" />
             <span className="text-sm font-semibold text-white">
@@ -311,6 +344,8 @@ export default function CommunityPanel({
             {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <UploadCloud className="h-5 w-5" aria-hidden="true" />}
             {busy ? "Subiendo…" : "Subir fotos"}
           </FiestaButton>
+            </>
+          )}
             </>
           )}
           {msg && (
