@@ -14,6 +14,21 @@ function seeded(seed: number) {
     return (s - 1) / 2147483646;
   };
 }
+/** Cielo de ejemplo para que los administradores vean cómo quedará (sus pruebas no cuentan) */
+const DEMO: FiestaSky = {
+  total: 48,
+  comunidades: 6,
+  open: false,
+  stars: [
+    { comunidad: "Comunidad de ejemplo 1", n: 17 },
+    { comunidad: "Comunidad de ejemplo 2", n: 12 },
+    { comunidad: "Comunidad de ejemplo 3", n: 8 },
+    { comunidad: "Comunidad de ejemplo 4", n: 6 },
+    { comunidad: "Comunidad de ejemplo 5", n: 4 },
+    { comunidad: "Comunidad de ejemplo 6", n: 1 },
+  ],
+};
+
 const hash = (t: string) => [...t].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
 
 /** Una constelación: las estrellas de una comunidad, repartidas en espiral */
@@ -69,6 +84,7 @@ export default function FeastSky({
   myComunidad,
   hideEmpty = false,
   title,
+  demo = false,
   className,
 }: {
   slug: string;
@@ -80,9 +96,13 @@ export default function FeastSky({
   hideEmpty?: boolean;
   /** Título sobre el contador (en la portada) */
   title?: string;
+  /** Administradores: si el cielo está vacío, muestra uno de ejemplo */
+  demo?: boolean;
   className?: string;
 }) {
-  const [sky, setSky] = useState<FiestaSky | null>(initial ?? null);
+  const [real, setSky] = useState<FiestaSky | null>(initial ?? null);
+  const isDemo = demo && real !== null && real.total === 0;
+  const sky = isDemo ? DEMO : real;
 
   useEffect(() => {
     if (initial) setSky(initial);
@@ -116,6 +136,12 @@ export default function FeastSky({
         .feast-twinkle { animation: feast-twinkle 3.2s ease-in-out infinite }
         @media (prefers-reduced-motion: reduce) { .feast-twinkle { animation: none } }
       `}</style>
+      {isDemo && (
+        <p className="mb-4 rounded-2xl px-4 py-3 text-center text-sm" style={{ background: "rgba(245,184,61,0.14)", border: "1px solid rgba(245,184,61,0.5)", color: "#ffe7a3" }}>
+          Vista previa para administradores: así se verá el cielo. Las comunidades y los números son de ejemplo; tu consagración
+          de prueba no se cuenta.
+        </p>
+      )}
       {title && (
         <h2 className="font-display mb-4 text-center text-3xl font-semibold sm:text-4xl" style={{ color: "#fff" }}>
           {title}
@@ -140,7 +166,7 @@ export default function FeastSky({
       ) : (
         <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {named.map((s) => (
-            <Constellation key={s.comunidad} name={s.comunidad!} n={s.n} mine={Boolean(myComunidad) && s.comunidad === myComunidad} />
+            <Constellation key={s.comunidad} name={s.comunidad!} n={s.n} mine={isDemo ? s === sky.stars[0] : Boolean(myComunidad) && s.comunidad === myComunidad} />
           ))}
           {others > 0 && <Constellation name="JMV Ecuador" n={others} mine={false} />}
         </ul>

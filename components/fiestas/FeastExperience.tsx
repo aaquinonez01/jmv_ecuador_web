@@ -156,7 +156,7 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
     <div className="flex flex-col items-center text-center">
       <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f5c867]">Nueve caminos, una Medalla</p>
       <div className="relative mt-6 w-56 sm:w-64">
-        <div aria-hidden="true" className={cn("absolute -inset-16 rounded-full blur-3xl transition-opacity duration-1000", complete ? "bg-[#f5b83d]/40 opacity-100" : "opacity-0")} />
+        <div aria-hidden="true" className={cn("absolute -inset-8 rounded-full blur-3xl transition-opacity duration-1000", complete ? "bg-[#f5b83d]/40 opacity-100" : "opacity-0")} />
         {/* la clave cambia con la cara: el componente gira al mostrar la otra */}
         <Medal key={face} earned={earned} highlight={complete ? null : current?.id} initialFace={face} showFlip={complete} />
       </div>
@@ -393,7 +393,7 @@ export default function FeastExperience({
               <div className="w-full">
                 <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f5c867]">JMV Ecuador, esta noche</p>
                 <h2 className="font-display mt-2 text-4xl font-semibold sm:text-5xl">Un solo cielo</h2>
-                <FeastSky slug={slug} initial={sky} myComunidad={done ? me?.comunidad?.nombre : null} className="mt-6" />
+                <FeastSky slug={slug} initial={sky} myComunidad={done ? me?.comunidad?.nombre : null} demo={Boolean(me?.user.isAdmin)} className="mt-6" />
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                   {done && (
                     <FiestaButton tone="gold" onClick={onShare} disabled={sharing}>
