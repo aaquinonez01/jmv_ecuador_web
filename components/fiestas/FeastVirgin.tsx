@@ -41,6 +41,17 @@ export default function FeastVirgin({ rays = true, className }: { rays?: boolean
           <stop offset="0" stopColor="#fffbe6" />
           <stop offset="1" stopColor="#f5b83d" stopOpacity="0.15" />
         </linearGradient>
+        <radialGradient id={`fade-${uid}`} cx="120" cy="140" r="150" gradientUnits="userSpaceOnUse">
+          <stop offset="0.2" stopColor="#fff" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <mask id={`mask-${uid}`} maskUnits="userSpaceOnUse" x="-80" y="-60" width="400" height="400">
+          <circle cx="120" cy="140" r="150" fill={`url(#fade-${uid})`} />
+        </mask>
+        <linearGradient id={`capa-${uid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#8fb4f0" />
+          <stop offset="1" stopColor="#2f62b8" />
+        </linearGradient>
         <filter id={`brillo-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="3" result="b" />
           <feMerge>
@@ -51,6 +62,7 @@ export default function FeastVirgin({ rays = true, className }: { rays?: boolean
       </defs>
 
       {/* Destellos que giran lentamente detrás */}
+      <g mask={`url(#mask-${uid})`}>
       <motion.g
         style={{ transformOrigin: "120px 140px" }}
         animate={reduce ? undefined : { rotate: 360 }}
@@ -64,6 +76,7 @@ export default function FeastVirgin({ rays = true, className }: { rays?: boolean
           return <polygon key={i} points={`${p(a, 26)} ${p(a - w, i % 2 ? 150 : 185)} ${p(a + w, i % 2 ? 150 : 185)}`} fill="#ffd36e" opacity={i % 2 ? 0.35 : 0.6} />;
         })}
       </motion.g>
+      </g>
 
       {/* Halo que respira */}
       <motion.ellipse
@@ -115,7 +128,15 @@ export default function FeastVirgin({ rays = true, className }: { rays?: boolean
             strokeWidth="1.8"
             strokeLinejoin="round"
           />
-          <circle cx="100" cy="76" r="8.5" fill="#fff3d6" stroke={`url(#oro-${uid})`} strokeWidth="1.4" />
+          {/* Manto azul que cae desde la cabeza por los dos lados */}
+          <path
+            d="M100 61 C84 62 79 78 82 96 L66 193 C72 197 80 199 86 200 L92 104 C90 92 92 82 100 80 C108 82 110 92 108 104 L114 200 C120 199 128 197 134 193 L118 96 C121 78 116 62 100 61 Z"
+            fill={`url(#capa-${uid})`}
+            stroke={`url(#oro-${uid})`}
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <circle cx="100" cy="76" r="7.5" fill="#fff3d6" stroke={`url(#oro-${uid})`} strokeWidth="1.2" />
         </g>
         <path d="M88 102 C82 112 78 122 74 132 M112 102 C118 112 122 122 126 132" fill="none" stroke={`url(#oro-${uid})`} strokeWidth="2.4" strokeLinecap="round" />
         <path d="M92 150 C96 160 104 160 108 150" fill="none" stroke="#c8860a" strokeWidth="1.1" strokeLinecap="round" opacity="0.7" />

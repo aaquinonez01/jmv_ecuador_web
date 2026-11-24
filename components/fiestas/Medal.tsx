@@ -219,6 +219,7 @@ export default function Medal({
   className,
   showFlip = true,
   fly = false,
+  face: controlled,
 }: {
   earned: Set<string>;
   highlight?: string | null;
@@ -227,8 +228,11 @@ export default function Medal({
   showFlip?: boolean;
   /** Celebración: las piezas entran volando al ganarse */
   fly?: boolean;
+  /** Cara que se muestra, decidida desde fuera (si falta, la elige quien mira) */
+  face?: Face;
 }) {
-  const [face, setFace] = useState<Face>(initialFace);
+  const [own, setFace] = useState<Face>(initialFace);
+  const face = controlled ?? own;
   const reduce = useReducedMotion();
   const complete = earned.has("medalla");
 

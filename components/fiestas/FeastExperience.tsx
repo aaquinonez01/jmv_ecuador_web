@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useAnimate, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, HandHeart, Loader2, Share2, Sparkles, X } from "lucide-react";
 import StarField from "@/components/calendario/StarField";
 import { consecrate, errorMessage, getMyConsecration, type FiestaSky } from "@/lib/fiestas/api";
@@ -153,18 +153,32 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
     return s;
   }, [count, complete]);
   const current = FEAST_PIECES[Math.min(count, FEAST_PIECES.length) - 1];
-  const face = complete ? "front" : (current?.face ?? "front");
+
+  // La Medalla gira una sola vez: se queda en el reverso mientras entran sus piezas
+  // y vuelve al anverso al completarse. Gira después de que la última pieza se asentó.
+  const [face, setFace] = useState<"front" | "back">("front");
+  useEffect(() => {
+    const next = complete ? "front" : (FEAST_PIECES[count]?.face ?? null);
+    if (!next) return;
+    const t = setTimeout(() => setFace(next), complete ? 0 : 850);
+    return () => clearTimeout(t);
+  }, [count, complete]);
+
+  // Un pequeño golpe cuando la pieza se incrusta
+  const [scope, animate] = useAnimate<HTMLDivElement>();
+  useEffect(() => {
+    if (count === 0 || reduce || !scope.current) return;
+    void animate(scope.current, { scale: [1, 1, 1.045, 1] }, { duration: 0.95, times: [0, 0.62, 0.78, 1] });
+  }, [count, reduce, animate, scope]);
 
   return (
     <div className="flex flex-col items-center text-center">
       <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f5c867]">Nueve caminos, una Medalla</p>
       <div className="relative mt-6 w-56 sm:w-64">
         <div aria-hidden="true" className={cn("absolute -inset-8 rounded-full blur-3xl transition-opacity duration-1000", complete ? "bg-[#f5b83d]/40 opacity-100" : "opacity-0")} />
-        {/* la clave cambia con la cara: el componente gira al mostrar la otra */}
-        {/* un pequeño golpe cuando la pieza se incrusta */}
-        <motion.div key={count} initial={{ scale: 1 }} animate={{ scale: [1, 1, 1.045, 1] }} transition={{ duration: 0.95, times: [0, 0.62, 0.78, 1] }}>
-          <Medal key={face} earned={earned} highlight={complete ? null : current?.id} initialFace={face} showFlip={complete} fly />
-        </motion.div>
+        <div ref={scope}>
+          <Medal earned={earned} highlight={complete ? null : current?.id} face={complete ? undefined : face} showFlip={complete} fly />
+        </div>
       </div>
       <p className="mt-6 min-h-6 text-sm text-white/70" aria-live="polite">
         {complete ? "" : `${Math.min(count, FEAST_PIECES.length)} de ${FEAST_PIECES.length} piezas`}
