@@ -14,8 +14,9 @@ import {
   FEAST_STORY,
   type FeastArt,
 } from "@/lib/fiestas/feast-medalla";
-import type { FiestaMe } from "@/lib/fiestas/types";
+import type { DayResult, FiestaDayContent, FiestaMe } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
+import FeastQuiz from "./FeastQuiz";
 import FeastSky from "./FeastSky";
 import FeastVirgin from "./FeastVirgin";
 import FeastWall from "./FeastWall";
@@ -24,6 +25,7 @@ import { Confetti, FiestaButton } from "./ui";
 
 type Screen =
   | { kind: "story"; index: number }
+  | { kind: "quiz" }
   | { kind: "medal" }
   | { kind: "roots" }
   | { kind: "consecration" }
@@ -31,6 +33,7 @@ type Screen =
 
 const SCREENS: Screen[] = [
   ...FEAST_STORY.map((_, index) => ({ kind: "story" as const, index })),
+  { kind: "quiz" },
   { kind: "medal" },
   { kind: "roots" },
   { kind: "consecration" },
@@ -202,6 +205,10 @@ export default function FeastExperience({
   slug,
   fiestaId,
   fiestaTitle,
+  dayNumber,
+  questions,
+  result,
+  onAnswered,
   me,
   onClose,
   onNeedAuth,
@@ -211,6 +218,11 @@ export default function FeastExperience({
   slug: string;
   fiestaId: string;
   fiestaTitle: string;
+  dayNumber: number;
+  /** Las preguntas del día de la fiesta se responden dentro de la celebración */
+  questions: FiestaDayContent["questions"];
+  result: DayResult | null;
+  onAnswered: (r: DayResult) => void;
   me: FiestaMe | null;
   onClose: () => void;
   /** Pide crear cuenta o entrar (para recibir la Medalla) */
@@ -274,8 +286,10 @@ export default function FeastExperience({
 
   const nextLabel =
     screen.kind === "story" && screen.index === FEAST_STORY.length - 1
-      ? "Tu Medalla"
-      : screen.kind === "medal"
+      ? "Las preguntas"
+      : screen.kind === "quiz"
+        ? "Tu Medalla"
+        : screen.kind === "medal"
         ? "Nuestras raíces"
         : screen.kind === "roots"
           ? "Recibir la Medalla"
@@ -332,6 +346,21 @@ export default function FeastExperience({
                   {FEAST_STORY[screen.index].text}
                 </motion.p>
               </>
+            )}
+
+            {screen.kind === "quiz" && (
+              <FeastQuiz
+                slug={slug}
+                dayNumber={dayNumber}
+                questions={questions}
+                result={result}
+                loggedIn={Boolean(me)}
+                onNeedAuth={onNeedAuth}
+                onAnswered={(r) => {
+                  onAnswered(r);
+                  setBurst((b) => b + 1);
+                }}
+              />
             )}
 
             {screen.kind === "medal" && <MedalCeremony name={firstName} onDone={() => setCeremonyDone(true)} />}
@@ -453,7 +482,7 @@ export default function FeastExperience({
           <button
             type="button"
             onClick={() => go(1)}
-            disabled={screen.kind === "medal" && !ceremonyDone}
+            disabled={(screen.kind === "medal" && !ceremonyDone) || (screen.kind === "quiz" && questions.length > 0 && !result?.answered)}
             className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-b from-[#ffd36e] to-[#f0a81f] px-6 font-semibold text-[#3b2600] shadow-[0_4px_0_#9a6504,0_10px_24px_rgba(240,168,31,0.35)] transition active:translate-y-[3px] active:shadow-[0_1px_0_#9a6504] disabled:opacity-40"
           >
             {nextLabel} <ArrowRight className="h-5 w-5" aria-hidden="true" />

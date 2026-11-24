@@ -377,7 +377,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
                 Vivir la fiesta
               </FiestaButton>
               <p className="relative mx-auto mt-3 max-w-sm text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
-                Revive las apariciones, completa tu Medalla y recíbela en tu corazón junto a todo JMV Ecuador.
+                Revive las apariciones, responde lo que caminaste en la novena, completa tu Medalla y recíbela en tu corazón junto a todo JMV Ecuador.
               </p>
             </motion.section>
 
@@ -400,6 +400,8 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </>
         )}
 
+        {!feastDay && (
+          <>
         {/* Oraciones de todos los días (plegables) */}
         {day.dailyPrayers && (
           <details className="group mt-10 overflow-hidden rounded-3xl border border-white/15 bg-white/[0.05] shadow-[0_4px_0_rgba(0,0,0,0.3)]">
@@ -596,6 +598,9 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </section>
         )}
 
+          </>
+        )}
+
         {/* Propósito */}
         {day.purpose && (
           <section className="mt-10">
@@ -675,6 +680,13 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           slug={slug}
           fiestaId={fiesta.id}
           fiestaTitle={fiesta.title}
+          dayNumber={dayNumber}
+          questions={day.questions}
+          result={result}
+          onAnswered={(r) => {
+            setResult(r);
+            void getMe(slug).then(setMe);
+          }}
           me={me}
           onClose={() => setFeast(false)}
           onNeedAuth={() => setAuth(true)}
