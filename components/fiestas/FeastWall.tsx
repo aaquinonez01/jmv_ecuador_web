@@ -138,11 +138,11 @@ export default function FeastWall({
                     type="button"
                     onClick={() => input.current?.click()}
                     disabled={busy}
-                    className="inline-flex min-h-9 flex-1 items-center justify-center gap-1 rounded-xl text-xs font-bold"
+                    aria-label="Cambiar mi foto"
+                    className="grid h-9 flex-1 place-items-center rounded-xl"
                     style={{ background: "rgba(7,13,29,0.78)", color: "#fff" }}
                   >
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ImagePlus className="h-4 w-4" aria-hidden="true" />}
-                    Cambiar
                   </button>
                   <button
                     type="button"
