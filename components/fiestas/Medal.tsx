@@ -67,7 +67,7 @@ function Piece({
       animate={flying ? { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 } : { opacity: 1, scale: 1 }}
       transition={
         flying
-          ? { type: "spring", stiffness: 95, damping: 13, mass: 0.9, opacity: { duration: 0.25 } }
+          ? { type: "spring", stiffness: 46, damping: 11, mass: 1, opacity: { duration: 0.35 } }
           : isNew
             ? { duration: 1.1, delay: 0.25, ease: [0.2, 0.8, 0.2, 1] }
             : undefined

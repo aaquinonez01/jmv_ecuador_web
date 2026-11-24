@@ -92,6 +92,36 @@ export async function consecrate(slug: string) {
   return (await api().post<{ done: boolean; sky: FiestaSky }>(`${base(slug)}/consagracion`)).data;
 }
 
+/** Foto de recuerdo de un joven con su medalla */
+export interface Keepsake {
+  userId: string;
+  url: string;
+  name: string;
+  comunidad: string | null;
+}
+
+export async function getKeepsakes(slug: string) {
+  return (await api().get<Keepsake[]>(`${base(slug)}/recuerdos`)).data;
+}
+
+export async function getMyKeepsake(slug: string) {
+  try {
+    return (await api().get<{ url: string | null }>(`${base(slug)}/recuerdo`)).data.url;
+  } catch {
+    return null;
+  }
+}
+
+export async function uploadKeepsake(slug: string, file: File) {
+  const form = new FormData();
+  form.append("photo", file);
+  return (await api().post<{ url: string }>(`${base(slug)}/recuerdo`, form)).data.url;
+}
+
+export async function removeMyKeepsake(slug: string) {
+  await api().delete(`${base(slug)}/recuerdo`);
+}
+
 export async function getRanking(slug: string) {
   return (await api().get<FiestaRanking>(`${base(slug)}/ranking`)).data;
 }

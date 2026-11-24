@@ -35,6 +35,9 @@ import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/
 import { cn } from "@/lib/utils";
 import AuthDialog from "./AuthDialog";
 import FeastExperience from "./FeastExperience";
+import FeastSky from "./FeastSky";
+import FeastWall from "./FeastWall";
+import Medal from "./Medal";
 import { FEAST_ACCEPT } from "@/lib/fiestas/feast-medalla";
 import FiestaSymbol from "./FiestaSymbol";
 import RichText from "./RichText";
@@ -44,6 +47,20 @@ type Load =
   | { kind: "loading" }
   | { kind: "ready"; fiesta: FiestaPublic; day: FiestaDayContent }
   | { kind: "closed"; fiesta: FiestaPublic | null; message: string };
+
+/** La Medalla completa (portada del día de la fiesta) */
+const FEAST_ALL = new Set(["rayos", "globo", "serpiente", "inscripcion", "maria", "m", "cruz", "corazones", "estrellas", "medalla"]);
+/** Destellos de la portada festiva (posiciones fijas) */
+const FEAST_SPARKS = [
+  { x: 8, y: 12, size: 18, dur: 3.2, delay: 0 },
+  { x: 88, y: 9, size: 22, dur: 3.8, delay: 0.6 },
+  { x: 16, y: 44, size: 14, dur: 2.9, delay: 1.1 },
+  { x: 82, y: 38, size: 16, dur: 3.5, delay: 0.3 },
+  { x: 6, y: 74, size: 20, dur: 4.1, delay: 1.6 },
+  { x: 92, y: 68, size: 14, dur: 3.1, delay: 0.9 },
+  { x: 28, y: 88, size: 16, dur: 3.6, delay: 0.4 },
+  { x: 72, y: 90, size: 20, dur: 3.3, delay: 1.3 },
+];
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -99,6 +116,11 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
     }
     setFeast(true);
   }, [feastDay, slug]);
+
+  // La página misma está de fiesta: confeti al llegar y al volver de la celebración
+  useEffect(() => {
+    if (feastDay && !feast) setBurst((b) => b + 1);
+  }, [feastDay, feast]);
 
   useEffect(() => {
     if (!toast) return;
@@ -301,23 +323,81 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </div>
         </header>
 
-        {/* Día de la fiesta: la celebración */}
+        {/* Día de la fiesta: portada festiva, el cielo y el recuerdo de todos */}
         {feastDay && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative mt-8 overflow-hidden rounded-3xl border border-[#f5b83d]/60 bg-gradient-to-br from-[#f5b83d]/25 to-[#f5b83d]/5 p-6 text-center shadow-[0_4px_0_rgba(154,101,4,0.55),0_20px_44px_-14px_rgba(245,184,61,0.5)] sm:p-8"
-          >
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#f5c867]">27 de noviembre · 1830 – {fiesta.feastDate.slice(0, 4)}</p>
-            <h2 className="font-display mt-2 text-3xl font-semibold leading-tight text-white sm:text-4xl">La noche en que todo empezó</h2>
-            <p className="mx-auto mt-2 max-w-md text-white/80">
-              Revive las apariciones, completa tu Medalla, recuerda de dónde venimos y recíbela en tu corazón junto a todo JMV Ecuador.
-            </p>
-            <FiestaButton tone="gold" className="mt-5 px-7 text-base" onClick={() => setFeast(true)}>
-              <Sparkles className="h-5 w-5" aria-hidden="true" />
-              Vivir la fiesta
-            </FiestaButton>
-          </motion.section>
+          <>
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative mt-8 overflow-hidden rounded-[2rem] border border-[#f5b83d]/60 bg-[#0b1a33] px-6 pb-8 pt-10 text-center shadow-[0_4px_0_rgba(154,101,4,0.55),0_24px_60px_-16px_rgba(245,184,61,0.55)] sm:px-10"
+            >
+              <div
+                aria-hidden="true"
+                className="fiesta-rays absolute left-1/2 top-40 -ml-[450px] -mt-[450px] h-[900px] w-[900px] opacity-60 [background:repeating-conic-gradient(from_0deg,rgba(245,184,61,0.26)_0deg_4deg,transparent_4deg_15deg)] [mask-image:radial-gradient(circle,black_20%,transparent_66%)]"
+              />
+              {/* destellos que flotan */}
+              {FEAST_SPARKS.map((p, i) => (
+                <motion.span
+                  key={i}
+                  aria-hidden="true"
+                  className="absolute text-[#ffe7a3]"
+                  style={{ left: `${p.x}%`, top: `${p.y}%`, fontSize: p.size }}
+                  animate={{ opacity: [0.15, 1, 0.15], scale: [0.7, 1.25, 0.7], y: [0, -10, 0] }}
+                  transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  ✦
+                </motion.span>
+              ))}
+
+              <p className="relative inline-block rounded-full bg-[#f5b83d] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#3b2600] shadow-[0_3px_0_#9a6504]">
+                ¡Hoy es la fiesta!
+              </p>
+              <div className="fiesta-float relative mx-auto mt-6 w-44 sm:w-52">
+                <div aria-hidden="true" className="absolute -inset-10 rounded-full bg-[#f5b83d]/40 blur-3xl" />
+                <Medal earned={FEAST_ALL} showFlip={false} />
+              </div>
+              <h2
+                className="font-display relative mt-6 bg-gradient-to-b from-[#fff3c4] via-[#f5c867] to-[#e0a11c] bg-clip-text text-4xl font-semibold leading-tight sm:text-5xl"
+                style={{ color: "transparent" }}
+              >
+                Nuestra Señora de la Medalla Milagrosa
+              </h2>
+              <p className="font-display relative mx-auto mt-3 max-w-md text-xl italic" style={{ color: "#fff" }}>
+                «Oh María, sin pecado concebida, ruega por nosotros que recurrimos a ti»
+              </p>
+              <div className="relative mt-5 flex flex-wrap justify-center gap-2 text-sm font-semibold">
+                {["27 de noviembre de 1830", `${Number(fiesta.feastDate.slice(0, 4)) - 1830} años después`, "JMV Ecuador"].map((t) => (
+                  <span key={t} className="rounded-full px-3.5 py-1.5" style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(245,184,61,0.5)", color: "#ffe7a3" }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <FiestaButton tone="gold" className="relative mt-7 px-8 text-lg" onClick={() => setFeast(true)}>
+                <Sparkles className="h-5 w-5" aria-hidden="true" />
+                Vivir la fiesta
+              </FiestaButton>
+              <p className="relative mx-auto mt-3 max-w-sm text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
+                Revive las apariciones, completa tu Medalla y recíbela en tu corazón junto a todo JMV Ecuador.
+              </p>
+            </motion.section>
+
+            <FeastSky
+              slug={slug}
+              title="Un solo cielo"
+              myComunidad={me?.comunidad?.nombre}
+              hideEmpty
+              demo={isAdmin}
+              className="mt-6 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
+            />
+            <FeastWall
+              slug={slug}
+              fiestaId={fiesta.id}
+              canUpload={Boolean(me)}
+              onNeedAuth={me ? undefined : () => setAuth(true)}
+              isAdmin={isAdmin}
+              className="mt-6 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
+            />
+          </>
         )}
 
         {/* Oraciones de todos los días (plegables) */}
@@ -593,6 +673,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       {feast && (
         <FeastExperience
           slug={slug}
+          fiestaId={fiesta.id}
           fiestaTitle={fiesta.title}
           me={me}
           onClose={() => setFeast(false)}

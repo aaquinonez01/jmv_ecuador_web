@@ -14,6 +14,7 @@ import AuthDialog from "./AuthDialog";
 import CommunityPanel from "./CommunityPanel";
 import DayPath from "./DayPath";
 import FeastSky from "./FeastSky";
+import FeastWall from "./FeastWall";
 import FiestaSymbol from "./FiestaSymbol";
 import Mural from "./Mural";
 import Ranking from "./Ranking";
@@ -288,7 +289,17 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
       {/* ── El cielo del día de la fiesta (aparece cuando alguien ya se consagró) ── */}
       {medal && (
         <section id="cielo" className="mx-auto max-w-5xl scroll-mt-24 px-4">
-          <FeastSky slug={slug} myComunidad={me?.comunidad?.nombre} hideEmpty title="Un solo cielo" className="mb-20 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8" />
+          <FeastSky slug={slug} myComunidad={me?.comunidad?.nombre} hideEmpty title="Un solo cielo" className="mb-8 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8" />
+          {(fiesta.today >= fiesta.feastDate || isAdmin) && (
+            <FeastWall
+              slug={slug}
+              fiestaId={fiesta.id}
+              canUpload={Boolean(me)}
+              onNeedAuth={me ? undefined : () => setAuth("registro")}
+              isAdmin={isAdmin}
+              className="mb-20 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
+            />
+          )}
         </section>
       )}
 

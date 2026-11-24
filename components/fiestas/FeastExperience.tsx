@@ -18,6 +18,7 @@ import type { FiestaMe } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
 import FeastSky from "./FeastSky";
 import FeastVirgin from "./FeastVirgin";
+import FeastWall from "./FeastWall";
 import Medal from "./Medal";
 import { Confetti, FiestaButton } from "./ui";
 
@@ -142,7 +143,7 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
     }
     // Una pausa más larga al pasar del anverso al reverso, para que se vea el giro
     const flip = count > 0 && count < FEAST_PIECES.length && FEAST_PIECES[count].face !== FEAST_PIECES[count - 1].face;
-    const t = setTimeout(() => setCount((c) => c + 1), count === 0 ? 700 : flip ? 1700 : count === FEAST_PIECES.length ? 1400 : 1050);
+    const t = setTimeout(() => setCount((c) => c + 1), count === 0 ? 800 : flip ? 2600 : count === FEAST_PIECES.length ? 2000 : 1650);
     return () => clearTimeout(t);
   }, [count]);
 
@@ -160,7 +161,7 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
   useEffect(() => {
     const next = complete ? "front" : (FEAST_PIECES[count]?.face ?? null);
     if (!next) return;
-    const t = setTimeout(() => setFace(next), complete ? 0 : 850);
+    const t = setTimeout(() => setFace(next), complete ? 0 : 1450);
     return () => clearTimeout(t);
   }, [count, complete]);
 
@@ -168,7 +169,7 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
   const [scope, animate] = useAnimate<HTMLDivElement>();
   useEffect(() => {
     if (count === 0 || reduce || !scope.current) return;
-    void animate(scope.current, { scale: [1, 1, 1.045, 1] }, { duration: 0.95, times: [0, 0.62, 0.78, 1] });
+    void animate(scope.current, { scale: [1, 1, 1.045, 1] }, { duration: 1.5, times: [0, 0.66, 0.8, 1] });
   }, [count, reduce, animate, scope]);
 
   return (
@@ -199,6 +200,7 @@ function MedalCeremony({ name, onDone }: { name: string | null; onDone: () => vo
 // recibir la Medalla y el cielo que se enciende con cada joven.
 export default function FeastExperience({
   slug,
+  fiestaId,
   fiestaTitle,
   me,
   onClose,
@@ -207,6 +209,7 @@ export default function FeastExperience({
   sharing = false,
 }: {
   slug: string;
+  fiestaId: string;
   fiestaTitle: string;
   me: FiestaMe | null;
   onClose: () => void;
@@ -422,6 +425,14 @@ export default function FeastExperience({
                     Seguir con la fiesta
                   </FiestaButton>
                 </div>
+                <FeastWall
+                  slug={slug}
+                  fiestaId={fiestaId}
+                  canUpload={Boolean(me)}
+                  onNeedAuth={me ? undefined : onNeedAuth}
+                  isAdmin={Boolean(me?.user.isAdmin)}
+                  className="mt-12 border-t border-white/15 pt-10"
+                />
               </div>
             )}
           </motion.div>

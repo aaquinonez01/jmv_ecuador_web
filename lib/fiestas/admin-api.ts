@@ -123,6 +123,10 @@ export interface CommunityRow {
 export const listCommunitiesAPI = async (id: string) => (await api().get<CommunityRow[]>(`/admin/fiestas/${id}/communities`)).data;
 export const setCommunityAPI = async (id: string, comunidadId: string, p: { mode?: FiestaMode; open?: boolean }) =>
   (await api().put<CommunityRow[]>(`/admin/fiestas/${id}/communities/${comunidadId}`, p)).data;
+/** Quita la foto de recuerdo de un joven (día de la fiesta) */
+export const removeKeepsakeAPI = async (id: string, userId: string) => {
+  await api().delete(`/admin/fiestas/${id}/recuerdos/${userId}`);
+};
 export const listPhotosAPI = async (id: string, status?: PhotoStatus) =>
   (await api().get<AdminPhoto[]>(`/admin/fiestas/${id}/photos`, { params: status ? { status } : {} })).data;
 export const setPhotoStatusAPI = async (photoId: string, status: PhotoStatus) =>
