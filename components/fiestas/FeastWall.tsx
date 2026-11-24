@@ -105,8 +105,6 @@ export default function FeastWall({
   // Tu propia foto primero (la de un administrador no sale en la lista pública)
   const others = mine ? list.filter((k) => k.url !== mine) : list;
   if (hideEmpty && !canUpload && !onNeedAuth && list.length === 0) return null;
-  // Solo está el recuadro propio: va más grande y al centro
-  const alone = others.length === 0;
 
   return (
     <div className={className}>
@@ -128,10 +126,10 @@ export default function FeastWall({
         </p>
       )}
 
-      <ul className="mt-6 flex flex-wrap justify-center gap-2">
-        {/* Tu foto, o el botón para subirla */}
+      {/* Tu foto, o el botón para subirla: sola y al centro */}
+      <div className="mt-6 flex justify-center">
         {(canUpload || onNeedAuth) && (
-          <li className={cn("relative aspect-square overflow-hidden rounded-2xl", alone ? "w-44 sm:w-52" : TILE)} style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
+          <div className="relative aspect-square w-48 overflow-hidden rounded-3xl sm:w-56" style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
             {mine ? (
               <>
                 <img src={getOptimizedUrl(mine, { w: 400 })} alt="Tu foto con la medalla" className="h-full w-full object-cover" />
@@ -176,10 +174,24 @@ export default function FeastWall({
               </button>
             )}
             <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-          </li>
+          </div>
         )}
+      </div>
 
-        {others.map((k) => (
+      {/* Las fotos de todos, en su propio apartado */}
+      <div className="mt-10 border-t pt-8" style={{ borderColor: "rgba(255,255,255,0.14)" }}>
+        <p className="text-center text-sm font-semibold" style={{ color: "#fff" }}>
+          Los que caminamos esta novena
+          {others.length > 0 && <span style={{ color: soft }}> · {others.length} {others.length === 1 ? "foto" : "fotos"}</span>}
+        </p>
+        {others.length === 0 ? (
+          <p className="mx-auto mt-3 max-w-sm text-center text-sm" style={{ color: soft }}>
+            {items === null ? "Cargando…" : "Aquí irán apareciendo las fotos de todos a medida que las suban."}
+          </p>
+        ) : (
+          <ul className="mt-4 flex flex-wrap justify-center gap-2">
+
+            {others.map((k) => (
           <li key={k.userId} className={cn("relative aspect-square overflow-hidden rounded-2xl", TILE)} style={{ background: "rgba(255,255,255,0.06)" }}>
             <button type="button" onClick={() => setOpen(k)} className="block h-full w-full" aria-label={`Ver la foto de ${k.name}`}>
               <img src={getOptimizedUrl(k.url, { w: 400 })} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -191,14 +203,10 @@ export default function FeastWall({
               </span>
             </button>
           </li>
-        ))}
-      </ul>
-
-      {items !== null && list.length === 0 && !mine && (
-        <p className="mt-4 text-center text-sm" style={{ color: soft }}>
-          Todavía no hay fotos. La primera puede ser la tuya.
-        </p>
-      )}
+            ))}
+          </ul>
+        )}
+      </div>
 
       {/* Foto ampliada */}
       {open && (
