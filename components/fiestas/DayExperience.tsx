@@ -23,6 +23,7 @@ import {
   getDay,
   getFiesta,
   getMe,
+  getMyKeepsake,
   getResult,
   markPurpose,
   sendAnswers,
@@ -263,6 +264,8 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       const blob = await makeShareCard({
         fiestaTitle: fiesta.title,
         headline: FEAST_ACCEPT.shareHeadline,
+        // Si subió su foto con la medalla, sale en la imagen
+        photo: me ? await getMyKeepsake(slug) : null,
         piece: me?.user.name ?? "JMV Ecuador",
         earned: [...fiesta.days.map((d) => d.piece), "medalla"],
         face: "front",

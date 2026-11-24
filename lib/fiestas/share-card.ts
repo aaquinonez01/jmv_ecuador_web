@@ -184,6 +184,13 @@ function drawMedal(ctx: CanvasRenderingContext2D, cx: number, cy: number, k: num
   ctx.restore();
 }
 
+/** Pide a Cloudinary la foto cuadrada y centrada en el rostro (otras direcciones se dejan igual) */
+function squareUrl(url: string) {
+  return url.includes("res.cloudinary.com") && url.includes("/upload/")
+    ? url.replace("/upload/", "/upload/c_fill,g_face,w_800,h_800,f_jpg,q_auto/")
+    : url;
+}
+
 /** Carga una imagen para dibujarla en el lienzo (null si no se puede) */
 function loadImage(url: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
@@ -205,6 +212,8 @@ export async function makeShareCard(p: {
   face: "front" | "back";
   /** Ej.: "1 de 10 piezas de mi Medalla" */
   progress?: string;
+  /** Foto de quien comparte (su recuerdo con la medalla): va en grande, con la Medalla al lado */
+  photo?: string | null;
   /** Símbolo por capas: imagen base y capas ya ganadas (en lugar de la Medalla) */
   layers?: { base: string | null; images: string[] };
   footer: string;
@@ -255,7 +264,32 @@ export async function makeShareCard(p: {
       for (const img of imgs) if (img) ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     }
   } else {
-    drawMedal(ctx, cx, cy, 3.3, new Set(p.earned), p.face);
+    // Con foto: la foto en un círculo grande y la Medalla más pequeña, encima a un lado
+    const photo = p.photo ? await loadImage(squareUrl(p.photo)) : null;
+    if (photo) {
+      const px = cx;
+      const py = 610;
+      const r = 300;
+      ctx.save();
+      ctx.shadowColor = "rgba(245,184,61,0.7)";
+      ctx.shadowBlur = 70;
+      ctx.beginPath();
+      ctx.arc(px, py, r + 10, 0, Math.PI * 2);
+      ctx.fillStyle = "#f5b83d";
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.clip();
+      // recorte centrado, como object-fit: cover
+      const side = Math.min(photo.naturalWidth, photo.naturalHeight);
+      ctx.drawImage(photo, (photo.naturalWidth - side) / 2, (photo.naturalHeight - side) / 2, side, side, px - r, py - r, r * 2, r * 2);
+      ctx.restore();
+      drawMedal(ctx, cx + 270, 900, 1.5, new Set(p.earned), p.face);
+    } else {
+      drawMedal(ctx, cx, cy, 3.3, new Set(p.earned), p.face);
+    }
   }
 
   ctx.textAlign = "center";

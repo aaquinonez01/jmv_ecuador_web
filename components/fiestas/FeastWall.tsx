@@ -6,12 +6,15 @@ import { Camera, EyeOff, ImagePlus, Loader2, Trash2, X } from "lucide-react";
 import { errorMessage, getKeepsakes, getMyKeepsake, removeMyKeepsake, uploadKeepsake, type Keepsake } from "@/lib/fiestas/api";
 import { removeKeepsakeAPI } from "@/lib/fiestas/admin-api";
 import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
+import { cn } from "@/lib/utils";
 
 // El recuerdo de todos: cada joven sube una foto llevando la medalla.
 // Siempre es de noche (colores fijos), como el cielo.
 
 const gold = "#f5c867";
 const soft = "rgba(255,255,255,0.72)";
+/** Ancho de cada foto: tres por fila en el celular, más en pantallas grandes */
+const TILE = "w-[calc((100%-1rem)/3)] sm:w-[calc((100%-1.5rem)/4)] lg:w-[calc((100%-2.5rem)/6)]";
 
 export default function FeastWall({
   slug,
@@ -102,6 +105,8 @@ export default function FeastWall({
   // Tu propia foto primero (la de un administrador no sale en la lista pública)
   const others = mine ? list.filter((k) => k.url !== mine) : list;
   if (hideEmpty && !canUpload && !onNeedAuth && list.length === 0) return null;
+  // Solo está el recuadro propio: va más grande y al centro
+  const alone = others.length === 0;
 
   return (
     <div className={className}>
@@ -123,10 +128,10 @@ export default function FeastWall({
         </p>
       )}
 
-      <ul className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+      <ul className="mt-6 flex flex-wrap justify-center gap-2">
         {/* Tu foto, o el botón para subirla */}
         {(canUpload || onNeedAuth) && (
-          <li className="relative aspect-square overflow-hidden rounded-2xl" style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
+          <li className={cn("relative aspect-square overflow-hidden rounded-2xl", alone ? "w-44 sm:w-52" : TILE)} style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
             {mine ? (
               <>
                 <img src={getOptimizedUrl(mine, { w: 400 })} alt="Tu foto con la medalla" className="h-full w-full object-cover" />
@@ -175,7 +180,7 @@ export default function FeastWall({
         )}
 
         {others.map((k) => (
-          <li key={k.userId} className="relative aspect-square overflow-hidden rounded-2xl" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <li key={k.userId} className={cn("relative aspect-square overflow-hidden rounded-2xl", TILE)} style={{ background: "rgba(255,255,255,0.06)" }}>
             <button type="button" onClick={() => setOpen(k)} className="block h-full w-full" aria-label={`Ver la foto de ${k.name}`}>
               <img src={getOptimizedUrl(k.url, { w: 400 })} alt="" loading="lazy" className="h-full w-full object-cover" />
               <span
