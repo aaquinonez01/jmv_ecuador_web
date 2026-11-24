@@ -67,6 +67,31 @@ export async function markPurpose(slug: string, n: number) {
   return (await api().post<{ purposeDone: boolean; points: number }>(`${base(slug)}/days/${n}/purpose`)).data;
 }
 
+/** El cielo del día de la fiesta: cuántos se consagraron, por comunidad */
+export interface FiestaSky {
+  total: number;
+  comunidades: number;
+  stars: { comunidad: string | null; n: number }[];
+  /** Ya es el día de la fiesta */
+  open: boolean;
+}
+
+export async function getSky(slug: string) {
+  return (await api().get<FiestaSky>(`${base(slug)}/cielo`)).data;
+}
+
+export async function getMyConsecration(slug: string) {
+  try {
+    return (await api().get<{ done: boolean }>(`${base(slug)}/consagracion`)).data.done;
+  } catch {
+    return false;
+  }
+}
+
+export async function consecrate(slug: string) {
+  return (await api().post<{ done: boolean; sky: FiestaSky }>(`${base(slug)}/consagracion`)).data;
+}
+
 export async function getRanking(slug: string) {
   return (await api().get<FiestaRanking>(`${base(slug)}/ranking`)).data;
 }

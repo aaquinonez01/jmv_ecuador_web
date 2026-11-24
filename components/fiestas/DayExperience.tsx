@@ -34,6 +34,7 @@ import { makeShareCard, shareCard } from "@/lib/fiestas/share-card";
 import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import { cn } from "@/lib/utils";
 import AuthDialog from "./AuthDialog";
+import FeastExperience from "./FeastExperience";
 import FiestaSymbol from "./FiestaSymbol";
 import RichText from "./RichText";
 import { Confetti, FiestaButton, FiestaStyles, Glass, Sheet } from "./ui";
@@ -59,6 +60,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   const [purposeBusy, setPurposeBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [sharing, setSharing] = useState(false);
+  const [feast, setFeast] = useState(false);
 
   const load = useCallback(async () => {
     const [fiesta, m] = await Promise.all([getFiesta(slug).catch(() => null), getMe(slug)]);
@@ -82,6 +84,20 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
   useEffect(() => {
     load();
   }, [load]);
+
+  // Día de la fiesta de la Medalla: la celebración se abre sola la primera vez
+  const feastDay = state.kind === "ready" && isMedal(state.fiesta) && state.day.piece === "medalla";
+  useEffect(() => {
+    if (!feastDay) return;
+    const key = `jmv-fiesta-vista:${slug}`;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, "1");
+    } catch {
+      // sin almacenamiento: se abre igual
+    }
+    setFeast(true);
+  }, [feastDay, slug]);
 
   useEffect(() => {
     if (!toast) return;
@@ -216,6 +232,30 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
     }
   };
 
+  /** Imagen de recuerdo del día de la fiesta: la Medalla completa con su nombre */
+  const shareFeast = async () => {
+    setSharing(true);
+    try {
+      const year = fiesta.feastDate.slice(0, 4);
+      const blob = await makeShareCard({
+        fiestaTitle: fiesta.title,
+        headline: "Me consagré a María",
+        piece: me?.user.name ?? "JMV Ecuador",
+        earned: [...fiesta.days.map((d) => d.piece), "medalla"],
+        face: "front",
+        progress: [me?.comunidad?.nombre, `${longDate(fiesta.feastDate)} de ${year}`].filter(Boolean).join(" · "),
+        footer: "JMV Ecuador",
+        url: `${window.location.host}/fiestas/${slug}`,
+      });
+      const res = await shareCard(blob, "jmv-consagracion.png");
+      if (res === "downloaded") setToast("Imagen descargada: súbela a tu estado o historia ✨");
+    } catch {
+      setToast("No se pudo crear la imagen.");
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <Shell>
       <Confetti burst={burst} />
@@ -259,6 +299,25 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
             />
           </div>
         </header>
+
+        {/* Día de la fiesta: la celebración */}
+        {feastDay && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative mt-8 overflow-hidden rounded-3xl border border-[#f5b83d]/60 bg-gradient-to-br from-[#f5b83d]/25 to-[#f5b83d]/5 p-6 text-center shadow-[0_4px_0_rgba(154,101,4,0.55),0_20px_44px_-14px_rgba(245,184,61,0.5)] sm:p-8"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#f5c867]">27 de noviembre · 1830 – {fiesta.feastDate.slice(0, 4)}</p>
+            <h2 className="font-display mt-2 text-3xl font-semibold leading-tight text-white sm:text-4xl">La noche en que todo empezó</h2>
+            <p className="mx-auto mt-2 max-w-md text-white/80">
+              Revive la aparición, completa tu Medalla, recuerda de dónde venimos y conságrate a María junto a todo JMV Ecuador.
+            </p>
+            <FiestaButton tone="gold" className="mt-5 px-7 text-base" onClick={() => setFeast(true)}>
+              <Sparkles className="h-5 w-5" aria-hidden="true" />
+              Vivir la fiesta
+            </FiestaButton>
+          </motion.section>
+        )}
 
         {/* Oraciones de todos los días (plegables) */}
         {day.dailyPrayers && (
@@ -529,6 +588,18 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </div>
         </div>
       </Sheet>
+
+      {feast && (
+        <FeastExperience
+          slug={slug}
+          fiestaTitle={fiesta.title}
+          me={me}
+          onClose={() => setFeast(false)}
+          onNeedAuth={() => setAuth(true)}
+          onShare={shareFeast}
+          sharing={sharing}
+        />
+      )}
 
       <AuthDialog
         open={auth}

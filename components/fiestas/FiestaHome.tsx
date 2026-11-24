@@ -13,6 +13,7 @@ import type { FiestaMe, FiestaPublic } from "@/lib/fiestas/types";
 import AuthDialog from "./AuthDialog";
 import CommunityPanel from "./CommunityPanel";
 import DayPath from "./DayPath";
+import FeastSky from "./FeastSky";
 import FiestaSymbol from "./FiestaSymbol";
 import Mural from "./Mural";
 import Ranking from "./Ranking";
@@ -281,6 +282,13 @@ export default function FiestaHome({ initial }: { initial: FiestaPublic }) {
         <section id="comunidad" className="mx-auto max-w-6xl scroll-mt-24 px-4 pb-20">
           <SectionTitle kicker="Juntos" title="Tu comunidad" icon={Users} />
           <CommunityPanel slug={slug} days={fiesta.days} onChanged={() => setRefresh((r) => r + 1)} showModes={medal} />
+        </section>
+      )}
+
+      {/* ── El cielo del día de la fiesta (aparece cuando alguien ya se consagró) ── */}
+      {medal && (
+        <section id="cielo" className="mx-auto max-w-5xl scroll-mt-24 px-4">
+          <FeastSky slug={slug} myComunidad={me?.comunidad?.nombre} hideEmpty title="Un solo cielo" className="mb-20 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8" />
         </section>
       )}
 
