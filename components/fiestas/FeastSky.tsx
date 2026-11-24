@@ -77,7 +77,7 @@ function Constellation({ name, n, mine }: { name: string; n: number; mine: boole
   );
 }
 
-// El cielo de la fiesta: una estrella por cada joven que se consagró, agrupadas por comunidad.
+// El cielo de la fiesta: una estrella por cada joven que recibió la Medalla, agrupadas por comunidad.
 export default function FeastSky({
   slug,
   initial,
@@ -88,11 +88,11 @@ export default function FeastSky({
   className,
 }: {
   slug: string;
-  /** Datos ya cargados (por ejemplo, la respuesta al consagrarse) */
+  /** Datos ya cargados (por ejemplo, la respuesta al recibir la Medalla) */
   initial?: FiestaSky | null;
   /** Nombre de la comunidad de quien mira, para resaltarla */
   myComunidad?: string | null;
-  /** No mostrar nada mientras nadie se haya consagrado */
+  /** No mostrar nada mientras nadie haya recibido la Medalla */
   hideEmpty?: boolean;
   /** Título sobre el contador (en la portada) */
   title?: string;
@@ -138,8 +138,8 @@ export default function FeastSky({
       `}</style>
       {isDemo && (
         <p className="mb-4 rounded-2xl px-4 py-3 text-center text-sm" style={{ background: "rgba(245,184,61,0.14)", border: "1px solid rgba(245,184,61,0.5)", color: "#ffe7a3" }}>
-          Vista previa para administradores: así se verá el cielo. Las comunidades y los números son de ejemplo; tu consagración
-          de prueba no se cuenta.
+          Vista previa para administradores: así se verá el cielo. Las comunidades y los números son de ejemplo; tu prueba
+          no se cuenta.
         </p>
       )}
       {title && (
@@ -152,7 +152,7 @@ export default function FeastSky({
           {sky.total}
         </span>
         <span className="mt-1 block text-base" style={{ color: "rgba(255,255,255,0.85)" }}>
-          {sky.total === 1 ? "joven ya se consagró" : "jóvenes ya se consagraron"}
+          {sky.total === 1 ? "joven ya lleva la Medalla en su corazón" : "jóvenes ya llevan la Medalla en su corazón"}
           {sky.comunidades > 0 && (
             <>
               {" "}

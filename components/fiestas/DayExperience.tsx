@@ -35,6 +35,7 @@ import type { DayResult, FiestaDayContent, FiestaMe, FiestaPublic } from "@/lib/
 import { cn } from "@/lib/utils";
 import AuthDialog from "./AuthDialog";
 import FeastExperience from "./FeastExperience";
+import { FEAST_ACCEPT } from "@/lib/fiestas/feast-medalla";
 import FiestaSymbol from "./FiestaSymbol";
 import RichText from "./RichText";
 import { Confetti, FiestaButton, FiestaStyles, Glass, Sheet } from "./ui";
@@ -239,7 +240,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       const year = fiesta.feastDate.slice(0, 4);
       const blob = await makeShareCard({
         fiestaTitle: fiesta.title,
-        headline: "Me consagré a María",
+        headline: FEAST_ACCEPT.shareHeadline,
         piece: me?.user.name ?? "JMV Ecuador",
         earned: [...fiesta.days.map((d) => d.piece), "medalla"],
         face: "front",
@@ -247,7 +248,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
         footer: "JMV Ecuador",
         url: `${window.location.host}/fiestas/${slug}`,
       });
-      const res = await shareCard(blob, "jmv-consagracion.png");
+      const res = await shareCard(blob, "jmv-medalla-milagrosa.png");
       if (res === "downloaded") setToast("Imagen descargada: súbela a tu estado o historia ✨");
     } catch {
       setToast("No se pudo crear la imagen.");
@@ -310,7 +311,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#f5c867]">27 de noviembre · 1830 – {fiesta.feastDate.slice(0, 4)}</p>
             <h2 className="font-display mt-2 text-3xl font-semibold leading-tight text-white sm:text-4xl">La noche en que todo empezó</h2>
             <p className="mx-auto mt-2 max-w-md text-white/80">
-              Revive la aparición, completa tu Medalla, recuerda de dónde venimos y conságrate a María junto a todo JMV Ecuador.
+              Revive las apariciones, completa tu Medalla, recuerda de dónde venimos y recíbela en tu corazón junto a todo JMV Ecuador.
             </p>
             <FiestaButton tone="gold" className="mt-5 px-7 text-base" onClick={() => setFeast(true)}>
               <Sparkles className="h-5 w-5" aria-hidden="true" />

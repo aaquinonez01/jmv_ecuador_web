@@ -24,28 +24,54 @@ const RAYS_RIGHT = [0, 1, 2, 3, 4, 5].map((i) => `M${126 + i * 0.6} ${132 + i * 
 
 type Face = "front" | "back";
 
+/** Desde dónde entra volando cada pieza en la celebración (unidades del dibujo; la medalla mide 200×260) */
+const FLY_FROM: Record<string, { x: number; y: number; rotate: number }> = {
+  rayos: { x: 0, y: -460, rotate: -30 },
+  globo: { x: 0, y: 460, rotate: 25 },
+  serpiente: { x: -420, y: 120, rotate: -50 },
+  inscripcion: { x: 420, y: -140, rotate: 60 },
+  maria: { x: 0, y: -520, rotate: 0 },
+  m: { x: -420, y: -60, rotate: -45 },
+  cruz: { x: 0, y: -480, rotate: 20 },
+  corazones: { x: 0, y: 460, rotate: -25 },
+  estrellas: { x: 420, y: 80, rotate: 90 },
+};
+
 function Piece({
   id,
   earned,
   highlight,
   children,
   fill = false,
+  fly = false,
 }: {
   id: string;
   earned: Set<string>;
   highlight?: string | null;
   children: ReactNode;
   fill?: boolean;
+  /** Celebración: al ganarse, la pieza entra volando desde fuera y se incrusta */
+  fly?: boolean;
 }) {
   const reduce = useReducedMotion();
   const on = earned.has(id);
   const isNew = on && highlight === id && !reduce;
+  const from = FLY_FROM[id];
+  const flying = fly && isNew && Boolean(from);
   return (
     <motion.g
+      // al ganarse en la celebración se vuelve a montar, para que la entrada se anime
+      key={fly && on ? "on" : "off"}
       data-piece={id}
-      initial={isNew ? { opacity: 0, scale: 1.6 } : false}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={isNew ? { duration: 1.1, delay: 0.25, ease: [0.2, 0.8, 0.2, 1] } : undefined}
+      initial={flying ? { opacity: 0, x: from.x, y: from.y, rotate: from.rotate, scale: 2.2 } : isNew ? { opacity: 0, scale: 1.6 } : false}
+      animate={flying ? { opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 } : { opacity: 1, scale: 1 }}
+      transition={
+        flying
+          ? { type: "spring", stiffness: 95, damping: 13, mass: 0.9, opacity: { duration: 0.25 } }
+          : isNew
+            ? { duration: 1.1, delay: 0.25, ease: [0.2, 0.8, 0.2, 1] }
+            : undefined
+      }
       style={{ transformOrigin: "100px 130px", transformBox: "view-box" }}
       stroke={on ? "url(#medal-gold)" : "rgba(255,255,255,0.16)"}
       strokeDasharray={on ? undefined : "3 4"}
@@ -57,7 +83,7 @@ function Piece({
   );
 }
 
-function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>; highlight?: string | null }) {
+function FaceSvg({ face, earned, highlight, fly }: { face: Face; earned: Set<string>; highlight?: string | null; fly?: boolean }) {
   const uid = useId().replace(/:/g, "");
   const complete = earned.has("medalla");
   return (
@@ -98,26 +124,26 @@ function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>;
       <g strokeLinecap="round" strokeLinejoin="round">
         {face === "front" ? (
           <>
-            <Piece id="rayos" earned={earned} highlight={highlight}>
+            <Piece id="rayos" earned={earned} highlight={highlight} fly={fly}>
               <g strokeWidth="1.6">
                 {[...RAYS_LEFT, ...RAYS_RIGHT].map((d) => (
                   <path key={d} d={d} />
                 ))}
               </g>
             </Piece>
-            <Piece id="globo" earned={earned} highlight={highlight} fill>
+            <Piece id="globo" earned={earned} highlight={highlight} fly={fly} fill>
               <g strokeWidth="2">
                 <path d="M62 214 A38 18 0 0 1 138 214 Z" />
                 <path d="M74 205 Q100 198 126 205 M100 196 V214 M84 199 Q80 207 82 214 M116 199 Q120 207 118 214" strokeWidth="1.2" />
               </g>
             </Piece>
-            <Piece id="serpiente" earned={earned} highlight={highlight}>
+            <Piece id="serpiente" earned={earned} highlight={highlight} fly={fly}>
               <g strokeWidth="2.2">
                 <path d="M58 206 C66 196 74 212 84 204 S100 196 110 204 S128 210 136 200" />
                 <path d="M136 200 C139 196 145 196 146 200 C145 204 139 204 136 200 Z" strokeWidth="1.6" />
               </g>
             </Piece>
-            <Piece id="maria" earned={earned} highlight={highlight} fill>
+            <Piece id="maria" earned={earned} highlight={highlight} fly={fly} fill>
               <g strokeWidth="2.2">
                 <circle cx="100" cy="74" r="9" />
                 <path d="M100 63 C86 65 82 80 85 94 L70 194 C86 202 114 202 130 194 L115 94 C118 80 114 65 100 63 Z" />
@@ -125,7 +151,7 @@ function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>;
                 <path d="M92 150 C96 160 104 160 108 150" strokeWidth="1.2" />
               </g>
             </Piece>
-            <Piece id="inscripcion" earned={earned} highlight={highlight}>
+            <Piece id="inscripcion" earned={earned} highlight={highlight} fly={fly}>
               <text
                 fontSize="7.6"
                 fontWeight={600}
@@ -152,20 +178,20 @@ function FaceSvg({ face, earned, highlight }: { face: Face; earned: Set<string>;
           </>
         ) : (
           <>
-            <Piece id="estrellas" earned={earned} highlight={highlight} fill>
+            <Piece id="estrellas" earned={earned} highlight={highlight} fly={fly} fill>
               <g strokeWidth="1.2">
                 {STARS.map((p) => (
                   <polygon key={p} points={p} />
                 ))}
               </g>
             </Piece>
-            <Piece id="cruz" earned={earned} highlight={highlight}>
+            <Piece id="cruz" earned={earned} highlight={highlight} fly={fly}>
               <path d="M100 50 V108 M86 66 H114 M68 108 H132" strokeWidth="5" />
             </Piece>
-            <Piece id="m" earned={earned} highlight={highlight}>
+            <Piece id="m" earned={earned} highlight={highlight} fly={fly}>
               <path d="M72 164 V122 L100 150 L128 122 V164 M100 108 V150" strokeWidth="5" />
             </Piece>
-            <Piece id="corazones" earned={earned} highlight={highlight} fill>
+            <Piece id="corazones" earned={earned} highlight={highlight} fly={fly} fill>
               <g transform="translate(51 186) scale(0.82)" strokeWidth="2.4">
                 <path d={HEART} />
                 <path d="M1 12c9 5 37 5 46 0M2 18c9 5 35 5 44 0" fill="none" />
@@ -192,12 +218,15 @@ export default function Medal({
   initialFace = "front",
   className,
   showFlip = true,
+  fly = false,
 }: {
   earned: Set<string>;
   highlight?: string | null;
   initialFace?: Face;
   className?: string;
   showFlip?: boolean;
+  /** Celebración: las piezas entran volando al ganarse */
+  fly?: boolean;
 }) {
   const [face, setFace] = useState<Face>(initialFace);
   const reduce = useReducedMotion();
@@ -220,10 +249,10 @@ export default function Medal({
           transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 60, damping: 14 }}
         >
           <div className="absolute inset-0 [backface-visibility:hidden]">
-            <FaceSvg face="front" earned={earned} highlight={highlight} />
+            <FaceSvg face="front" earned={earned} highlight={highlight} fly={fly} />
           </div>
           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-            <FaceSvg face="back" earned={earned} highlight={highlight} />
+            <FaceSvg face="back" earned={earned} highlight={highlight} fly={fly} />
           </div>
         </motion.div>
         {complete && !reduce && (
