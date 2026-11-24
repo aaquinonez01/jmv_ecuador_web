@@ -125,7 +125,7 @@ export default function FeastQuiz({
                   aria-checked={on}
                   onClick={() => setPicks((p) => Object.assign([...p], { [step]: i }))}
                   className={cn(
-                    "flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-[15px] font-medium transition active:translate-y-0.5",
+                    "flex min-h-14 items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[15px] font-medium transition active:translate-y-0.5",
                     on
                       ? "border-[#f5b83d] bg-[#f5b83d] text-[#3b2600] shadow-[0_4px_0_#9a6504]"
                       : "border-white/25 bg-white/10 text-white shadow-[0_4px_0_rgba(0,0,0,0.3)] hover:bg-white/15",
