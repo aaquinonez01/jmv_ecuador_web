@@ -103,7 +103,7 @@ export interface Prayer extends PrayerPayload {
   published: boolean;
 }
 
-export const SONG_CATEGORIES = ["Entrada", "Ofertorio", "Comunión", "Salida", "Partes de la misa", "Marianos", "Vicencianos", "Adoración", "Alabanza"] as const;
+export const SONG_CATEGORIES = ["Entrada", "Ofertorio", "Comunión", "Salida", "Partes de la misa", "Marianos", "Vicencianos", "Adoración", "Alabanza", "Espíritu Santo", "Animación", "Vía crucis", "Villancicos", "Juveniles"] as const;
 export type SongCategory = (typeof SONG_CATEGORIES)[number];
 
 export interface SongPayload {
