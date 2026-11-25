@@ -184,10 +184,10 @@ function drawMedal(ctx: CanvasRenderingContext2D, cx: number, cy: number, k: num
   ctx.restore();
 }
 
-/** Pide a Cloudinary la foto cuadrada y centrada en el rostro (otras direcciones se dejan igual) */
-function squareUrl(url: string) {
+/** Pide a Cloudinary la foto completa a un tamaño razonable, sin recortarla (otras direcciones se dejan igual) */
+function fitUrl(url: string) {
   return url.includes("res.cloudinary.com") && url.includes("/upload/")
-    ? url.replace("/upload/", "/upload/c_fill,g_face,w_800,h_800,f_jpg,q_auto/")
+    ? url.replace("/upload/", "/upload/c_limit,w_1100,h_1400,f_jpg,q_auto/")
     : url;
 }
 
@@ -264,29 +264,33 @@ export async function makeShareCard(p: {
       for (const img of imgs) if (img) ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     }
   } else {
-    // Con foto: la foto en un círculo grande y la Medalla más pequeña, encima a un lado
-    const photo = p.photo ? await loadImage(squareUrl(p.photo)) : null;
+    // Con foto: la foto ENTERA (sin recortar, para que se vea la medalla que lleva puesta)
+    // en un marco dorado de esquinas redondeadas, y la Medalla más pequeña encima a un lado
+    const photo = p.photo ? await loadImage(fitUrl(p.photo)) : null;
     if (photo) {
-      const px = cx;
-      const py = 610;
-      const r = 300;
+      const k = Math.min(720 / photo.naturalWidth, 880 / photo.naturalHeight);
+      const w = photo.naturalWidth * k;
+      const h = photo.naturalHeight * k;
+      const x = cx - w / 2;
+      const y = 150 + (880 - h) / 2;
+      const round = (pad: number, radius: number) => {
+        ctx.beginPath();
+        ctx.roundRect(x - pad, y - pad, w + pad * 2, h + pad * 2, radius);
+      };
       ctx.save();
       ctx.shadowColor = "rgba(245,184,61,0.7)";
       ctx.shadowBlur = 70;
-      ctx.beginPath();
-      ctx.arc(px, py, r + 10, 0, Math.PI * 2);
+      round(10, 58);
       ctx.fillStyle = "#f5b83d";
       ctx.fill();
       ctx.restore();
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(px, py, r, 0, Math.PI * 2);
+      round(0, 48);
       ctx.clip();
-      // recorte centrado, como object-fit: cover
-      const side = Math.min(photo.naturalWidth, photo.naturalHeight);
-      ctx.drawImage(photo, (photo.naturalWidth - side) / 2, (photo.naturalHeight - side) / 2, side, side, px - r, py - r, r * 2, r * 2);
+      ctx.drawImage(photo, x, y, w, h);
       ctx.restore();
-      drawMedal(ctx, cx + 270, 900, 1.5, new Set(p.earned), p.face);
+      // La Medalla, en la esquina inferior derecha del marco
+      drawMedal(ctx, Math.min(x + w + 40, W - 135), y + h - 110, 1.25, new Set(p.earned), p.face);
     } else {
       drawMedal(ctx, cx, cy, 3.3, new Set(p.earned), p.face);
     }

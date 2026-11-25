@@ -116,7 +116,7 @@ export default function FeastWall({
           Caminamos juntos esta novena
         </h3>
         <p className="mx-auto mt-2 max-w-md text-[15px]" style={{ color: soft }}>
-          Sube una foto tuya llevando la medalla. Quedará aquí, junto a las de todos los que caminaron estos días.
+          Sube una foto tuya llevando la medalla. Quedará aquí, junto a las de todos los que caminaron estos días. Tu foto sale completa en la imagen que compartas.
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export default function FeastWall({
       {/* Tu foto, o el botón para subirla: sola y al centro */}
       <div className="mt-6 flex justify-center">
         {(canUpload || onNeedAuth) && (
-          <div className="relative aspect-square w-48 overflow-hidden rounded-3xl sm:w-56" style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
+          <div className="relative aspect-[3/4] w-52 overflow-hidden rounded-3xl sm:w-60" style={{ border: `2px ${mine ? "solid" : "dashed"} ${gold}`, background: "rgba(245,184,61,0.1)" }}>
             {mine ? (
               <>
                 <img src={getOptimizedUrl(mine, { w: 400 })} alt="Tu foto con la medalla" className="h-full w-full object-cover" />
@@ -192,7 +192,7 @@ export default function FeastWall({
           <ul className="mt-4 flex flex-wrap justify-center gap-2">
 
             {others.map((k) => (
-          <li key={k.userId} className={cn("relative aspect-square overflow-hidden rounded-2xl", TILE)} style={{ background: "rgba(255,255,255,0.06)" }}>
+          <li key={k.userId} className={cn("relative aspect-[3/4] overflow-hidden rounded-2xl", TILE)} style={{ background: "rgba(255,255,255,0.06)" }}>
             <button type="button" onClick={() => setOpen(k)} className="block h-full w-full" aria-label={`Ver la foto de ${k.name}`}>
               <img src={getOptimizedUrl(k.url, { w: 400 })} alt="" loading="lazy" className="h-full w-full object-cover" />
               <span
