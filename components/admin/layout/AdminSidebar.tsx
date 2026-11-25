@@ -21,6 +21,7 @@ import {
   ImageIcon,
   Inbox,
   Layers3,
+  Lightbulb,
   LogOut,
   MapPinned,
   Megaphone,
@@ -106,6 +107,12 @@ export default function AdminSidebar() {
           href: "/admin/formaciones",
           icon: <Presentation className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/formaciones"),
+        },
+        {
+          label: "Enseñanzas",
+          href: "/admin/ensenanzas",
+          icon: <Lightbulb className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/ensenanzas"),
         },
         {
           label: "Oraciones",

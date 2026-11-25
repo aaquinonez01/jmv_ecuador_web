@@ -126,3 +126,37 @@ export interface Song extends Omit<SongPayload, "author" | "songKey" | "videoUrl
   displayOrder: number;
   published: boolean;
 }
+
+/** Cómo se guía una enseñanza con "Hazlo ahora" en la app */
+export const TEACHING_GUIDES = [
+  { id: "pasos", name: "Paso a paso (un paso por pantalla)" },
+  { id: "rosario", name: "Rosario guiado (misterios y cuenta de avemarías)" },
+  { id: "none", name: "Solo lectura (sin Hazlo ahora)" },
+] as const;
+export type TeachingGuide = (typeof TEACHING_GUIDES)[number]["id"];
+
+export interface TeachingStep {
+  title: string;
+  text: string;
+}
+
+export interface TeachingPayload {
+  title: string;
+  summary: string;
+  needs: string[];
+  steps: TeachingStep[];
+  groupSteps: TeachingStep[];
+  source?: string;
+  guide: TeachingGuide;
+  icon?: string;
+  displayOrder?: number;
+  published?: boolean;
+}
+
+export interface Teaching extends Omit<TeachingPayload, "source" | "icon"> {
+  id: string;
+  source?: string | null;
+  icon?: string | null;
+  displayOrder: number;
+  published: boolean;
+}
