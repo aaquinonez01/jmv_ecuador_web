@@ -1,5 +1,7 @@
 import { getAxiosClient } from "@/config/axios.config";
 import type {
+  Mood,
+  MoodPayload,
   FormationTopic,
   FormationTopicPayload,
   NationalTraining,
@@ -62,6 +64,11 @@ export const getThemesAPI = async () => (await api().get<Theme[]>("/formation/ad
 export const createThemeAPI = async (p: ThemePayload) => (await api().post<Theme>("/formation/admin/themes", p)).data;
 export const updateThemeAPI = async (id: string, p: ThemePayload) => (await api().patch<Theme>(`/formation/admin/themes/${id}`, p)).data;
 export const deleteThemeAPI = async (id: string) => { await api().delete(`/formation/admin/themes/${id}`); };
+
+export const getMoodsAPI = async () => (await api().get<Mood[]>("/formation/admin/moods")).data;
+export const createMoodAPI = async (p: MoodPayload) => (await api().post<Mood>("/formation/admin/moods", p)).data;
+export const updateMoodAPI = async (id: string, p: MoodPayload) => (await api().patch<Mood>(`/formation/admin/moods/${id}`, p)).data;
+export const deleteMoodAPI = async (id: string) => { await api().delete(`/formation/admin/moods/${id}`); };
 
 /** Mensaje legible de un error del backend (validaciones de NestJS) */
 export function formationErrorMessage(error: unknown, fallback: string): string {

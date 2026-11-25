@@ -215,3 +215,22 @@ export interface Theme extends Omit<ThemePayload, "gameCategory" | "summary"> {
   displayOrder: number;
   published: boolean;
 }
+
+/** "¿Cómo estás hoy?": estado de ánimo con su palabra */
+export interface MoodPayload {
+  name: string;
+  icon?: string;
+  word: string;
+  reference: string;
+  prayer?: string;
+  displayOrder?: number;
+  published?: boolean;
+}
+
+export interface Mood extends Omit<MoodPayload, "icon" | "prayer"> {
+  id: string;
+  icon?: string | null;
+  prayer?: string | null;
+  displayOrder: number;
+  published: boolean;
+}

@@ -17,6 +17,7 @@ import {
   FolderKanban,
   GraduationCap,
   HandHeart,
+  HeartPulse,
   HeartHandshake,
   ImageIcon,
   Inbox,
@@ -126,6 +127,12 @@ export default function AdminSidebar() {
           href: "/admin/oraciones",
           icon: <Flame className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/oraciones"),
+        },
+        {
+          label: "¿Cómo estás hoy?",
+          href: "/admin/animo",
+          icon: <HeartPulse className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/animo"),
         },
         {
           label: "Cantos",
