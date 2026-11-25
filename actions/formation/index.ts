@@ -10,6 +10,8 @@ import type {
   SongPayload,
   Teaching,
   TeachingPayload,
+  Theme,
+  ThemePayload,
 } from "@/types/formation";
 
 // Formación de la app móvil: itinerarios, formaciones nacionales y oraciones (solo administradores)
@@ -55,6 +57,11 @@ export const getTeachingsAPI = async () => (await api().get<Teaching[]>("/format
 export const createTeachingAPI = async (p: TeachingPayload) => (await api().post<Teaching>("/formation/admin/teachings", p)).data;
 export const updateTeachingAPI = async (id: string, p: TeachingPayload) => (await api().patch<Teaching>(`/formation/admin/teachings/${id}`, p)).data;
 export const deleteTeachingAPI = async (id: string) => { await api().delete(`/formation/admin/teachings/${id}`); };
+
+export const getThemesAPI = async () => (await api().get<Theme[]>("/formation/admin/themes")).data;
+export const createThemeAPI = async (p: ThemePayload) => (await api().post<Theme>("/formation/admin/themes", p)).data;
+export const updateThemeAPI = async (id: string, p: ThemePayload) => (await api().patch<Theme>(`/formation/admin/themes/${id}`, p)).data;
+export const deleteThemeAPI = async (id: string) => { await api().delete(`/formation/admin/themes/${id}`); };
 
 /** Mensaje legible de un error del backend (validaciones de NestJS) */
 export function formationErrorMessage(error: unknown, fallback: string): string {

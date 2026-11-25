@@ -26,6 +26,12 @@ export interface LibraryDocument {
   axis?: LibraryAxis | null;
   stage: LibraryStage;
   tags: string[];
+  /** Temas de formación de los que trata (identificadores) */
+  themes?: string[];
+  /** Preguntas que un joven se haría y que este libro responde */
+  answers?: string[];
+  /** Para quién es */
+  level?: "empezar" | "profundizar" | null;
   visibility: LibraryVisibility;
   /** Portada (Cloudinary). Para PDFs el admin la genera de la primera página */
   coverUrl?: string | null;

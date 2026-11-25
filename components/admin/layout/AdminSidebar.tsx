@@ -32,6 +32,7 @@ import {
   Settings,
   Sparkles,
   Star,
+  Tags,
   Users,
 } from "lucide-react";
 import { removeToken } from "@/lib/auth/token";
@@ -113,6 +114,12 @@ export default function AdminSidebar() {
           href: "/admin/ensenanzas",
           icon: <Lightbulb className="h-[18px] w-[18px]" strokeWidth={1.85} />,
           active: pathname.startsWith("/admin/ensenanzas"),
+        },
+        {
+          label: "Temas de formación",
+          href: "/admin/temas",
+          icon: <Tags className="h-[18px] w-[18px]" strokeWidth={1.85} />,
+          active: pathname.startsWith("/admin/temas"),
         },
         {
           label: "Oraciones",

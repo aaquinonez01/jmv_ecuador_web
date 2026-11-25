@@ -24,6 +24,10 @@ export interface LibraryDocumentPayload {
   axis?: LibraryAxis | "" | null;
   stage: LibraryStage;
   tags?: string[];
+  themes?: string[];
+  answers?: string[];
+  /** "" o null quita el nivel */
+  level?: "empezar" | "profundizar" | "" | null;
   visibility: LibraryVisibility;
   externalUrl?: string;
   pageCount?: number | null;

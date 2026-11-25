@@ -20,6 +20,8 @@ import { getOptimizedUrl } from "@/lib/helpers/cloudinary";
 import { AXIS_LABELS, STAGE_LABELS, TYPE_SINGULAR, fileSizeLabel } from "@/lib/biblioteca";
 import type { LibraryAxis, LibraryStage, LibraryType, LibraryVisibility } from "@/types/library";
 import { Field, FormSection, ToggleCard, inputClass } from "./formParts";
+import { getThemesAPI } from "@/actions/formation";
+import { THEME_AXES, type Theme } from "@/types/formation";
 
 export const SUMMARY_MIN = 10;
 export const SUMMARY_MAX = 180;
@@ -44,6 +46,11 @@ export interface DocumentFormState {
   axis: LibraryAxis | "";
   stage: LibraryStage;
   tags: string[];
+  /** Temas de formación (identificadores) */
+  themes: string[];
+  /** Preguntas que responde, una por línea */
+  answers: string;
+  level: "" | "empezar" | "profundizar";
   readingMinutes: string;
   /** El admin escribió el tiempo a mano: ya no se recalcula solo */
   minutesTouched: boolean;
@@ -102,6 +109,10 @@ export default function LibraryDocumentForm({
   const [dragging, setDragging] = useState(false);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [tagDraft, setTagDraft] = useState("");
+  const [themeList, setThemeList] = useState<Theme[]>([]);
+  useEffect(() => {
+    getThemesAPI().then(setThemeList).catch(() => setThemeList([]));
+  }, []);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -532,6 +543,68 @@ export default function LibraryDocumentForm({
             </div>
           )}
         </Field>
+
+        {/* Para que la app sepa cuándo sugerir este libro */}
+        <fieldset className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:col-span-2">
+          <legend className="px-1 text-sm font-semibold text-slate-800">Para recomendarlo en la app</legend>
+          <div>
+            <p className="text-sm font-medium text-slate-800">Temas de los que trata</p>
+            <p className="mb-2 text-xs text-slate-500">
+              Marca solo los que de verdad desarrolla. La app lo sugiere cuando un joven falla preguntas de esos temas o quiere profundizar en ellos.
+            </p>
+            {themeList.length === 0 ? (
+              <p className="text-xs text-slate-500">Cargando temas…</p>
+            ) : (
+              <div className="space-y-2">
+                {THEME_AXES.map((a) => {
+                  const list = themeList.filter((t) => t.axis === a.id);
+                  if (!list.length) return null;
+                  return (
+                    <div key={a.id}>
+                      <p className="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">{a.name}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {list.map((t) => {
+                          const on = form.themes.includes(t.slug);
+                          return (
+                            <label
+                              key={t.slug}
+                              className={`inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-xs font-semibold ${on ? "border-jmv-blue bg-jmv-blue text-white" : "border-slate-300 bg-white text-slate-700"}`}
+                            >
+                              <input
+                                type="checkbox"
+                                className="sr-only"
+                                checked={on}
+                                onChange={() => onChange({ themes: on ? form.themes.filter((x) => x !== t.slug) : [...form.themes, t.slug] })}
+                              />
+                              {t.name}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div>
+            <label htmlFor="doc-answers" className="text-sm font-medium text-slate-800">
+              Este libro responde a…
+            </label>
+            <p className="mb-1 text-xs text-slate-500">Una pregunta por línea, como la haría un joven. Ej.: ¿Cómo se reza el rosario?</p>
+            <textarea id="doc-answers" rows={3} value={form.answers} onChange={(e) => onChange({ answers: e.target.value })} className={`${inputClass} py-2`} />
+          </div>
+          <div className="max-w-xs">
+            <label htmlFor="doc-level" className="text-sm font-medium text-slate-800">
+              Para quién es
+            </label>
+            <select id="doc-level" value={form.level} onChange={(e) => onChange({ level: e.target.value as DocumentFormState["level"] })} className={inputClass}>
+              <option value="">Sin indicar</option>
+              <option value="empezar">Para empezar</option>
+              <option value="profundizar">Para profundizar</option>
+            </select>
+          </div>
+        </fieldset>
 
         <Field
           label="Tiempo de lectura (minutos)"
