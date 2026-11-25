@@ -264,13 +264,19 @@ export async function makeShareCard(p: {
       for (const img of imgs) if (img) ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
     }
   } else {
-    // Con foto: la foto ENTERA (sin recortar, para que se vea la medalla que lleva puesta)
-    // en un marco dorado de esquinas redondeadas, y la Medalla más pequeña encima a un lado
+    // Con foto: en un marco dorado de esquinas redondeadas, con la Medalla más pequeña a un lado.
+    // Las fotos muy alargadas se recortan un poco (sobre todo por abajo) para que el marco no quede
+    // tan angosto, pero conservando el rostro y el pecho, que es donde va la medalla puesta.
     const photo = p.photo ? await loadImage(fitUrl(p.photo)) : null;
     if (photo) {
-      const k = Math.min(720 / photo.naturalWidth, 880 / photo.naturalHeight);
-      const w = photo.naturalWidth * k;
-      const h = photo.naturalHeight * k;
+      const MAX_RATIO = 1.45; // alto / ancho máximo del marco
+      const srcW = photo.naturalWidth;
+      const srcH = Math.min(photo.naturalHeight, srcW * MAX_RATIO);
+      // de lo que sobra, se quita el 40 % arriba y el 60 % abajo
+      const srcY = (photo.naturalHeight - srcH) * 0.4;
+      const k = Math.min(720 / srcW, 880 / srcH);
+      const w = srcW * k;
+      const h = srcH * k;
       const x = cx - w / 2;
       const y = 150 + (880 - h) / 2;
       const round = (pad: number, radius: number) => {
@@ -287,7 +293,7 @@ export async function makeShareCard(p: {
       ctx.save();
       round(0, 48);
       ctx.clip();
-      ctx.drawImage(photo, x, y, w, h);
+      ctx.drawImage(photo, 0, srcY, srcW, srcH, x, y, w, h);
       ctx.restore();
       // La Medalla, en la esquina inferior derecha del marco
       drawMedal(ctx, Math.min(x + w + 40, W - 135), y + h - 110, 1.25, new Set(p.earned), p.face);
