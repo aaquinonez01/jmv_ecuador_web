@@ -193,9 +193,13 @@ export const GAME_CATEGORY_NAMES: Record<string, string> = {
 };
 
 export interface ThemeQuote {
+  /** Identificador corto que usan los pasos del recorrido */
+  id?: string;
   kind: QuoteKind;
   text: string;
   reference: string;
+  /** Explicación breve (no es parte de la cita) */
+  context?: string;
 }
 
 export interface ThemePayload {
@@ -211,6 +215,8 @@ export interface ThemePayload {
 
 export interface Theme extends Omit<ThemePayload, "gameCategory" | "summary"> {
   id: string;
+  /** Recorrido para profundizar (se carga aparte; este formulario no lo cambia) */
+  journey?: { recorrido?: unknown[] } | null;
   gameCategory?: string | null;
   summary?: string | null;
   displayOrder: number;

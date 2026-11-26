@@ -131,6 +131,7 @@ export default function ThemesManager() {
                           </p>
                         </div>
                         {t.quotes.length === 0 && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">Sin citas</span>}
+                        {t.journey?.recorrido?.length ? <span className="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-800">Recorrido de {t.journey.recorrido.length} pasos</span> : null}
                         <PublishedBadge published={t.published} />
                         <Button
                           size="sm"
@@ -205,6 +206,7 @@ export default function ThemesManager() {
                       />
                     </div>
                     <TextareaField rows={3} value={q.text} onChange={(e) => setQ(i, { text: e.target.value })} placeholder="Texto de la cita" />
+                    <TextareaField rows={2} value={q.context ?? ""} onChange={(e) => setQ(i, { context: e.target.value })} placeholder="Explicación breve (opcional): qué está diciendo el autor. No es parte de la cita." />
                   </div>
                 ))}
               </div>
