@@ -175,8 +175,9 @@ export type ThemeAxis = (typeof THEME_AXES)[number]["id"];
 export const QUOTE_KINDS = [
   { id: "biblia", name: "La Biblia" },
   { id: "iglesia", name: "La Iglesia (Catecismo, papas)" },
-  { id: "padres", name: "Padres de la Iglesia y primeros cristianos" },
+  { id: "padres", name: "Padres de la Iglesia y santos" },
   { id: "vicenciana", name: "Familia Vicenciana" },
+  { id: "profesional", name: "Profesionales (psicología de inspiración católica)" },
   { id: "otro", name: "Otra fuente" },
 ] as const;
 export type QuoteKind = (typeof QUOTE_KINDS)[number]["id"];
