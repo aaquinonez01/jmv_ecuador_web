@@ -264,6 +264,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
       const blob = await makeShareCard({
         fiestaTitle: fiesta.title,
         headline: FEAST_ACCEPT.shareHeadline,
+        message: FEAST_ACCEPT.shareMessage,
         // Si subió su foto con la medalla, sale en la imagen
         photo: me ? await getMyKeepsake(slug) : null,
         piece: me?.user.name ?? "JMV Ecuador",
@@ -384,20 +385,28 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
               </p>
             </motion.section>
 
-            <FeastSky
-              slug={slug}
-              title="Un solo cielo"
-              myComunidad={me?.comunidad?.nombre}
-              hideEmpty
-              demo={isAdmin}
-              className="mt-6 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
-            />
             <FeastWall
               slug={slug}
               fiestaId={fiesta.id}
               canUpload={Boolean(me)}
               onNeedAuth={me ? undefined : () => setAuth(true)}
               isAdmin={isAdmin}
+              className="mt-6 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
+            />
+            {me && (
+              <div className="mt-5 text-center">
+                <FiestaButton tone="gold" onClick={shareFeast} disabled={sharing}>
+                  {sharing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Share2 className="h-5 w-5" />}
+                  Compartir mi recuerdo
+                </FiestaButton>
+              </div>
+            )}
+            <FeastSky
+              slug={slug}
+              title="Un solo cielo"
+              myComunidad={me?.comunidad?.nombre}
+              hideEmpty
+              demo={isAdmin}
               className="mt-6 rounded-[2rem] bg-[#0b1a33] p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] sm:p-8"
             />
           </>
@@ -635,7 +644,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
           </section>
         )}
 
-        {answered && (
+        {answered && !feastDay && (
           <div className="mt-8 text-center">
             <FiestaButton tone="glass" onClick={share} disabled={sharing}>
               {sharing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Share2 className="h-5 w-5" />}

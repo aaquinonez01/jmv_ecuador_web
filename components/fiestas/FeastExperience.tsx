@@ -440,9 +440,13 @@ export default function FeastExperience({
 
             {screen.kind === "sky" && (
               <div className="w-full">
-                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f5c867]">JMV Ecuador, esta noche</p>
-                <h2 className="font-display mt-2 text-4xl font-semibold sm:text-5xl">Un solo cielo</h2>
-                <FeastSky slug={slug} initial={sky} myComunidad={done ? me?.comunidad?.nombre : null} demo={Boolean(me?.user.isAdmin)} className="mt-6" />
+                <FeastWall
+                  slug={slug}
+                  fiestaId={fiestaId}
+                  canUpload={Boolean(me)}
+                  onNeedAuth={me ? undefined : onNeedAuth}
+                  isAdmin={Boolean(me?.user.isAdmin)}
+                />
                 <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                   {done && (
                     <FiestaButton tone="gold" onClick={onShare} disabled={sharing}>
@@ -454,14 +458,11 @@ export default function FeastExperience({
                     Seguir con la fiesta
                   </FiestaButton>
                 </div>
-                <FeastWall
-                  slug={slug}
-                  fiestaId={fiestaId}
-                  canUpload={Boolean(me)}
-                  onNeedAuth={me ? undefined : onNeedAuth}
-                  isAdmin={Boolean(me?.user.isAdmin)}
-                  className="mt-12 border-t border-white/15 pt-10"
-                />
+                <div className="mt-12 border-t border-white/15 pt-10">
+                  <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f5c867]">JMV Ecuador, esta noche</p>
+                  <h2 className="font-display mt-2 text-4xl font-semibold sm:text-5xl">Un solo cielo</h2>
+                  <FeastSky slug={slug} initial={sky} myComunidad={done ? me?.comunidad?.nombre : null} demo={Boolean(me?.user.isAdmin)} className="mt-6" />
+                </div>
               </div>
             )}
           </motion.div>

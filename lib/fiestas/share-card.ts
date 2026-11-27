@@ -212,6 +212,8 @@ export async function makeShareCard(p: {
   face: "front" | "back";
   /** Ej.: "1 de 10 piezas de mi Medalla" */
   progress?: string;
+  /** Frase bajo el titular (hasta dos líneas): lo vivido en la fiesta */
+  message?: string;
   /** Foto de quien comparte (su recuerdo con la medalla): va en grande, con la Medalla al lado */
   photo?: string | null;
   /** Símbolo por capas: imagen base y capas ya ganadas (en lugar de la Medalla) */
@@ -311,21 +313,31 @@ export async function makeShareCard(p: {
   ctx.font = "700 96px Georgia, serif";
   wrap(ctx, p.headline, W - 160).forEach((l, i) => ctx.fillText(l, W / 2, 1320 + i * 110));
 
+  // Con mensaje, el titular ocupa hasta dos líneas y lo demás baja un poco para hacerle sitio
+  const lines = wrap(ctx, p.headline, W - 160).length;
+  const shift = p.message ? 70 : 0;
+  if (p.message) {
+    ctx.font = "italic 500 40px Georgia, serif";
+    ctx.fillStyle = "#ffe7a3";
+    const top = 1320 + (lines - 1) * 110 + 86;
+    wrap(ctx, p.message, W - 200).slice(0, 2).forEach((l, i) => ctx.fillText(l, W / 2, top + i * 54));
+  }
+
   ctx.font = "500 50px Poppins, system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(p.piece, W / 2, 1580, W - 120);
+  ctx.fillText(p.piece, W / 2, 1580 + shift, W - 120);
   if (p.progress) {
     ctx.font = "500 38px Poppins, system-ui, sans-serif";
     ctx.fillStyle = "#f5c867";
-    ctx.fillText(p.progress, W / 2, 1650, W - 120);
+    ctx.fillText(p.progress, W / 2, 1650 + shift * 0.9, W - 120);
   }
 
   ctx.font = "600 40px Poppins, system-ui, sans-serif";
   ctx.fillStyle = "#f5c867";
-  ctx.fillText(p.footer, W / 2, 1760);
+  ctx.fillText(p.footer, W / 2, 1760 + shift * 0.6);
   ctx.font = "500 36px Poppins, system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.fillText(p.url, W / 2, 1820);
+  ctx.fillText(p.url, W / 2, 1820 + shift * 0.5);
 
   return new Promise((resolve, reject) => c.toBlob((b) => (b ? resolve(b) : reject(new Error("canvas"))), "image/png"));
 }

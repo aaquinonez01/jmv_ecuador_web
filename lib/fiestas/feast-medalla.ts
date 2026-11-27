@@ -109,6 +109,8 @@ export const FEAST_ACCEPT = {
   done: "Ya la llevas en tu corazón. Tu estrella está en el cielo.",
   hint: "Reza despacio. Al terminar, toca el botón y se encenderá tu estrella junto a las de tu comunidad.",
   shareHeadline: "Llevo la Medalla en mi corazón",
+  /** Va en la imagen que se comparte: el camino recorrido (redactado a pedido del equipo) */
+  shareMessage: "Caminé los nueve días de la novena y hoy celebro a María. ¡Milagrosa, abres caminos!",
   text: [
     "Que no busquemos en la medalla un amuleto, sino un recuerdo vivo de tu amor y una llamada a seguirte. Que al llevarla sobre nuestro pecho llevemos también tu Palabra a nuestras decisiones y tu caridad a nuestras obras.",
     "Que la medalla que portamos nos recuerde cada día que pertenecemos a Cristo y que estamos llamados a reconocerlo en nuestros hermanos.",
