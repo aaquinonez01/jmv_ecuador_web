@@ -117,8 +117,7 @@ export default function FeastRecap() {
   const [photos, setPhotos] = useState<FiestaPhoto[]>([]);
   const [faces, setFaces] = useState<Keepsake[]>([]);
   const [sky, setSky] = useState<FiestaSky | null>(null);
-  const [spot, setSpot] = useState(0);
-  const [turn, setTurn] = useState(0);
+  const [tick, setTick] = useState(0);
   const [open, setOpen] = useState<FiestaPhoto | null>(null);
   const [all, setAll] = useState(false);
 
@@ -136,19 +135,16 @@ export default function FeastRecap() {
     getSky(SLUG).then(setSky).catch(() => {});
   }, [show]);
 
-  // Cada pocos segundos una estrella se ilumina; con más de doce jóvenes, van rotando
+  // Cada pocos segundos se ilumina la estrella siguiente. Con más de doce jóvenes, la
+  // estrella que se acaba de apagar cambia por el siguiente que aún no ha salido: así
+  // pasan todos, de uno en uno, sin esperar a que termine la vuelta.
   const slots = Math.min(STARS, faces.length);
   useEffect(() => {
     if (slots === 0) return;
-    const t = setInterval(() => {
-      setSpot((s) => {
-        const next = (s + 1) % slots;
-        if (next === 0 && faces.length > STARS) setTurn((x) => x + 1);
-        return next;
-      });
-    }, 3200);
+    const t = setInterval(() => setTick((x) => x + 1), 3200);
     return () => clearInterval(t);
-  }, [slots, faces.length]);
+  }, [slots]);
+  const spot = slots ? tick % slots : 0;
 
   const order = useMemo(() => Array.from({ length: slots }, (_, k) => Math.floor((k * STARS) / slots)), [slots]);
   const stars = useMemo(
@@ -156,11 +152,13 @@ export default function FeastRecap() {
       Array.from({ length: STARS }, (_, i) => {
         // Con menos de doce jóvenes, se reparten por todo el círculo en vez de quedar juntos
         const k = order.indexOf(i);
-        const face = k >= 0 ? faces[(k + turn * STARS) % faces.length] : null;
+        // Cuántas veces se ha renovado esta estrella (una por cada vez que dejó de estar iluminada)
+        const veces = faces.length > slots && tick > k ? Math.floor((tick - k - 1) / slots) + 1 : 0;
+        const face = k < 0 ? null : veces === 0 ? faces[k] : faces[(slots + k + (veces - 1) * slots) % faces.length];
         const a = (i / STARS) * Math.PI * 2 - Math.PI / 2;
         return { face, left: 50 + 41 * Math.cos(a), top: 50 + 41 * Math.sin(a) };
       }),
-    [faces, order, turn],
+    [faces, order, slots, tick],
   );
   const litSlot = order[spot] ?? -1;
   const lit = stars[litSlot]?.face ?? null;
