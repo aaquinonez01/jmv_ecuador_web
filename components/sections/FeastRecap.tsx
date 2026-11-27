@@ -21,9 +21,9 @@ const ALL = new Set(["rayos", "globo", "serpiente", "inscripcion", "maria", "m",
 const STARS = 12;
 /** Radio y tamaño de las fotos de cada anillo, y cuánto se encoge la Medalla, con 1, 2 o 3 anillos */
 const RING_LAYOUT = [
-  { medal: 27, max: "30rem", rings: [{ r: 41, size: 16 }] },
-  { medal: 36, max: "34rem", rings: [{ r: 31, size: 12 }, { r: 45, size: 10.5 }] },
-  { medal: 38.5, max: "38rem", rings: [{ r: 26, size: 10 }, { r: 36.5, size: 9 }, { r: 46, size: 8 }] },
+  { medal: 28, max: "40rem", rings: [{ r: 41, size: 18.5 }] },
+  { medal: 37, max: "46rem", rings: [{ r: 31, size: 14 }, { r: 44.5, size: 12.5 }] },
+  { medal: 39, max: "50rem", rings: [{ r: 26, size: 11.5 }, { r: 36.5, size: 10.5 }, { r: 46, size: 9.5 }] },
 ];
 
 const gold = "#f5c867";
@@ -126,6 +126,7 @@ export default function FeastRecap() {
   const [tick, setTick] = useState(0);
   const [open, setOpen] = useState<FiestaPhoto | null>(null);
   const [all, setAll] = useState(false);
+  const [faceOpen, setFaceOpen] = useState<Keepsake | null>(null);
 
   // Quién lo ve: todos si ya es público; mientras tanto, solo administradores
   useEffect(() => {
@@ -196,6 +197,12 @@ export default function FeastRecap() {
     (d: number) => setOpen((o) => (o ? mixed[(mixed.findIndex((p) => p.id === o.id) + d + mixed.length) % mixed.length] : o)),
     [mixed],
   );
+  useEffect(() => {
+    if (!faceOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFaceOpen(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [faceOpen]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -275,7 +282,7 @@ export default function FeastRecap() {
 
         {/* Las doce estrellas: los jóvenes con su medalla giran alrededor de la Medalla */}
         {faces.length > 0 && (
-          <div className="mt-16 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,34rem)]">
+          <div className="mt-16 grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,17rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
             <div className="text-center lg:order-2 lg:text-left">
               <p className="text-xs font-bold uppercase tracking-[0.24em]" style={{ color: gold }}>
                 {n > STARS ? "Las estrellas de la Medalla" : "Las doce estrellas"}
@@ -311,7 +318,7 @@ export default function FeastRecap() {
               )}
             </div>
 
-            <div className="relative mx-auto aspect-square w-full lg:order-1" style={{ maxWidth: layout.max }}>
+            <div className="relative -mx-[5%] aspect-square w-[110%] sm:mx-auto sm:w-full lg:order-1" style={{ maxWidth: layout.max }}>
               <div aria-hidden="true" className="recap-rays absolute inset-[-12%] [background:repeating-conic-gradient(from_0deg,rgba(245,184,61,0.22)_0deg_4deg,transparent_4deg_15deg)] [mask-image:radial-gradient(circle,black_18%,transparent_66%)]" />
               <div aria-hidden="true" className="absolute rounded-full blur-3xl" style={{ inset: `${layout.medal - 1}%`, background: "rgba(245,184,61,0.35)" }} />
               <div className="absolute" style={{ inset: `${layout.medal}%` }}>
@@ -324,15 +331,18 @@ export default function FeastRecap() {
                     return (
                       <div key={j} className={`${ri % 2 ? "recap-star-rev" : "recap-star"} absolute`} style={{ left: `${c.left}%`, top: `${c.top}%`, width: `${layout.rings[ri].size}%`, aspectRatio: "1", zIndex: on ? 2 : 1 }}>
                         {c.face ? (
-                          <div
-                            className="h-full w-full overflow-hidden rounded-full transition-all duration-700"
+                          <button
+                            type="button"
+                            onClick={() => setFaceOpen(c.face)}
+                            aria-label={`Ver en grande la foto de ${c.face.name}`}
+                            className="block h-full w-full cursor-zoom-in overflow-hidden rounded-full outline-none transition-all duration-700 focus-visible:ring-4 focus-visible:ring-white"
                             style={{
                               transform: on ? "scale(1.28)" : "scale(1)",
                               boxShadow: on ? `0 0 0 3px ${gold}, 0 0 34px 6px rgba(245,184,61,0.75)` : "0 0 0 2px rgba(245,200,103,0.55), 0 8px 20px -6px rgba(0,0,0,0.7)",
                             }}
                           >
-                            <img key={c.face.userId} src={getOptimizedUrl(c.face.url, { w: 240 })} alt={`${c.face.name} con su medalla`} className="h-full w-full object-cover" />
-                          </div>
+                            <img key={c.face.userId} src={getOptimizedUrl(c.face.url, { w: 400 })} alt={`${c.face.name} con su medalla`} className="h-full w-full object-cover" />
+                          </button>
                         ) : (
                           <div aria-hidden="true" className="flex h-full w-full items-center justify-center text-2xl sm:text-3xl" style={{ color: "rgba(245,200,103,0.5)" }}>
                             ✦
@@ -354,7 +364,9 @@ export default function FeastRecap() {
           <ul className="grid max-h-[32rem] grid-cols-3 gap-x-3 gap-y-5 overflow-y-auto rounded-3xl p-5 sm:grid-cols-5 lg:grid-cols-8" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(245,200,103,0.3)" }}>
             {faces.map((f) => (
               <li key={f.userId} className="min-w-0 text-center">
-                <img src={getOptimizedUrl(f.url, { w: 240 })} alt="" loading="lazy" className="mx-auto aspect-square w-full max-w-24 rounded-full object-cover" style={{ boxShadow: "0 0 0 2px rgba(245,200,103,0.6)" }} />
+                <button type="button" onClick={() => setFaceOpen(f)} aria-label={`Ver en grande la foto de ${f.name}`} className="mx-auto block w-full max-w-28 cursor-zoom-in rounded-full outline-none focus-visible:ring-4 focus-visible:ring-white">
+                  <img src={getOptimizedUrl(f.url, { w: 240 })} alt="" loading="lazy" className="aspect-square w-full rounded-full object-cover" style={{ boxShadow: "0 0 0 2px rgba(245,200,103,0.6)" }} />
+                </button>
                 <p className="mt-2 truncate text-sm font-semibold" style={{ color: "#fff" }}>{f.name}</p>
                 {f.comunidad && <p className="truncate text-xs" style={{ color: soft }}>{f.comunidad}</p>}
               </li>
@@ -411,6 +423,22 @@ export default function FeastRecap() {
           </Link>
         </div>
       </div>
+
+      {/* Un joven con su medalla, en grande */}
+      {faceOpen && (
+        <div role="dialog" aria-modal="true" aria-label={`Foto de ${faceOpen.name}`} className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(3,8,20,0.94)" }} onClick={() => setFaceOpen(null)}>
+          <button type="button" autoFocus onClick={() => setFaceOpen(null)} aria-label="Cerrar" className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full" style={{ background: "rgba(255,255,255,0.14)", color: "#fff" }}>
+            <X className="h-6 w-6" />
+          </button>
+          <figure className="max-h-full max-w-xl text-center" onClick={(e) => e.stopPropagation()}>
+            <img src={getOptimizedUrl(faceOpen.url, { w: 1080 })} alt={`${faceOpen.name} con su medalla`} className="max-h-[74vh] w-auto rounded-3xl object-contain" style={{ boxShadow: `0 0 0 3px ${gold}, 0 0 60px 4px rgba(245,184,61,0.45)` }} />
+            <figcaption className="mt-4">
+              <span className="font-display block text-2xl font-semibold" style={{ color: gold }}>{faceOpen.name}</span>
+              {faceOpen.comunidad && <span className="block text-base" style={{ color: soft }}>{faceOpen.comunidad}</span>}
+            </figcaption>
+          </figure>
+        </div>
+      )}
 
       {/* Foto en grande */}
       {open && (
