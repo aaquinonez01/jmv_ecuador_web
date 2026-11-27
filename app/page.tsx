@@ -4,6 +4,7 @@ import HomeAnnouncementBanner from "@/components/sections/HomeAnnouncementBanner
 import ProximaFiesta from "@/components/calendario/ProximaFiesta";
 import ProximasActividades from "@/components/sections/ProximasActividades";
 import HomeGallery from "@/components/sections/HomeGallery";
+import FeastRecap from "@/components/sections/FeastRecap";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import CTASection from "@/components/sections/CTASection";
 import TestimonialsSkeleton from "@/components/sections/skeletons/TestimonialsSkeleton";
@@ -19,6 +20,8 @@ export default function Home() {
       <Suspense fallback={null}>
         <HomeAnnouncementBanner />
       </Suspense>
+      {/* Recuerdo de la novena y la fiesta de la Medalla (por ahora solo lo ven los administradores) */}
+      <FeastRecap />
       <Suspense fallback={null}>
         <ProximaFiesta />
       </Suspense>
