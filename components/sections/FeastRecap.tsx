@@ -19,6 +19,12 @@ const PUBLICO = process.env.NEXT_PUBLIC_RECAP_PREVIEW === "1";
 const SLUG = "medalla-milagrosa";
 const ALL = new Set(["rayos", "globo", "serpiente", "inscripcion", "maria", "m", "cruz", "corazones", "estrellas", "medalla"]);
 const STARS = 12;
+/** Radio y tamaño de las fotos de cada anillo, y cuánto se encoge la Medalla, con 1, 2 o 3 anillos */
+const RING_LAYOUT = [
+  { medal: 27, max: "30rem", rings: [{ r: 41, size: 16 }] },
+  { medal: 36, max: "34rem", rings: [{ r: 31, size: 12 }, { r: 45, size: 10.5 }] },
+  { medal: 38.5, max: "38rem", rings: [{ r: 26, size: 10 }, { r: 36.5, size: 9 }, { r: 46, size: 8 }] },
+];
 
 const gold = "#f5c867";
 const soft = "rgba(255,255,255,0.74)";
@@ -135,33 +141,41 @@ export default function FeastRecap() {
     getSky(SLUG).then(setSky).catch(() => {});
   }, [show]);
 
-  // Cada pocos segundos se ilumina la estrella siguiente. Con más de doce jóvenes, la
-  // estrella que se acaba de apagar cambia por el siguiente que aún no ha salido: así
-  // pasan todos, de uno en uno, sin esperar a que termine la vuelta.
-  const slots = Math.min(STARS, faces.length);
+  // Todos los jóvenes giran alrededor de la Medalla. El primer anillo son las doce estrellas;
+  // cuando suben más de doce se abre un segundo anillo, y con más de treinta, un tercero.
+  // Caben 54 a la vez; si llegan a ser más, las fotos se relevan de una en una.
+  const n = faces.length;
+  const rings = useMemo(() => {
+    if (n <= STARS) return [{ places: STARS, count: n, start: 0 }];
+    if (n <= 30) return [{ places: STARS, count: STARS, start: 0 }, { places: n - STARS, count: n - STARS, start: STARS }];
+    const outer = Math.min(n - 30, 24);
+    return [{ places: STARS, count: STARS, start: 0 }, { places: 18, count: 18, start: STARS }, { places: outer, count: outer, start: 30 }];
+  }, [n]);
+  const slots = Math.min(n, 54);
   useEffect(() => {
     if (slots === 0) return;
     const t = setInterval(() => setTick((x) => x + 1), 3200);
     return () => clearInterval(t);
   }, [slots]);
   const spot = slots ? tick % slots : 0;
-
-  const order = useMemo(() => Array.from({ length: slots }, (_, k) => Math.floor((k * STARS) / slots)), [slots]);
-  const stars = useMemo(
+  // Radio y tamaño de cada anillo (en % del cuadro), según cuántos anillos hay
+  const layout = RING_LAYOUT[rings.length - 1];
+  const cells = useMemo(
     () =>
-      Array.from({ length: STARS }, (_, i) => {
-        // Con menos de doce jóvenes, se reparten por todo el círculo en vez de quedar juntos
-        const k = order.indexOf(i);
-        // Cuántas veces se ha renovado esta estrella (una por cada vez que dejó de estar iluminada)
-        const veces = faces.length > slots && tick > k ? Math.floor((tick - k - 1) / slots) + 1 : 0;
-        const face = k < 0 ? null : veces === 0 ? faces[k] : faces[(slots + k + (veces - 1) * slots) % faces.length];
-        const a = (i / STARS) * Math.PI * 2 - Math.PI / 2;
-        return { face, left: 50 + 41 * Math.cos(a), top: 50 + 41 * Math.sin(a) };
-      }),
-    [faces, order, slots, tick],
+      rings.map((ring, ri) =>
+        Array.from({ length: ring.places }, (_, j) => {
+          // Con menos de doce, se reparten por todo el círculo en vez de quedar juntos
+          const k = ring.count < ring.places ? Array.from({ length: ring.count }, (_, x) => Math.floor((x * ring.places) / ring.count)).indexOf(j) : ring.start + j;
+          // Cuántas veces se ha renovado esta estrella (solo si hay más jóvenes que lugares)
+          const veces = n > slots && tick > k ? Math.floor((tick - k - 1) / slots) + 1 : 0;
+          const face = k < 0 ? null : veces === 0 ? faces[k] : faces[(slots + k + (veces - 1) * slots) % n];
+          const a = ((j + (ri % 2 ? 0.5 : 0)) / ring.places) * Math.PI * 2 - Math.PI / 2;
+          return { k, face, left: 50 + layout.rings[ri].r * Math.cos(a), top: 50 + layout.rings[ri].r * Math.sin(a) };
+        }),
+      ),
+    [faces, rings, layout, n, slots, tick],
   );
-  const litSlot = order[spot] ?? -1;
-  const lit = stars[litSlot]?.face ?? null;
+  const lit = cells.flat().find((c) => c.k === spot)?.face ?? null;
 
   // En la portada solo pasan las fotos que el equipo eligió en el admin. Mientras no haya
   // ninguna elegida, la vista previa de los administradores las muestra todas.
@@ -210,6 +224,8 @@ export default function FeastRecap() {
         @keyframes recap-rise { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }
         .recap-ring { animation: recap-spin 110s linear infinite }
         .recap-star { transform: translate(-50%,-50%); animation: recap-unspin 110s linear infinite }
+        .recap-ring-rev { animation: recap-spin 150s linear infinite reverse }
+        .recap-star-rev { transform: translate(-50%,-50%); animation: recap-unspin 150s linear infinite reverse }
         .recap-rays { animation: recap-spin 160s linear infinite reverse }
         .recap-track { animation: recap-slide linear infinite }
         .recap-track-rev { animation-direction: reverse }
@@ -218,7 +234,7 @@ export default function FeastRecap() {
         .recap-tile:hover { transform: rotate(0deg) scale(1.05) !important; filter: brightness(1.08) }
         .recap-name { animation: recap-rise .45s ease both }
         @media (prefers-reduced-motion: reduce) {
-          .recap-ring, .recap-star, .recap-rays, .recap-track, .recap-twinkle, .recap-name { animation: none !important }
+          .recap-ring, .recap-star, .recap-ring-rev, .recap-star-rev, .recap-rays, .recap-track, .recap-twinkle, .recap-name { animation: none !important }
           .recap-row { overflow-x: auto }
         }
       `}</style>
@@ -259,10 +275,10 @@ export default function FeastRecap() {
 
         {/* Las doce estrellas: los jóvenes con su medalla giran alrededor de la Medalla */}
         {faces.length > 0 && (
-          <div className="mt-16 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,30rem)]">
+          <div className="mt-16 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,34rem)]">
             <div className="text-center lg:order-2 lg:text-left">
               <p className="text-xs font-bold uppercase tracking-[0.24em]" style={{ color: gold }}>
-                Las doce estrellas
+                {n > STARS ? "Las estrellas de la Medalla" : "Las doce estrellas"}
               </p>
               <h3 className="font-display mt-2 text-3xl font-semibold sm:text-4xl">Cada estrella es un joven que la lleva en el corazón</h3>
               <div className="mt-6 min-h-[5.5rem]" aria-live="polite">
@@ -295,36 +311,38 @@ export default function FeastRecap() {
               )}
             </div>
 
-            <div className="relative mx-auto aspect-square w-full max-w-[30rem] lg:order-1">
+            <div className="relative mx-auto aspect-square w-full lg:order-1" style={{ maxWidth: layout.max }}>
               <div aria-hidden="true" className="recap-rays absolute inset-[-12%] [background:repeating-conic-gradient(from_0deg,rgba(245,184,61,0.22)_0deg_4deg,transparent_4deg_15deg)] [mask-image:radial-gradient(circle,black_18%,transparent_66%)]" />
-              <div aria-hidden="true" className="absolute inset-[26%] rounded-full blur-3xl" style={{ background: "rgba(245,184,61,0.35)" }} />
-              <div className="absolute inset-[27%]">
+              <div aria-hidden="true" className="absolute rounded-full blur-3xl" style={{ inset: `${layout.medal - 1}%`, background: "rgba(245,184,61,0.35)" }} />
+              <div className="absolute" style={{ inset: `${layout.medal}%` }}>
                 <Medal earned={ALL} showFlip={false} />
               </div>
-              <div className="recap-ring absolute inset-0">
-                {stars.map((s, i) => {
-                  const on = i === litSlot && Boolean(s.face);
-                  return (
-                    <div key={i} className="recap-star absolute" style={{ left: `${s.left}%`, top: `${s.top}%`, width: "16%", aspectRatio: "1" }}>
-                      {s.face ? (
-                        <div
-                          className="h-full w-full overflow-hidden rounded-full transition-all duration-700"
-                          style={{
-                            transform: on ? "scale(1.32)" : "scale(1)",
-                            boxShadow: on ? `0 0 0 3px ${gold}, 0 0 34px 6px rgba(245,184,61,0.75)` : "0 0 0 2px rgba(245,200,103,0.55), 0 8px 20px -6px rgba(0,0,0,0.7)",
-                          }}
-                        >
-                          <img key={s.face.userId} src={getOptimizedUrl(s.face.url, { w: 240 })} alt={`${s.face.name} con su medalla`} loading="lazy" className="h-full w-full object-cover" />
-                        </div>
-                      ) : (
-                        <div aria-hidden="true" className="flex h-full w-full items-center justify-center text-2xl sm:text-3xl" style={{ color: "rgba(245,200,103,0.5)" }}>
-                          ✦
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              {cells.map((ring, ri) => (
+                <div key={ri} className={`${ri % 2 ? "recap-ring-rev" : "recap-ring"} absolute inset-0`}>
+                  {ring.map((c, j) => {
+                    const on = c.k === spot && Boolean(c.face);
+                    return (
+                      <div key={j} className={`${ri % 2 ? "recap-star-rev" : "recap-star"} absolute`} style={{ left: `${c.left}%`, top: `${c.top}%`, width: `${layout.rings[ri].size}%`, aspectRatio: "1", zIndex: on ? 2 : 1 }}>
+                        {c.face ? (
+                          <div
+                            className="h-full w-full overflow-hidden rounded-full transition-all duration-700"
+                            style={{
+                              transform: on ? "scale(1.28)" : "scale(1)",
+                              boxShadow: on ? `0 0 0 3px ${gold}, 0 0 34px 6px rgba(245,184,61,0.75)` : "0 0 0 2px rgba(245,200,103,0.55), 0 8px 20px -6px rgba(0,0,0,0.7)",
+                            }}
+                          >
+                            <img key={c.face.userId} src={getOptimizedUrl(c.face.url, { w: 240 })} alt={`${c.face.name} con su medalla`} className="h-full w-full object-cover" />
+                          </div>
+                        ) : (
+                          <div aria-hidden="true" className="flex h-full w-full items-center justify-center text-2xl sm:text-3xl" style={{ color: "rgba(245,200,103,0.5)" }}>
+                            ✦
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
         )}
