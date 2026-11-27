@@ -10,6 +10,8 @@ export interface AdminQuestion {
   options: string[];
   correctIndex: number;
   explanation?: string | null;
+  /** Retirada: ya no se sortea, pero la conserva quien la respondió */
+  retired?: boolean;
 }
 
 export interface AdminDay {
@@ -27,6 +29,8 @@ export interface AdminDay {
   purpose: string | null;
   source: string | null;
   questions: AdminQuestion[];
+  /** Cuántas preguntas le tocan a cada persona (sorteadas); null = todas */
+  quizSize: number | null;
   published: boolean;
   stats: { answered: number; purposes: number; photos: number };
 }

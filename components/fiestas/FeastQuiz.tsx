@@ -39,7 +39,7 @@ export default function FeastQuiz({
     setSending(true);
     setError("");
     try {
-      const r = await sendAnswers(slug, dayNumber, answers);
+      const r = await sendAnswers(slug, dayNumber, answers, questions.map((x) => x.id));
       onAnswered({ ...r, answered: true });
     } catch (e) {
       if (statusOf(e) === 409) {

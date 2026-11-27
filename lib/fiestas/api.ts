@@ -59,8 +59,9 @@ export async function getResult(slug: string, n: number): Promise<DayResult | nu
   }
 }
 
-export async function sendAnswers(slug: string, n: number, answers: number[]) {
-  return (await api().post<DayResult>(`${base(slug)}/days/${n}/answers`, { answers })).data;
+/** `questionIds`: las preguntas que le tocaron (el día puede sortearlas de un banco) */
+export async function sendAnswers(slug: string, n: number, answers: number[], questionIds: string[]) {
+  return (await api().post<DayResult>(`${base(slug)}/days/${n}/answers`, { answers, questionIds })).data;
 }
 
 export async function markPurpose(slug: string, n: number) {

@@ -193,7 +193,7 @@ export default function DayExperience({ slug, dayNumber }: { slug: string; dayNu
     setSending(true);
     setError("");
     try {
-      const r = await sendAnswers(slug, dayNumber, picks);
+      const r = await sendAnswers(slug, dayNumber, picks, day.questions.map((x) => x.id));
       setResult({ ...r, answered: true });
       setBurst((b) => b + 1);
       setCelebrate(true);

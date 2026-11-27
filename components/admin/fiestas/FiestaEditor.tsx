@@ -347,6 +347,7 @@ function DayCard({
         purpose: f.purpose ?? "",
         source: f.source ?? "",
         questions: clean,
+        quizSize: f.quizSize && f.quizSize > 0 ? f.quizSize : null,
         published,
       });
       onSaved({ ...saved, stats: day.stats });
@@ -452,11 +453,19 @@ function DayCard({
                 variant="outline"
                 icon={<Plus className="h-4 w-4" />}
                 onClick={() => set("questions", [...f.questions, emptyQ()])}
-                disabled={f.questions.length >= 10}
+                disabled={f.questions.length >= 40}
               >
                 Agregar pregunta
               </Button>
             </div>
+            <InputField
+              label="¿Cuántas le salen a cada joven?"
+              type="number"
+              value={f.quizSize ? String(f.quizSize) : ""}
+              onChange={(e) => set("quizSize", e.target.value ? Number(e.target.value) : null)}
+              placeholder="Todas"
+              hint="Si escribes menos de las que hay (por ejemplo 5 de 20), a cada persona le salen al azar. Vacío: todas, en orden."
+            />
             {f.questions.length === 0 && (
               <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-500">
                 Sin preguntas el día solo muestra el tema, la oración y el propósito.
@@ -466,6 +475,7 @@ function DayCard({
               <div key={q.id ?? `new-${i}`} className="space-y-3 rounded-lg border border-slate-200 p-4">
                 <div className="flex items-start gap-2">
                   <span className="mt-2 text-sm font-bold text-slate-400">{i + 1}.</span>
+                  {q.retired && <span className="mt-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">Retirada</span>}
                   <InputField className="flex-1" value={q.prompt} onChange={(e) => setQ(i, { prompt: e.target.value })} placeholder="Pregunta" />
                   <Button
                     size="sm"
