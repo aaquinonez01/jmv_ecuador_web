@@ -120,6 +120,7 @@ export default function FeastRecap() {
   const [spot, setSpot] = useState(0);
   const [turn, setTurn] = useState(0);
   const [open, setOpen] = useState<FiestaPhoto | null>(null);
+  const [all, setAll] = useState(false);
 
   // Quién lo ve: todos si ya es público; mientras tanto, solo administradores
   useEffect(() => {
@@ -164,15 +165,19 @@ export default function FeastRecap() {
   const litSlot = order[spot] ?? -1;
   const lit = stars[litSlot]?.face ?? null;
 
+  // En la portada solo pasan las fotos que el equipo eligió en el admin. Mientras no haya
+  // ninguna elegida, la vista previa de los administradores las muestra todas.
+  const chosen = useMemo(() => photos.filter((p) => p.featured), [photos]);
+  const mural = chosen.length > 0 ? chosen : PUBLICO ? [] : photos;
   // El mural alterna comunidades para que no pasen seguidas todas las fotos de una sola
   const mixed = useMemo(() => {
     const groups = new Map<string, FiestaPhoto[]>();
-    for (const p of photos) groups.set(p.comunidad, [...(groups.get(p.comunidad) ?? []), p]);
+    for (const p of mural) groups.set(p.comunidad, [...(groups.get(p.comunidad) ?? []), p]);
     const lists = [...groups.values()];
     const out: FiestaPhoto[] = [];
-    for (let i = 0; out.length < photos.length; i++) for (const l of lists) if (l[i]) out.push(l[i]);
+    for (let i = 0; out.length < mural.length; i++) for (const l of lists) if (l[i]) out.push(l[i]);
     return out;
-  }, [photos]);
+  }, [mural]);
   const [rowA, rowB] = useMemo(() => [mixed.filter((_, i) => i % 2 === 0), mixed.filter((_, i) => i % 2 === 1)], [mixed]);
 
   const step = useCallback(
@@ -279,6 +284,17 @@ export default function FeastRecap() {
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
                 {faces.length} {faces.length === 1 ? "joven subió" : "jóvenes subieron"} su foto con la medalla
               </p>
+              {faces.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setAll((v) => !v)}
+                  aria-expanded={all}
+                  className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold transition"
+                  style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(245,200,103,0.5)", color: "#fff" }}
+                >
+                  {all ? "Ocultar" : `Ver a ${faces.length === 2 ? "los dos" : "todos"}`}
+                </button>
+              )}
             </div>
 
             <div className="relative mx-auto aspect-square w-full max-w-[30rem] lg:order-1">
@@ -316,14 +332,34 @@ export default function FeastRecap() {
         )}
       </div>
 
+      {/* Todos los jóvenes, sin importar cuántos sean: una cuadrícula que crece y se desplaza */}
+      {all && (
+        <div className="mx-auto mt-10 max-w-6xl px-4 sm:px-6">
+          <ul className="grid max-h-[32rem] grid-cols-3 gap-x-3 gap-y-5 overflow-y-auto rounded-3xl p-5 sm:grid-cols-5 lg:grid-cols-8" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(245,200,103,0.3)" }}>
+            {faces.map((f) => (
+              <li key={f.userId} className="min-w-0 text-center">
+                <img src={getOptimizedUrl(f.url, { w: 240 })} alt="" loading="lazy" className="mx-auto aspect-square w-full max-w-24 rounded-full object-cover" style={{ boxShadow: "0 0 0 2px rgba(245,200,103,0.6)" }} />
+                <p className="mt-2 truncate text-sm font-semibold" style={{ color: "#fff" }}>{f.name}</p>
+                {f.comunidad && <p className="truncate text-xs" style={{ color: soft }}>{f.comunidad}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* El mural: dos filas que pasan en sentidos opuestos */}
-      {photos.length > 0 && (
+      {mixed.length > 0 && (
         <div className="mt-16">
           <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
             <p className="text-xs font-bold uppercase tracking-[0.24em]" style={{ color: gold }}>
               El mural de las comunidades
             </p>
             <h3 className="font-display mt-2 text-3xl font-semibold sm:text-4xl">Así se rezó en cada rincón del país</h3>
+            {!PUBLICO && chosen.length === 0 && (
+              <p className="mx-auto mt-3 max-w-xl text-sm" style={{ color: soft }}>
+                Aún no eliges fotos: ahora ves todas. En el admin de la fiesta, pestaña Fotos, marca «Portada» en las que quieras mostrar aquí.
+              </p>
+            )}
           </div>
           <div className="mt-6 space-y-2 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
             <Row photos={rowA} onOpen={setOpen} />
@@ -366,7 +402,7 @@ export default function FeastRecap() {
           <button type="button" autoFocus onClick={() => setOpen(null)} aria-label="Cerrar" className="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full" style={{ background: "rgba(255,255,255,0.14)", color: "#fff" }}>
             <X className="h-6 w-6" />
           </button>
-          {photos.length > 1 && (
+          {mixed.length > 1 && (
             <>
               <button type="button" onClick={(e) => { e.stopPropagation(); step(-1); }} aria-label="Foto anterior" className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full" style={{ background: "rgba(255,255,255,0.14)", color: "#fff" }}>
                 <ArrowLeft className="h-6 w-6" />

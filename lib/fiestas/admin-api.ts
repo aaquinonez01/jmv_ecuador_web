@@ -78,6 +78,8 @@ export interface AdminPhoto {
   label: string;
   comunidad: string;
   uploadedBy: string | null;
+  /** Sale en el recuerdo de la portada */
+  featured: boolean;
 }
 
 export interface LeadRow {
@@ -133,6 +135,8 @@ export const removeKeepsakeAPI = async (id: string, userId: string) => {
 };
 export const listPhotosAPI = async (id: string, status?: PhotoStatus) =>
   (await api().get<AdminPhoto[]>(`/admin/fiestas/${id}/photos`, { params: status ? { status } : {} })).data;
+export const setPhotoFeaturedAPI = async (photoId: string, featured: boolean) =>
+  (await api().patch(`/admin/fiestas/photos/${photoId}/featured`, { featured })).data;
 export const setPhotoStatusAPI = async (photoId: string, status: PhotoStatus) =>
   (await api().patch(`/admin/fiestas/photos/${photoId}`, { status })).data;
 export const deletePhotoAPI = async (photoId: string) => {

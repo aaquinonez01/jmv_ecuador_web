@@ -39,6 +39,7 @@ import {
   listPhotosAPI,
   setCommunityAPI,
   setLeadAPI,
+  setPhotoFeaturedAPI,
   setPhotoStatusAPI,
   updateDayAPI,
   updateFiestaAPI,
@@ -568,6 +569,8 @@ function DayCard({
 
 // ── Fotos ─────────────────────────────────────────────────────────────
 
+import { Star } from "lucide-react";
+
 function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }) {
   const toast = useToastRef();
   const [status, setStatus] = useState<PhotoStatus | "">("approved");
@@ -587,6 +590,16 @@ function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }
   useEffect(() => {
     load();
   }, [load]);
+
+  /** Elegir (o quitar) una foto para el recuerdo de la portada */
+  const feature = async (p: AdminPhoto) => {
+    try {
+      await setPhotoFeaturedAPI(p.id, !p.featured);
+      setPhotos((l) => l?.map((x) => (x.id === p.id ? { ...x, featured: !p.featured } : x)) ?? null);
+    } catch (e) {
+      toast.current.error(adminError(e, "No se pudo guardar."));
+    }
+  };
 
   const review = async (p: AdminPhoto, st: PhotoStatus) => {
     try {
@@ -625,9 +638,15 @@ function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }
       ) : photos.length === 0 ? (
         <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500">No hay fotos aquí.</p>
       ) : (
+        <>
+        {status === "approved" && (
+          <p className="mb-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <strong>{photos.filter((p) => p.featured).length}</strong> de {photos.length} elegidas para la portada. Toca «Portada» en las fotos que quieras mostrar en la página principal; las demás siguen en el mural de la fiesta.
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
           {photos.map((p) => (
-            <figure key={p.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <figure key={p.id} className={`overflow-hidden rounded-xl border bg-white ${p.featured ? "border-amber-400 ring-2 ring-amber-300" : "border-slate-200"}`}>
               <a href={p.url} target="_blank" rel="noreferrer">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.url.replace("/upload/", "/upload/w_500,q_auto,f_auto/")} alt={p.caption ?? ""} className="aspect-square w-full object-cover" />
@@ -639,6 +658,11 @@ function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }
                 </p>
                 {p.caption && <p className="text-xs text-slate-700">“{p.caption}”</p>}
                 <div className="flex flex-wrap gap-1.5">
+                  {p.status === "approved" && (
+                    <Button size="xs" variant={p.featured ? undefined : "outline"} onClick={() => feature(p)} aria-pressed={p.featured} icon={<Star className={`h-3.5 w-3.5 ${p.featured ? "fill-current" : ""}`} />}>
+                      {p.featured ? "En portada" : "Portada"}
+                    </Button>
+                  )}
                   {p.status !== "approved" && (
                     <Button size="xs" onClick={() => review(p, "approved")} icon={<Check className="h-3.5 w-3.5" />}>
                       Aprobar
@@ -655,6 +679,7 @@ function PhotosTab({ id, onCount }: { id: string; onCount: (n: number) => void }
             </figure>
           ))}
         </div>
+        </>
       )}
       <ConfirmDialog
         isOpen={!!toDelete}

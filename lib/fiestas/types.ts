@@ -107,6 +107,8 @@ export interface FiestaPhoto {
   dayNumber: number;
   label: string;
   comunidad: string;
+  /** Elegida para el recuerdo de la portada */
+  featured?: boolean;
   reactions: Partial<Record<Reaction, number>>;
 }
 
