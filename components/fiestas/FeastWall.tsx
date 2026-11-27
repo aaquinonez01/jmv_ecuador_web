@@ -41,6 +41,7 @@ export default function FeastWall({
   const [mine, setMine] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [note, setNote] = useState("");
   const [open, setOpen] = useState<Keepsake | null>(null);
   const input = useRef<HTMLInputElement>(null);
 
@@ -66,7 +67,11 @@ export default function FeastWall({
     setBusy(true);
     setError("");
     try {
-      setMine(await uploadKeepsake(slug, file));
+      const hadPhoto = Boolean(mine);
+      const r = await uploadKeepsake(slug, file);
+      setMine(r.url);
+      // Los puntos se ganan al subirla por primera vez (o al volver a subirla tras borrarla)
+      setNote(!hadPhoto && r.points ? `¡Foto subida! Ganaste ${r.points} puntos.` : "");
       load();
     } catch (e) {
       setError(errorMessage(e, "No se pudo subir la foto. Inténtalo de nuevo."));
@@ -77,8 +82,9 @@ export default function FeastWall({
   };
 
   const removeMine = async () => {
-    if (!window.confirm("¿Quitar tu foto del recuerdo?")) return;
+    if (!window.confirm("¿Quitar tu foto del recuerdo? Se te restarán los puntos que ganaste al subirla. Si la vuelves a subir, los recuperas.")) return;
     setBusy(true);
+    setNote("");
     try {
       await removeMyKeepsake(slug);
       setMine(null);
@@ -120,6 +126,11 @@ export default function FeastWall({
         </p>
       </div>
 
+      {note && (
+        <p role="status" className="mx-auto mt-4 max-w-md rounded-2xl px-4 py-3 text-center text-sm font-semibold" style={{ background: "rgba(245,184,61,0.22)", border: "1px solid rgba(245,200,103,0.6)", color: "#ffe7a3" }}>
+          {note}
+        </p>
+      )}
       {error && (
         <p role="alert" className="mx-auto mt-4 max-w-md rounded-2xl px-4 py-3 text-center text-sm" style={{ background: "rgba(211,48,47,0.28)", color: "#fff" }}>
           {error}

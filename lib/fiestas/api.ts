@@ -116,7 +116,8 @@ export async function getMyKeepsake(slug: string) {
 export async function uploadKeepsake(slug: string, file: File) {
   const form = new FormData();
   form.append("photo", file);
-  return (await api().post<{ url: string }>(`${base(slug)}/recuerdo`, form)).data.url;
+  // `points`: los puntos que tiene por esta foto (se dan una vez; cambiarla por otra no suma)
+  return (await api().post<{ url: string; points?: number }>(`${base(slug)}/recuerdo`, form)).data;
 }
 
 export async function removeMyKeepsake(slug: string) {
