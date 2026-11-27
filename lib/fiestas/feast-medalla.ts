@@ -1,9 +1,13 @@
 // La noche del 27: contenido de la experiencia del día de la fiesta de la Medalla Milagrosa.
-// Los textos son citas del Manual de JMV (Ecuador) y de la novena «Milagrosa, abres
-// caminos» (2026); solo se corrigieron erratas y se desarrollaron abreviaturas
-// ("Sma. Virgen" → "Santísima Virgen María"). La fuente de cada texto se anota aquí
-// (no se muestra en pantalla). Excepción: la tercera aparición no está en esos
-// documentos y se redactó aparte (ver nota en esa pantalla).
+// El relato de las tres apariciones es el del sitio oficial de la Capilla de la Rue du Bac
+// (medaillemiraculeuse.org/es/saber/las-apariciones-de-la-virgen-maria, consultado el
+// 27-11-2026): se copió tal cual, solo uniendo frases seguidas. Antes se usaba el resumen
+// del Manual de JMV, que tenía tres imprecisiones (la Virgen no fue una «imagen»: Catalina
+// la vio y habló con ella; la segunda aparición fue a las 17:30, durante la oración de la
+// tarde, no «por la noche»; y la inscripción va en el anverso, la M y la cruz en el reverso).
+// Del Manual de JMV y de la novena «Milagrosa, abres caminos» (2026) quedan el deseo de la
+// Asociación, las primeras medallas y el nombre. La fuente de cada texto se anota aquí
+// (no se muestra en pantalla).
 
 export type FeastArt = "anio" | "capilla" | "estrellas" | "virgen" | "medalla" | "rayos" | "luz" | "servicio" | "nombre";
 
@@ -15,16 +19,22 @@ export interface FeastSlide {
 
 export const FEAST_STORY: FeastSlide[] = [
   {
-    // Novena, Anexo V
+    // Capilla de la Rue du Bac, «Las manifestaciones de 1830»
     kicker: "París, 1830",
     art: "anio",
-    text: "En 1830, santa Catalina Labouré era una novicia de las Hijas de la Caridad en la calle del Bac, París.",
+    text: "En 1830, en la capilla de la Rue du Bac de París, la Virgen María se le apareció tres veces a una joven Hija de la Caridad: santa Catalina Labouré. Catalina tiene 24 años. Es hermana del Seminario (novicia) y tiene un profundo deseo de ver a la Virgen María.",
   },
   {
-    // Manual de JMV, «Santa Catalina Labouré»
-    kicker: "Primera aparición · 18 de julio",
+    // Capilla de la Rue du Bac, «La noche del 18 al 19 de julio de 1830»
+    kicker: "Primera aparición · noche del 18 al 19 de julio",
     art: "capilla",
-    text: "Esa noche estando en el dormitorio sintió que un hermoso niño la invitaba a ir a la capilla. Lo siguió hasta allá y él la llevó ante la imagen de la Virgen Santísima.",
+    text: "Hacia las 23:30, Catalina oye que la llaman por su nombre. Hay un niño ahí, al pie de su cama. Le dice: «La Virgen te está esperando». Se levanta, se viste y lo sigue hasta la capilla. Todo el camino está iluminado.",
+  },
+  {
+    // Capilla de la Rue du Bac, «La noche del 18 al 19 de julio de 1830»
+    kicker: "A los pies de María",
+    art: "luz",
+    text: "Al llegar a la capilla, oye algo que suena como el roce de un vestido de seda. El niño le dice: «Aquí está la Santísima Virgen». Catalina se acerca, se arrodilla y pone las manos sobre las rodillas de María, que está sentada en un sillón. La Virgen le habla largo y tendido: «Venid al pie de este altar. Allí se derramarán las gracias sobre todos los que las pidan con confianza y fervor».",
   },
   {
     // Manual de JMV, «¿Cuándo y cómo nació JMV?»
@@ -33,29 +43,29 @@ export const FEAST_STORY: FeastSlide[] = [
     text: "En su primera aparición la Virgen revela a Catalina su deseo de que se forme una Asociación de jóvenes que imiten a su hijo Jesús, y a la que concedería abundantes gracias, pues ella misma sería su protectora.",
   },
   {
-    // Manual de JMV, «Santa Catalina Labouré»
+    // Capilla de la Rue du Bac, «El 27 de noviembre de 1830»
     kicker: "Segunda aparición · 27 de noviembre",
     art: "virgen",
-    text: "Estando por la noche en la capilla, de pronto vio que la Santísima Virgen María se le aparecía totalmente resplandeciente, derramando de sus manos hermosos rayos de luz hacia la tierra.",
+    text: "La segunda aparición tuvo lugar el 27 de noviembre de 1830, sobre las 17:30, durante la oración de la tarde. Catalina ve primero a la Virgen de pie sobre medio globo terráqueo, aplastando a una serpiente. Sostiene en sus manos un globo coronado por una cruz.",
   },
   {
-    // Manual de JMV, «Santa Catalina Labouré»
-    kicker: "La Medalla",
-    art: "medalla",
-    text: "Le encomendó que mandara hacer una medalla que tuviera por un lado las iniciales de la Virgen, M y una cruz, con esta frase: «Oh María, sin pecado concebida, ruega por nosotros que recurrimos a Ti».",
-  },
-  {
-    // Manual de JMV, «Santa Catalina Labouré»
+    // Capilla de la Rue du Bac, «El 27 de noviembre de 1830»
     kicker: "Los rayos de sus manos",
     art: "rayos",
-    text: "«Muchas gracias y ayudas celestiales no se obtienen porque no se piden».",
+    text: "Las manos de María se abren y unos rayos de luz descienden hacia la tierra. Catalina oye: «Estos rayos son las gracias que derramo sobre quienes me las piden».",
   },
   {
-    // NO está en el Manual ni en la novena: redactado a pedido del equipo nacional.
-    // Revisar contra una fuente vicenciana antes de reutilizarlo.
+    // Capilla de la Rue du Bac, «El 27 de noviembre de 1830». La oración va con las palabras
+    // con que la rezamos en la novena («recurrimos»; el sitio de la Capilla traduce «acudimos»).
+    kicker: "La Medalla",
+    art: "medalla",
+    text: "Alrededor de la Virgen aparece entonces esta oración: «Oh María, sin pecado concebida, ruega por nosotros que recurrimos a ti». A continuación, la imagen da un giro: una cruz encima de la letra M, dos corazones, doce estrellas. La Virgen le dijo: «Haced que se acuñe una medalla según este diseño. Los que la lleven con confianza recibirán grandes gracias».",
+  },
+  {
+    // Capilla de la Rue du Bac, «Diciembre de 1830»
     kicker: "Tercera aparición · diciembre de 1830",
     art: "luz",
-    text: "En diciembre de 1830, la Santísima Virgen María se apareció por tercera vez a Catalina y le confirmó la misión de la Medalla.",
+    text: "La tercera aparición tuvo lugar en diciembre de 1830 (no se sabe la fecha exacta). Esta vez, la Virgen se aparece cerca del altar, junto al sagrario. Le confirma su misión a Catalina y le dice: «Ya no me volveréis a ver».",
   },
   {
     // Novena, Anexo V
